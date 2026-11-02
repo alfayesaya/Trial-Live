@@ -1334,7 +1334,7 @@ var _fillSummary=fillSummary;fillSummary=function(sm,f,pr){_fillSummary(sm,f);va
  l.forEach(function(o,i){[i+1,o.project,o.stage,o.method+(o.desc?" – "+o.desc:""),o.part,o.qty,o.res,o.photos.length?o.photos.length+" foto":"-"].forEach(function(a,j){put(sm,r,2+j,2+j,a,{bd:true,h:j==0||j==2||j>=5?"center":"left"})});
   sm.getCell(r,8).font={name:"Arial",size:10,bold:true,color:{argb:o.res=="OK"?"FF1F9D63":"FFD6405A"}};r++})};
 $("xl").onclick=function(){var p=$("fp").value;LABSCOPE=p?[p]:null;buildReport(filtered(),"Trial_Report_ME.xlsx",$("xl"))};
-$("xr").onclick=function(){var p=$("xp").value;LABSCOPE=p?[p]:null;buildReport(rows.filter(function(x){return !p||x.project==p}),"Laporan_"+(p||"Semua_Project").replace(/[^\w-]+/g,"_")+".xlsx",$("xr"))};
+/* xr diganti oleh pilihan multi-project di bawah */
 
 /* ---------- Jadwal Project: part / posisi yang di-trial ---------- */
 function partsTrial(name){var g={};rows.filter(function(x){return x.project==name}).forEach(function(x){var k=x.pos||"-",o=g[k]=g[k]||{part:k,st:[],n:0};o.n++;if(o.st.indexOf(x.stage)<0)o.st.push(x.stage)});
@@ -1349,10 +1349,17 @@ var _fillSchedule=fillSchedule;fillSchedule=function(ws,names){_fillSchedule(ws,
 
 /* ---------- Hapus Decoplan / Hapus Project ---------- */
 async function delDeco(name){await api("POST","sections",[{project:name,stage:"ALL",section:"decoplan",rows:[],ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();render();toast("Decoplan "+name+" dihapus")}
+async function sbDel(t,q){var r=await fetch(SB+"/rest/v1/"+t+q,{method:"DELETE",headers:{apikey:KEY,Prefer:"return=representation"}});if(!r.ok)throw new Error(await r.text());return (await r.json()).length}
+var DEL_SQL="create policy \"anon delete projects\" on public.projects for delete to anon using (true);\ncreate policy \"anon delete trials\" on public.trials for delete to anon using (true);\ncreate policy \"anon delete sections\" on public.sections for delete to anon using (true);";
+function showDelHelp(){openModal("<h2>Hapus belum diizinkan Supabase <button class=\"btn ghost small\" id=sql_x type=button>Tutup</button></h2><div class=sub style=\"margin-bottom:10px\">Supabase menolak perintah hapus (tidak ada policy DELETE), jadi project tidak terhapus dan datanya masih utuh. Jalankan SQL ini sekali di Supabase → SQL Editor, lalu klik Hapus Project lagi:</div><textarea id=sql_t readonly rows=5 style=\"font-family:monospace;font-size:12px!important\">"+esc(DEL_SQL)+"</textarea><div style=\"margin-top:10px\"><button class=btn type=button id=sql_c>Salin SQL</button> <span id=sql_m class=sub></span></div>")}
+$("mbody").addEventListener("click",function(e){var t=e.target;if(t.id=="sql_x")closeModal();if(t.id=="sql_c"){var ta=$("sql_t");ta.select();try{navigator.clipboard.writeText(DEL_SQL).then(function(){$("sql_m").textContent="Tersalin ✓"},function(){document.execCommand("copy");$("sql_m").textContent="Tersalin ✓"})}catch(x){document.execCommand("copy");$("sql_m").textContent="Tersalin ✓"}}});
 async function delProject(name){var E=encodeURIComponent,p=projs.filter(function(x){return x.name==name})[0];if(!p)return;
- try{await api("DELETE","trials",null,"?project=eq."+E(name));await api("DELETE","sections",null,"?project=eq."+E(name));await api("DELETE","projects",null,"?id=eq."+p.id);
-  last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();toast("Project "+name+" dihapus")}
- catch(err){toast("Gagal hapus (cek izin DELETE di Supabase): "+String(err.message||err).slice(0,120))}}
+ try{var n=await sbDel("projects","?id=eq."+p.id);
+  if(!n){showDelHelp();return}
+  var nt=rows.filter(function(x){return x.project==name}).length,dt=await sbDel("trials","?project=eq."+E(name));await sbDel("sections","?project=eq."+E(name));
+  last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();
+  toast(dt<nt?"Project dihapus, tapi "+(nt-dt)+" trial gagal dihapus (cek policy DELETE trials)":"Project "+name+" dihapus")}
+ catch(err){toast("Gagal hapus: "+String(err.message||err).slice(0,120))}}
 function sure(t,label,fn){if(t.dataset.sure!="1"){t.dataset.sure="1";t.dataset.old=t.textContent;t.textContent=label;setTimeout(function(){if(t.isConnected){t.dataset.sure="";t.textContent=t.dataset.old}},4000);return}fn()}
 document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
  if(t.dataset.ddel){var n=t.dataset.ddel;sure(t,"Yakin hapus Decoplan?",function(){delDeco(n)})}
@@ -1360,6 +1367,22 @@ document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)retur
 var _renderProj2=renderProj;renderProj=function(){_renderProj2();var els=document.querySelectorAll("#plist .hot-row");
  projs.forEach(function(p,i){var el=els[i];if(!el)return;var d=el.lastElementChild;if(d)d.insertAdjacentHTML("beforeend"," <button type=button class=\"btn danger small\" data-ddel=\""+esc(p.name)+"\">🗑 Hapus Decoplan</button> <button type=button class=\"btn danger small\" data-pdel=\""+esc(p.name)+"\">🗑 Hapus Project</button>")})};
 renderProj();
+
+/* ---------- Ekspor: pilih beberapa project -> 1 file, 1 summary ---------- */
+var xsel={};
+$("xp").parentNode.style.display="none";
+$("xp").parentNode.insertAdjacentHTML("afterend","<div class=\"field\" style=\"grid-column:1/-1\"><label>Project untuk laporan lengkap (centang satu atau lebih → jadi 1 file &amp; 1 summary)</label><div id=xpicks style=\"display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px\"></div><button type=button class=\"btn ghost small\" id=xall>Pilih semua</button> <button type=button class=\"btn ghost small\" id=xnone>Kosongkan</button></div>");
+function renderXP(){var n=projs.map(function(p){return p.name});Object.keys(xsel).forEach(function(k){if(n.indexOf(k)<0)delete xsel[k]});
+ $("xpicks").innerHTML=n.length?n.map(function(k){return "<label class=chip style=\"display:inline-flex;align-items:center;gap:6px;cursor:pointer\"><input type=checkbox data-xp=\""+esc(k)+"\""+(xsel[k]?" checked":"")+" style=\"width:auto;min-width:0;margin:0\"> "+esc(k)+"</label>"}).join(""):"<span class=sub>Belum ada project.</span>"}
+$("xpicks").addEventListener("change",function(e){var t=e.target;if(t.dataset&&t.dataset.xp!=null){if(t.checked)xsel[t.dataset.xp]=1;else delete xsel[t.dataset.xp]}});
+$("xall").onclick=function(){projs.forEach(function(p){xsel[p.name]=1});renderXP()};
+$("xnone").onclick=function(){xsel={};renderXP()};
+var _setProjSel3=setProjSel;setProjSel=function(){_setProjSel3();renderXP()};
+renderXP();
+$("xr").onclick=function(){var sel=projs.map(function(p){return p.name}).filter(function(k){return xsel[k]});
+ if(!sel.length)return toast("Centang minimal 1 project dulu");
+ LABSCOPE=sel;var f=rows.filter(function(x){return sel.indexOf(x.project)>=0});
+ buildReport(f,sel.length==1?"Laporan_"+sel[0].replace(/[^\w-]+/g,"_")+".xlsx":"Laporan_"+sel.length+"_Project.xlsx",$("xr"))};
 
 </script>
 </body>
