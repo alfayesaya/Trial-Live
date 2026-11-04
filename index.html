@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -506,165 +506,164 @@ main{max-width:1600px;margin-left:auto;margin-right:auto}
 .modal.open{display:flex}.mbox{max-width:880px;width:100%;margin:auto!important;max-height:none}
 #lightbox{z-index:200!important}.clk{cursor:pointer}.clk:hover{background:var(--blue-soft)}
 @media (max-width:768px){.modal{padding:10px 6px 90px}}
-.pill.OK{background:var(--green-soft);color:#1f9d63}.pill.NG{background:var(--red-soft);color:#d6405a}
 </style>
 </head>
 <body>
 <aside class="sidebar">
   <div class="sb-brand">🎨</div>
-  <button class="sb-btn active" data-tab="ringkasan" title="Ringkasan">🏠</button>
-  <button class="sb-btn" data-tab="input" title="Input Trial">➕</button>
+  <button class="sb-btn active" data-tab="ringkasan" title="Dashboard">🏠</button>
+  <button class="sb-btn" data-tab="input" title="Trial Input">➕</button>
   <button class="sb-btn" data-tab="project" title="Project & Part">📁</button>
-  <button class="sb-btn" data-tab="lab" title="Kelengkapan & Lab">🧪</button>
-  <button class="sb-btn" data-tab="data" title="Data & Kendala">🗂️</button>
-  <button class="sb-btn" data-tab="galeri" title="Galeri Foto">📷</button>
+  <button class="sb-btn" data-tab="lab" title="Readiness & Lab">🧪</button>
+  <button class="sb-btn" data-tab="data" title="Data & Issues">🗂️</button>
+  <button class="sb-btn" data-tab="galeri" title="Photo Gallery">📷</button>
 </aside>
 <header class="top"><div class="top-inner"><div class="brand"><span class="tag">ME</span><span class="title-brand">Panel Trial ME – Handspray &amp; Pad Print</span></div></div>
 <nav class="tabs">
-  <button class="tab-btn active" data-tab="ringkasan">Ringkasan</button>
-  <button class="tab-btn" data-tab="input">Input Trial</button>
+  <button class="tab-btn active" data-tab="ringkasan">Dashboard</button>
+  <button class="tab-btn" data-tab="input">Trial Input</button>
   <button class="tab-btn" data-tab="project">Project &amp; Part</button>
-  <button class="tab-btn" data-tab="lab">Kelengkapan &amp; Lab</button>
-  <button class="tab-btn" data-tab="data">Data &amp; Kendala</button>
-  <button class="tab-btn" data-tab="galeri">Galeri Foto</button>
+  <button class="tab-btn" data-tab="lab">Readiness &amp; Lab</button>
+  <button class="tab-btn" data-tab="data">Data &amp; Issues</button>
+  <button class="tab-btn" data-tab="galeri">Photo Gallery</button>
 </nav></header>
 <main>
 <div id="warn" class="panel hidden" style="padding:10px 18px;margin-bottom:14px;color:#c58a10;font-weight:700"></div>
 
 <div id="filterPanel" class="panel" style="padding:12px 20px;margin-bottom:16px">
- <div class="fbar"><select id="fp"></select><input type="date" id="fd1" title="Dari tanggal"><input type="date" id="fd2" title="Sampai tanggal">
- <select id="fm"><option value="">Semua metode</option><option>Handspray</option><option>Pad Print</option></select>
- <select id="fr"><option value="">Semua hasil</option><option>Pass</option><option>Fail</option><option>Hold</option></select>
- <input id="fq" placeholder="Cari teks…"><button class="btn ghost small" id="freset" type="button">Reset</button></div>
+ <div class="fbar"><select id="fp"></select><input type="date" id="fd1" title="From date"><input type="date" id="fd2" title="To date">
+ <select id="fm"><option value="">All methods</option><option>Handspray</option><option>Pad Print</option></select>
+ <select id="fr"><option value="">All results</option><option>Pass</option><option>Fail</option><option>Hold</option></select>
+ <input type="text" id="fq" placeholder="Search text…"><button class="btn ghost small" id="freset" type="button">Reset</button></div>
 </div>
 
 <section id="tab-ringkasan">
- <div class="dash-grid"><div class="panel g-12"><h2>Ringkasan Trial</h2><div class="kpi-grid" id="kpi"></div></div></div>
+ <div class="dash-grid"><div class="panel g-12"><h2>Trial Summary</h2><div class="kpi-grid" id="kpi"></div></div></div>
  <div class="dash-grid">
-  <div class="panel g-6"><h2>Tren Trial Harian</h2><div class="chart-box" style="height:250px"><canvas id="cTrend"></canvas></div></div>
-  <div class="panel g-6"><h2>Distribusi Kendala</h2><div class="chart-box" style="height:250px"><canvas id="cDist"></canvas></div></div>
+  <div class="panel g-6"><h2>Daily Trial Trend</h2><div class="chart-box" style="height:250px"><canvas id="cTrend"></canvas></div></div>
+  <div class="panel g-6"><h2>Issue Distribution</h2><div class="chart-box" style="height:250px"><canvas id="cDist"></canvas></div></div>
  </div>
  <div class="dash-grid">
-  <div class="panel g-6"><h2>Kendala Terbanyak</h2><div class="barlist" id="topKendala"></div></div>
-  <div class="panel g-6"><h2>Hasil per Project</h2><div class="chart-box" style="height:250px"><canvas id="cProj"></canvas></div></div>
+  <div class="panel g-6"><h2>Top Issues</h2><div class="barlist" id="topKendala"></div></div>
+  <div class="panel g-6"><h2>Results per Project</h2><div class="chart-box" style="height:250px"><canvas id="cProj"></canvas></div></div>
  </div>
 </section>
 
-<section id="tab-input" class="hidden"><div class="panel"><h2>Input Trial Baru</h2>
+<section id="tab-input" class="hidden"><div class="panel"><h2>New Trial Input</h2>
  <div class="fg">
   <div class="field"><label>Project</label><select id="proj"></select></div>
-  <div class="field"><label>Diupdate oleh</label><select id="by"><option>Yesaya</option><option>Bintang</option><option>Qohar</option><option>Munir</option><option>Habibi</option></select></div>
-  <div class="field"><label>Tanggal &amp; jam trial</label><input id="dt" type="datetime-local"></div>
-  <div class="field"><label>Tahap</label><select id="stage"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Trial Lain</option></select></div>
-  <div class="field"><label>Metode</label><select id="method"><option>Handspray</option><option>Pad Print</option></select></div>
+  <div class="field"><label>Updated by</label><select id="by"><option>Yesaya</option><option>Bintang</option><option>Qohar</option><option>Munir</option><option>Habibi</option></select></div>
+  <div class="field"><label>Trial date &amp; time</label><input id="dt" type="datetime-local"></div>
+  <div class="field"><label>Stage</label><select id="stage"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Other Trial</option></select></div>
+  <div class="field"><label>Method</label><select id="method"><option>Handspray</option><option>Pad Print</option></select></div>
   <div class="field"><label>Part</label><select id="pos"></select></div>
-  <div class="field"><label>Warna cat (pilih / ketik, atau Cat trial)</label><input id="paint" list="paintl" placeholder="Pilih warna atau Cat trial"><datalist id="paintl"></datalist></div>
+  <div class="field"><label>Paint color (select / type, or Trial paint)</label><input type="text" id="paint" list="paintl" placeholder="Select a color or Trial paint"><datalist id="paintl"></datalist></div>
   <div style="grid-column:1/-1"><div id="planRef" class="sub"></div></div>
-  <div class="field"><label>Trial ke-</label><select id="tno"></select></div>
-  <div class="field"><label>Mesin / Line</label><input id="mc" placeholder="mis. C08"></div>
-  <div class="field"><label>Qty trial (pcs)</label><input id="qty" type="number" inputmode="numeric"></div>
-  <div class="field"><label>Qty NG (pcs)</label><input id="ng" type="number" inputmode="numeric" value="0"></div>
-  <div class="field"><label>Hasil warna</label><select id="color"><option>OK</option><option>Revisi mixed</option></select></div>
-  <div class="field"><label>Hasil</label><select id="res"><option>Pass</option><option>Fail</option><option>Hold</option></select></div>
+  <div class="field"><label>Trial no.</label><select id="tno"></select></div>
+  <div class="field"><label>Machine / Line</label><input type="text" id="mc" placeholder="e.g. C08"></div>
+  <div class="field"><label>Trial qty (pcs)</label><input id="qty" type="number" inputmode="numeric"></div>
+  <div class="field"><label>NG qty (pcs)</label><input id="ng" type="number" inputmode="numeric" value="0"></div>
+  <div class="field"><label>Color result</label><select id="color"><option>OK</option><option>Mixed revision</option></select></div>
+  <div class="field"><label>Result</label><select id="res"><option>Pass</option><option>Fail</option><option>Hold</option></select></div>
  </div>
- <div class="gh">Parameter aktual</div><div class="fg" id="params"></div>
- <div class="gh">Kendala</div>
- <div class="field"><label>Kategori kendala (pilih dari daftar atau ketik manual)</label><input id="cat" list="catl" placeholder="Pilih / ketik kendala…"><datalist id="catl"></datalist></div>
- <div class="field"><label>Detail kendala</label><textarea id="issue" placeholder="Apa yang terjadi, di part ke berapa, kondisi saat itu…"></textarea></div>
- <div class="field"><label>Tindakan / perbaikan</label><textarea id="act" placeholder="Apa yang sudah dilakukan"></textarea></div>
- <div class="gh">Foto produk</div>
- <div class="field"><label>Foto hasil produk (opsional, bisa lebih dari satu)</label><input id="ph_in" type="file" accept="image/*" multiple></div>
- <div class="gh">Foto parameter mesin</div>
+ <div class="gh">Actual parameters</div><div class="fg" id="params"></div>
+ <div class="gh">Issue</div>
+ <div class="field"><label>Issue category (select from the list or type manually)</label><input type="text" id="cat" list="catl" placeholder="Select / type an issue…"><datalist id="catl"></datalist></div>
+ <div class="field"><label>Issue detail</label><textarea id="issue" placeholder="What happened, which part number, conditions at the time…"></textarea></div>
+ <div class="field"><label>Action / correction</label><textarea id="act" placeholder="What has been done"></textarea></div>
+ <div class="gh">Product photos</div>
+ <div class="field"><label>Product result photos (optional, multiple allowed)</label><input id="ph_in" type="file" accept="image/*" multiple></div>
+ <div class="gh">Machine parameter photos</div>
  <div class="fg">
   <div class="field"><label>📟 HMI</label><input id="mp_hmi" type="file" accept="image/*" multiple></div>
   <div class="field"><label>⚡ Speed</label><input id="mp_speed" type="file" accept="image/*" multiple></div>
-  <div class="field"><label>💨 Angin</label><input id="mp_angin" type="file" accept="image/*" multiple></div>
-  <div class="field"><label>⚙️ Proses</label><input id="mp_proses" type="file" accept="image/*" multiple></div>
+  <div class="field"><label>💨 Air</label><input id="mp_angin" type="file" accept="image/*" multiple></div>
+  <div class="field"><label>⚙️ Process</label><input id="mp_proses" type="file" accept="image/*" multiple></div>
  </div>
- <button class="btn" id="save" type="button">Simpan trial</button> <span id="msg" class="sub"></span>
+ <button class="btn" id="save" type="button">Save trial</button> <span id="msg" class="sub"></span>
 </div></section>
 
 <section id="tab-project" class="hidden">
- <div class="panel"><h2>Project baru</h2>
-  <div class="field"><label>Nama project</label><input id="pn" placeholder="Nama project"></div>
-  <div class="gh">Part project ini</div>
-  <div class="fbar"><input id="pp" placeholder="Nama part"><input id="pc" placeholder="Warna cat part ini (pisahkan koma), mis. Hitam, Putih"><button class="btn ghost small" id="padd" type="button">Tambah</button></div>
+ <div class="panel"><h2>New project</h2>
+  <div class="field"><label>Project name</label><input type="text" id="pn" placeholder="Project name"></div>
+  <div class="gh">Parts of this project</div>
+  <div class="fbar"><input type="text" id="pp" placeholder="Part name"><input type="text" id="pc" placeholder="Paint colors for this part (comma-separated), e.g. Black, White"><button class="btn ghost small" id="padd" type="button">Add</button></div>
   <div id="pcur" style="margin-top:8px"></div>
-  <div class="gh">Daftar part dari project sebelumnya (klik untuk menambahkan)</div><div id="plib" class="sub">Belum ada.</div>
-  <div style="margin-top:16px"><button class="btn" id="psave" type="button">Simpan project</button> <span id="pmsg" class="sub"></span></div>
+  <div class="gh">Parts from previous projects (click to add)</div><div id="plib" class="sub">None yet.</div>
+  <div style="margin-top:16px"><button class="btn" id="psave" type="button">Save project</button> <span id="pmsg" class="sub"></span></div>
  </div>
- <div class="panel" style="margin-top:16px"><h2>Impor Decoplan (acuan project &amp; part)</h2>
-  <div class="sub">File Excel/CSV dengan kolom Project ID, Job Flow, Position, Face (nama part), metode (BOOK MASK / PAD PRINT), Number Process, dan Color. Project, part, posisi, warna cat, dan acuan jumlah tampo dibuat otomatis. Impor ulang file project yang sama tidak menimpa: baris dengan posisi yang sama diperbarui, posisi baru ditambahkan. Hasil impor bisa diedit lewat tombol Edit di daftar project.</div>
-  <div class="fbar" style="margin-top:10px"><button class="btn" id="dpbtn" type="button">Impor Decoplan</button><input type="file" id="dpf" accept=".xlsx,.csv" hidden><span id="dpmsg" class="sub"></span></div></div>
- <div class="panel" style="margin-top:16px"><h2>Warna Cat per Part</h2>
+ <div class="panel" style="margin-top:16px"><h2>Import Decoplan (project &amp; part reference)</h2>
+  <div class="sub">File Excel/CSV dengan kolom Project ID, Job Flow, Position, Face (nama part), metode (BOOK MASK / PAD PRINT), Number Process, dan Color. Project, part, posisi, warna cat, dan pad-count reference dibuat otomatis. Import ulang file project yang sama akan memperbarui acuannya.</div>
+  <div class="fbar" style="margin-top:10px"><button class="btn" id="dpbtn" type="button">Import Decoplan</button><input type="file" id="dpf" accept=".xlsx,.csv" hidden><span id="dpmsg" class="sub"></span></div></div>
+ <div class="panel" style="margin-top:16px"><h2>Paint Colors per Part</h2>
   <div class="field"><label>Project</label><select id="cp"></select></div>
   <div id="cpBox" class="fg"></div>
-  <button class="btn" id="csave" type="button">Simpan warna cat</button> <span id="cmsg" class="sub"></span></div>
- <div class="panel" style="margin-top:16px"><h2>Data Release Project</h2>
+  <button class="btn" id="csave" type="button">Save paint colors</button> <span id="cmsg" class="sub"></span></div>
+ <div class="panel" style="margin-top:16px"><h2>Project Release Data</h2>
   <div class="fg"><div class="field"><label>Project</label><select id="rp"></select></div>
-  <div class="field"><label>Target release</label><input type="date" id="rt"></div>
-  <div class="field"><label>Tanggal release (aktual)</label><input type="date" id="rd"></div>
-  <div class="field"><label>Status release</label><select id="rs"><option>Belum release</option><option>Siap release</option><option>Released</option></select></div></div>
-  <div class="field"><label>Catatan release</label><textarea id="rn" placeholder="Syarat release, dokumen, keputusan meeting…"></textarea></div>
-  <button class="btn" id="rsave" type="button">Simpan data release</button> <span id="rmsg" class="sub"></span></div>
- <div class="panel" style="margin-top:16px"><h2>Project yang ada</h2><div id="plist"></div></div>
+  <div class="field"><label>Release target</label><input type="date" id="rt"></div>
+  <div class="field"><label>Release date (actual)</label><input type="date" id="rd"></div>
+  <div class="field"><label>Release status</label><select id="rs"><option>Not released</option><option>Ready to release</option><option>Released</option></select></div></div>
+  <div class="field"><label>Release notes</label><textarea id="rn" placeholder="Release requirements, documents, meeting decisions…"></textarea></div>
+  <button class="btn" id="rsave" type="button">Save release data</button> <span id="rmsg" class="sub"></span></div>
+ <div class="panel" style="margin-top:16px"><h2>Existing projects</h2><div id="plist"></div></div>
 </section>
 
 <section id="tab-data" class="hidden">
- <div class="panel" style="margin-bottom:16px"><h2>Ekspor Cepat untuk Meeting</h2>
- <div class="fg"><div class="field"><label>Tanggal trial yang dibahas (default: kemarin)</label><input type="date" id="xd"></div>
- <div class="field"><label>Project untuk laporan lengkap</label><select id="xp"></select></div></div>
- <div class="fbar"><button class="btn" id="xm" type="button">Summary Meeting (tanggal di atas)</button><button class="btn ghost" id="xr" type="button">Laporan Project (awal–akhir)</button></div>
- <div class="sub" style="margin-top:8px">Dua tombol ini tidak terpengaruh filter di atas halaman.</div></div>
- <div class="panel" style="margin-bottom:16px"><h2>Acuan Decoplan vs Hasil Trial (acuan release PP2K)</h2><div class="ov stk" id="dplan"></div></div>
- <div class="panel" style="margin-bottom:16px"><h2>Jadwal Project: Trial Pertama sampai Release</h2><div class="ov stk" id="sch"></div></div>
- <div class="panel" style="margin-bottom:16px"><h2>Progres Trial per Part (trial awal sampai OK)</h2><div class="ov stk" id="prog"></div></div>
- <div class="panel" style="margin-bottom:16px"><h2>Hasil Test Lab per Project</h2><div class="ov stk" id="labsum"></div></div>
- <div class="panel" style="margin-bottom:16px"><h2>Ringkasan Kendala per Project</h2><div class="ov stk" id="sum"></div></div>
- <div class="panel"><h2>Log Trial <span><button class="btn small" id="xl" type="button">Ekspor Excel</button> <button class="btn ghost small" id="cs" type="button">CSV</button> <button class="btn ghost small" id="im" type="button">Impor</button><input type="file" id="imf" accept=".xlsx,.csv" hidden></span></h2><div class="sub" style="margin-bottom:8px">Klik baris untuk melihat seluruh data trial dan mengedit.</div><div class="ov stk" id="log"></div></div>
+ <div class="panel" style="margin-bottom:16px"><h2>Quick Export for Meetings</h2>
+ <div class="fg"><div class="field"><label>Trial date to discuss (default: yesterday)</label><input type="date" id="xd"></div>
+ <div class="field"><label>Projects for full report</label><select id="xp"></select></div></div>
+ <div class="fbar"><button class="btn" id="xm" type="button">Meeting Summary (date above)</button><button class="btn ghost" id="xr" type="button">Project Report (start–end)</button></div>
+ <div class="sub" style="margin-top:8px">These two buttons are not affected by the filters at the top of the page.</div></div>
+ <div class="panel" style="margin-bottom:16px"><h2>Decoplan Reference vs Trial Results (PP2K release reference)</h2><div class="ov stk" id="dplan"></div></div>
+ <div class="panel" style="margin-bottom:16px"><h2>Project Schedule (PA-based milestones)</h2><div class="ov stk" id="sch"></div></div>
+ <div class="panel" style="margin-bottom:16px"><h2>Trial Progress per Part (first trial to OK)</h2><div class="ov stk" id="prog"></div></div>
+ <div class="panel" style="margin-bottom:16px"><h2>Lab Test Results per Project</h2><div class="ov stk" id="labsum"></div></div>
+ <div class="panel" style="margin-bottom:16px"><h2>Issue Summary per Project</h2><div class="ov stk" id="sum"></div></div>
+ <div class="panel"><h2>Trial Log <span><button class="btn small" id="xl" type="button">Export Excel</button> <button class="btn ghost small" id="cs" type="button">CSV</button> <button class="btn ghost small" id="im" type="button">Import</button><input type="file" id="imf" accept=".xlsx,.csv" hidden></span></h2><div class="sub" style="margin-bottom:8px">Click a row to view all trial data and edit.</div><div class="ov stk" id="log"></div></div>
 </section>
 
 <section id="tab-lab" class="hidden">
-<div class="panel"><h2>Input Hasil Test Lab <span id="tl_mode" class="n"></span></h2>
+<div class="panel"><h2>Lab Test Result Input <span id="tl_mode" class="n"></span></h2>
 <div class="fg">
  <div class="field"><label>Project</label><select id="tl_proj"></select></div>
  <div class="field"><label>Part</label><select id="tl_part"></select></div>
- <div class="field"><label>Jenis trial</label><select id="tl_stage"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Trial Lain</option></select></div>
- <div class="field"><label>Metode</label><input id="tl_method" type="text" list="tl_methl" value="Handspray" data-auto="1" placeholder="Handspray / Pad Print"><datalist id="tl_methl"><option>Handspray</option><option>Pad Print</option><option>Adhesion</option><option>Abrasion</option><option>Rubbing</option><option>With Sanitizer</option><option>Nail</option></datalist></div>
- <div class="field"><label>Jumlah (pcs)</label><input id="tl_qty" type="number" inputmode="numeric" min="0"></div>
- <div class="field"><label>Hasil lab</label><select id="tl_res"><option>OK</option><option>NG</option></select></div>
+ <div class="field"><label>Trial type</label><select id="tl_stage"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Other Trial</option></select></div>
+ <div class="field"><label>Method</label><input id="tl_method" type="text" list="tl_methl" value="Handspray" data-auto="1" placeholder="Handspray / Pad Print"><datalist id="tl_methl"><option>Handspray</option><option>Pad Print</option><option>Adhesion</option><option>Abrasion</option><option>Rubbing</option><option>With Sanitizer</option><option>Nail</option></datalist></div>
+ <div class="field"><label>Quantity (pcs)</label><input id="tl_qty" type="number" inputmode="numeric" min="0"></div>
+ <div class="field"><label>Lab result</label><select id="tl_res"><option>OK</option><option>NG</option></select></div>
 </div>
-<div class="field"><label>Deskripsi metode trial khusus (opsional)</label><textarea id="tl_desc" rows="2" placeholder="Mis. aging 48 jam 60°C, beban 500 g, 100 siklus…"></textarea></div>
-<div class="field"><label>Foto (opsional, bisa lebih dari satu)</label><div id="tl_ph"></div><input type="file" id="tl_f" accept="image/*" multiple></div>
-<button class="btn" id="tl_save" type="button">Simpan hasil test lab</button> <button class="btn ghost hidden" id="tl_cancel" type="button">Batal edit</button> <span id="tl_msg" class="sub"></span>
+<div class="field"><label>Special trial method description (optional)</label><textarea id="tl_desc" rows="2" placeholder="E.g. 48 h aging at 60°C, 500 g load, 100 cycles…"></textarea></div>
+<div class="field"><label>Photos (optional, multiple allowed)</label><div id="tl_ph"></div><input type="file" id="tl_f" accept="image/*" multiple></div>
+<button class="btn" id="tl_save" type="button">Save lab result</button> <button class="btn ghost hidden" id="tl_cancel" type="button">Cancel edit</button> <span id="tl_msg" class="sub"></span>
 </div>
-<div class="panel"><h2>Hasil Test Lab Tersimpan <select id="tl_fp" style="width:auto;min-width:180px"></select></h2><div class="ov stk" id="tl_list"></div></div>
-<div class="panel"><h2>Kelengkapan Dekorasi, Tools &amp; Lab Report</h2>
-<div class="fg"><div class="field"><label>Project</label><select id="lp"></select></div><div class="field"><label>Tahap</label><select id="ls"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Trial Lain</option></select></div></div>
+<div class="panel"><h2>Saved Lab Results <select id="tl_fp" style="width:auto;min-width:180px"></select></h2><div class="ov stk" id="tl_list"></div></div>
+<div class="panel"><h2>Decoration Completeness &amp; Tools Readiness</h2>
+<div class="fg"><div class="field"><label>Project</label><select id="lp"></select></div><div class="field"><label>Stage</label><select id="ls"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Other Trial</option></select></div></div>
 <div id="labBox"></div>
-<div class="gh">Foto Dokumen Lab (untuk project &amp; tahap yang dipilih)</div><div id="labDocs"></div>
-<div class="field"><label>Tambah foto dokumen Lab</label><input type="file" id="labf" accept="image/*" multiple></div>
+<div class="gh">Lab Document Photos (for the selected project &amp; stage)</div><div id="labDocs"></div>
+<div class="field"><label>Add Lab document photos</label><input type="file" id="labf" accept="image/*" multiple></div>
 <datalist id="resl"><option>OK</option><option>NG</option><option>Pass</option><option>Fail</option><option>On progress</option></datalist>
-<div style="margin-top:16px"><button class="btn" id="lsave" type="button">Simpan</button> <button class="btn ghost small" id="lreset" type="button">Muat ulang dari data tersimpan</button></div></div></section>
+<div style="margin-top:16px"><button class="btn" id="lsave" type="button">Save</button> <button class="btn ghost small" id="lreset" type="button">Reload from saved data</button></div></div></section>
 
-<section id="tab-galeri" class="hidden"><div class="panel"><h2>Foto Hasil Trial (per project &amp; tanggal)</h2><div id="gal"></div></div></section>
+<section id="tab-galeri" class="hidden"><div class="panel"><h2>Trial Result Photos (per project &amp; date)</h2><div id="gal"></div></div></section>
 </main>
 <div class="modal" id="modal"><div class="mbox panel" id="mbody"></div></div>
 <div class="toast" id="toast"></div>
-<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Foto diperbesar"></div>
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Photos diperbesar"></div>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
 
 var $=function(i){return document.getElementById(i)};
 var SB="https://edmylqrsinorprliaoxu.supabase.co",KEY="sb_publishable_xm8If-u4NuGkydo4ULg-hQ_wBrdEDec",BUCKET="trial-photos";
-var PAR={"Handspray":["Mode spray","CT Cat","Rasio cat","Spray cycle time (s)","Kode masking","Tekanan udara (MPa)","Frek. cleaning mask (pcs)","Konsumsi cat (g/pcs)"],
-"Pad Print":["Jumlah tampo (kali)","Warna ink","Viskositas (KU)","Rubber head","Plate depth (mm)","Delay pick up ink (s)","Delay transfer ke part (s)","Jarak rear/front stopper (mm)","Cycle time (s)"]};
-var CATS={"Handspray":["Tidak ada kendala","Mask / jig","Kualitas cat (kasar, orange peel)","Cat bocor / bleeding","Ketebalan tidak rata","Dust / kontaminasi","Adhesion","Parameter"],
-"Pad Print":["Tidak ada kendala","Fixture longgar / posisi geser","Plate (kurang/lebih dalam)","Rubber head","Ink (viskositas / kering)","Image tidak lengkap / blur","Misalignment","Adhesion","Cycle time > target"]};
-var SELOPT={"Mode spray":["Mesin","Manual"]},newColors={},pk="",workDocs=[];
-var STAGES=["EP","FEP","PP2K","PP3K","Trial Lain"];
-var STT={"EP":"Report Engineering Piloting (EP)","FEP":"Report Final Engineering Piloting (FEP)","PP2K":"Production Piloting Internal 2K (PP2K)","PP3K":"Production Piloting 3K (PP3K)","Trial Lain":"Laporan Trial"};
+var PAR={"Handspray":["Spray mode","CT Cat","Paint ratio","Spray cycle time (s)","Masking code","Air pressure (MPa)","Mask cleaning freq. (pcs)","Paint consumption (g/pcs)"],
+"Pad Print":["Number of pads (times)","Ink color","Viscosity (KU)","Rubber head","Plate depth (mm)","Delay pick up ink (s)","Delay transfer to part (s)","Rear/front stopper distance (mm)","Cycle time (s)"]};
+var CATS={"Handspray":["No issue","Mask / jig","Paint quality (rough, orange peel)","Paint leak / bleeding","Uneven thickness","Dust / contamination","Adhesion","Parameter"],
+"Pad Print":["No issue","Loose fixture / shifted position","Plate (too shallow/deep)","Rubber head","Ink (viscosity / dry)","Incomplete / blurred image","Misalignment","Adhesion","Cycle time > target"]};
+var SELOPT={"Spray mode":["Machine","Manual"]},newColors={},pk="",workDocs=[];
+var STAGES=["EP","FEP","PP2K","PP3K","Other Trial"];
+var STT={"EP":"Report Engineering Piloting (EP)","FEP":"Report Final Engineering Piloting (FEP)","PP2K":"Production Piloting Internal 2K (PP2K)","PP3K":"Production Piloting 3K (PP3K)","Other Trial":"Trial Report"};
 var OBJ={"EP":"The Engineering Piloting is conducted to evaluate the feasibility of the decoration process, tooling, and initial process parameters before the Final Engineering Piloting.","FEP":"The Final Engineering Piloting is conducted to ensure that the tooling, process method, machine type, and key process parameters are established and ready for Production Piloting.","other":"Production Piloting is conducted to verify that the developed product can consistently meet the required quality standards, including appearance, shape, aesthetics, color, and other applicable quality tests."};
 var BARC=["#4a9fe0","#9b7ff0","#4dd0c1","#f6b73c","#f07fb0","#4ecb8e","#f0687c"];
 var rows=[],projs=[],newParts=[],last={p:"",t:""},charts={};
@@ -673,8 +672,8 @@ function toast(t){var e=$("toast");e.textContent=t;e.style.opacity=1;e.style.tra
 function warn(t){$("warn").textContent=t;$("warn").classList.remove("hidden")}
 function nowLocal(){var d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
 function T(x){return x.trialAt||x.ts}
-function fmt(ts){return new Date(ts).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})}
-function day(ts){return new Date(ts).toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"})}
+function fmt(ts){return new Date(ts).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+function day(ts){return new Date(ts).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})}
 function iso(ts){var d=new Date(ts);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function opts(a){return a.map(function(x){return "<option>"+esc(x)+"</option>"}).join("")}
 $("dt").value=nowLocal();
@@ -690,95 +689,95 @@ function zoom(u){$("lightboxImg").src=u;$("lightbox").style.display="flex"}
 document.addEventListener("click",function(e){if(e.target.dataset&&e.target.dataset.zoom)zoom(e.target.dataset.zoom)});
 
 /* supabase */
-function err(e){warn("Gagal terhubung ke Supabase: "+(e&&e.message?e.message.slice(0,200):e)+" — pastikan supabase-setup.sql sudah dijalankan.")}
+function err(e){warn("Failed to connect to Supabase: "+(e&&e.message?e.message.slice(0,200):e)+" — make sure supabase-setup.sql has been run.")}
 async function api(m,t,b,q,pref,n){var r=await fetch(SB+"/rest/v1/"+t+(q||""),{method:m,headers:{apikey:KEY,"Content-Type":"application/json",Prefer:pref||"return=minimal"},body:b?JSON.stringify(b):undefined});if(!r.ok){var tx=await r.text(),mm=tx.match(/Could not find the '([^']+)' column/);
-  if(mm&&t=="trials"&&b&&(n||0)<4){(Array.isArray(b)?b:[b]).forEach(function(o){delete o[mm[1]]});warn("Database belum diperbarui: kolom '"+mm[1]+"' belum ada, sehingga data kolom itu belum tersimpan. Jalankan supabase-setup.sql terbaru di Supabase.");return api(m,t,b,q,pref,(n||0)+1)}
+  if(mm&&t=="trials"&&b&&(n||0)<4){(Array.isArray(b)?b:[b]).forEach(function(o){delete o[mm[1]]});warn("Database not updated: column '"+mm[1]+"' does not exist, so that column's data was not saved. Run the latest supabase-setup.sql in Supabase.");return api(m,t,b,q,pref,(n||0)+1)}
   throw new Error(tx)}return m=="GET"?r.json():null}
 async function upPhoto(f){var ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,""),path=Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
  var r=await fetch(SB+"/storage/v1/object/"+BUCKET+"/"+path,{method:"POST",headers:{apikey:KEY,"Content-Type":f.type||"image/jpeg"},body:f});if(!r.ok)throw new Error(await r.text());return SB+"/storage/v1/object/public/"+BUCKET+"/"+path}
 function toT(x){return {ts:x.ts,trial_at:x.trialAt,project:x.project,by_name:x.by,stage:x.stage,method:x.method,pos:x.pos,mc:x.mc,qty:x.qty,ng:x.ng,color:x.color,res:x.res,params:x.params,cat:x.cat,issue:x.issue,act:x.act,photos:x.photos,trial_no:x.no,machine_photos:x.mp||{},paint_color:x.paint||""}}
 function fromT(r){return {id:r.id,ts:r.ts,trialAt:r.trial_at,project:r.project,by:r.by_name,stage:r.stage,method:r.method,pos:r.pos,mc:r.mc,qty:r.qty||0,ng:r.ng||0,color:r.color,res:r.res,params:r.params||{},cat:r.cat||"",issue:r.issue||"",act:r.act||"",photos:r.photos||[],no:r.trial_no||1,mp:r.machine_photos||{},paint:r.paint_color||""}}
-async function loadP(){var a=await api("GET","projects",null,"?select=*&order=ts.asc"),k=JSON.stringify(a);if(k==last.p)return;last.p=k;projs=a.map(function(r){return {id:r.id,name:r.name,parts:r.parts||[],co:r.colors||{},ts:r.ts,rt:r.release_target||"",rd:r.release_date||"",rs:r.release_status||"Belum release",rn:r.release_note||""}});setProjSel();renderProj();if(!relDone&&projs.length){relDone=true;fillRel();fillCol()}}
+async function loadP(){var a=await api("GET","projects",null,"?select=*&order=ts.asc"),k=JSON.stringify(a);if(k==last.p)return;last.p=k;projs=a.map(function(r){return {id:r.id,name:r.name,parts:r.parts||[],co:r.colors||{},ts:r.ts,rt:r.release_target||"",rd:r.release_date||"",rs:lg(LEG.rel,r.release_status)||"Not released",rn:r.release_note||""}});setProjSel();renderProj();if(!relDone&&projs.length){relDone=true;fillRel();fillCol()}}
 async function loadT(){var a=await api("GET","trials",null,"?select=*&order=trial_at.desc"),k=JSON.stringify(a);if(k==last.t)return;last.t=k;rows=a.map(fromT);setCats();if(cur!="input"&&cur!="project"&&cur!="lab")render()}
 function init(){var go=function(){loadP().then(loadT).then(loadS).catch(err)};go();setInterval(go,8000)}
 
 /* form */
 function curProj(){var n=$("proj").value;return projs.filter(function(p){return p.name==n})[0]}
 function setParts(){var p=curProj(),own=p?p.parts:[],other=[],c=$("pos").value;projs.forEach(function(q){if(q!==p)q.parts.forEach(function(x){if(own.indexOf(x)<0&&other.indexOf(x)<0)other.push(x)})});
- $("pos").innerHTML=(own.length?"<optgroup label=\"Part project ini\">"+opts(own)+"</optgroup>":"")+(other.length?"<optgroup label=\"Part dari project sebelumnya\">"+opts(other)+"</optgroup>":"")||"<option>(isi part di tab Project)</option>";
+ $("pos").innerHTML=(own.length?"<optgroup label=\"Parts of this project\">"+opts(own)+"</optgroup>":"")+(other.length?"<optgroup label=\"Part dari project sebelumnya\">"+opts(other)+"</optgroup>":"")||"<option>(add parts in the Project tab)</option>";
  if(c&&own.concat(other).indexOf(c)>=0)$("pos").value=c;setPaint()}
 function setCats(){var m=$("method").value,all=CATS[m].slice();rows.forEach(function(r){if(r.cat&&all.indexOf(r.cat)<0)all.push(r.cat)});$("catl").innerHTML=all.map(function(c){return "<option value=\""+esc(c)+"\">"}).join("")}
 function setMethod(){var m=$("method").value;$("params").innerHTML=PAR[m].map(function(k){return pfield(k,"","")}).join("");setCats()}
-function setProjSel(){var c=$("proj").value,n=projs.map(function(p){return p.name});$("proj").innerHTML=n.length?opts(n):"<option value=\"\">(buat project dulu di tab Project)</option>";if(n.indexOf(c)>=0)$("proj").value=c;setParts();
- var lv=$("lp").value;$("lp").innerHTML=opts(n);if(n.indexOf(lv)>=0)$("lp").value=lv;var cv2=$("cp").value;$("cp").innerHTML=opts(n);if(n.indexOf(cv2)>=0)$("cp").value=cv2;var rv=$("rp").value;$("rp").innerHTML=opts(n);if(n.indexOf(rv)>=0)$("rp").value=rv;var xv=$("xp").value;$("xp").innerHTML="<option value=\"\">Semua project</option>"+opts(n);$("xp").value=xv;var f=$("fp").value;$("fp").innerHTML="<option value=\"\">Semua project</option>"+opts(n);$("fp").value=f}
+function setProjSel(){var c=$("proj").value,n=projs.map(function(p){return p.name});$("proj").innerHTML=n.length?opts(n):"<option value=\"\">(create a project first in the Project tab)</option>";if(n.indexOf(c)>=0)$("proj").value=c;setParts();
+ var lv=$("lp").value;$("lp").innerHTML=opts(n);if(n.indexOf(lv)>=0)$("lp").value=lv;var cv2=$("cp").value;$("cp").innerHTML=opts(n);if(n.indexOf(cv2)>=0)$("cp").value=cv2;var rv=$("rp").value;$("rp").innerHTML=opts(n);if(n.indexOf(rv)>=0)$("rp").value=rv;var xv=$("xp").value;$("xp").innerHTML="<option value=\"\">All projects</option>"+opts(n);$("xp").value=xv;var f=$("fp").value;$("fp").innerHTML="<option value=\"\">All projects</option>"+opts(n);$("fp").value=f}
 $("tno").innerHTML=Array.from({length:10},function(_,i){return "<option>"+(i+1)+"</option>"}).join("");
 function suggestNo(){var p=$("proj").value,st=$("stage").value,m=$("method").value,ps=$("pos").value,mx=0;rows.forEach(function(x){if(x.project==p&&x.stage==st&&x.method==m&&x.pos==ps&&(x.no||1)>mx)mx=x.no||1});$("tno").value=Math.min(10,mx+1)}
 $("method").onchange=function(){setMethod();suggestNo();planSync(false)};$("proj").onchange=function(){setParts();suggestNo()};$("stage").onchange=suggestNo;$("pos").onchange=function(){suggestNo();setPaint()};setMethod();
 
 $("save").onclick=async function(){
- if(!$("proj").value){$("msg").textContent="Buat/pilih project dulu.";return}
- var btn=$("save");btn.disabled=true;$("msg").textContent="Menyimpan…";
+ if(!$("proj").value){$("msg").textContent="Create/select a project first.";return}
+ var btn=$("save");btn.disabled=true;$("msg").textContent="Saving…";
  var params={};document.querySelectorAll("#params input,#params select").forEach(function(i){if(i.value.trim())params[i.dataset.k]=i.value.trim()});
  var photos=[];
- var mp={};try{var fs=$("ph_in").files;for(var i=0;i<fs.length;i++)photos.push(await upPhoto(fs[i]));for(var kk of MPK){var f2=$("mp_"+kk[0]).files;mp[kk[0]]=[];for(var i2=0;i2<f2.length;i2++)mp[kk[0]].push(await upPhoto(f2[i2]))}}catch(e){$("msg").textContent="Foto gagal diupload ("+e.message.slice(0,80)+"), data tetap disimpan."}
+ var mp={};try{var fs=$("ph_in").files;for(var i=0;i<fs.length;i++)photos.push(await upPhoto(fs[i]));for(var kk of MPK){var f2=$("mp_"+kk[0]).files;mp[kk[0]]=[];for(var i2=0;i2<f2.length;i2++)mp[kk[0]].push(await upPhoto(f2[i2]))}}catch(e){$("msg").textContent="Photo upload failed ("+e.message.slice(0,80)+"); data was still saved."}
  var rec={ts:Date.now(),trialAt:new Date($("dt").value).getTime()||Date.now(),project:$("proj").value,by:$("by").value,stage:$("stage").value,method:$("method").value,pos:$("pos").value,mc:$("mc").value.trim(),
   qty:Number($("qty").value)||0,ng:Number($("ng").value)||0,color:$("color").value,paint:$("paint").value.trim(),res:$("res").value,params:params,cat:$("cat").value.trim(),issue:$("issue").value.trim(),act:$("act").value.trim(),photos:photos,mp:mp,no:Number($("tno").value)||1};
- try{await api("POST","trials",toT(rec));last.t="";await loadT();$("msg").textContent="Tersimpan ✓";toast("Trial tersimpan");
+ try{await api("POST","trials",toT(rec));last.t="";await loadT();$("msg").textContent="Saved ✓";toast("Trial saved");
   ["qty","issue","act","ph_in","cat","mp_hmi","mp_speed","mp_angin","mp_proses"].forEach(function(k){$(k).value=""});$("ng").value=0;$("dt").value=nowLocal();suggestNo();
-  document.querySelectorAll("#params input,#params select").forEach(function(i){i.value=""});setCats()}catch(e){$("msg").textContent="Gagal menyimpan: "+e.message.slice(0,120)}
+  document.querySelectorAll("#params input,#params select").forEach(function(i){i.value=""});setCats()}catch(e){$("msg").textContent="Failed to save: "+e.message.slice(0,120)}
  btn.disabled=false};
 
 /* project */
 function libParts(){var u=[];projs.forEach(function(p){p.parts.forEach(function(x){if(u.indexOf(x)<0&&newParts.indexOf(x)<0)u.push(x)})});return u}
 function renderProj(){
- $("pcur").innerHTML=newParts.map(function(x,i){return "<button class=chip data-i=\""+i+"\">"+esc(x)+((newColors[x]||[]).length?" ("+esc(newColors[x].join(", "))+")":"")+" ✕</button>"}).join("")||"<span class=sub>Belum ada part.</span>";
+ $("pcur").innerHTML=newParts.map(function(x,i){return "<button class=chip data-i=\""+i+"\">"+esc(x)+((newColors[x]||[]).length?" ("+esc(newColors[x].join(", "))+")":"")+" ✕</button>"}).join("")||"<span class=sub>No parts yet.</span>";
  document.querySelectorAll("#pcur button").forEach(function(b){b.onclick=function(){delete newColors[newParts[+b.dataset.i]];newParts.splice(+b.dataset.i,1);renderProj()}});
- var l=libParts();$("plib").innerHTML=l.length?l.map(function(x){return "<button class=\"chip add\" data-p=\""+esc(x)+"\">＋ "+esc(x)+(libColors(x).length?" ("+esc(libColors(x).join(", "))+")":"")+"</button>"}).join(""):"Belum ada.";
+ var l=libParts();$("plib").innerHTML=l.length?l.map(function(x){return "<button class=\"chip add\" data-p=\""+esc(x)+"\">＋ "+esc(x)+(libColors(x).length?" ("+esc(libColors(x).join(", "))+")":"")+"</button>"}).join(""):"None yet.";
  document.querySelectorAll("#plib button").forEach(function(b){b.onclick=function(){newParts.push(b.dataset.p);var c=libColors(b.dataset.p);if(c.length)newColors[b.dataset.p]=c;renderProj()}});
- $("plist").innerHTML=projs.map(function(p){return "<div class=hot-row style=\"margin-bottom:8px;display:block\"><b>"+esc(p.name)+"</b><div class=sub>"+esc(p.parts.join(", ")||"-")+"</div><div class=sub>Release: "+esc(p.rs)+" · Target "+fd(p.rt)+" · Aktual "+fd(p.rd)+"</div><div class=sub>Decoplan: "+planOf(p.name).length+" baris</div></div>"}).join("")||"<span class=sub>Belum ada project.</span>"}
+ $("plist").innerHTML=projs.map(function(p){return "<div class=hot-row style=\"margin-bottom:8px;display:block\"><b>"+esc(p.name)+"</b><div class=sub>"+esc(p.parts.join(", ")||"-")+"</div><div class=sub>Release: "+esc(p.rs)+" · Target "+fd(p.rt)+" · Actual "+fd(p.rd)+"</div><div class=sub>Decoplan: "+planOf(p.name).length+" rows</div></div>"}).join("")||"<span class=sub>No projects yet.</span>"}
 $("padd").onclick=function(){var v=$("pp").value.trim();if(v&&newParts.indexOf(v)<0){newParts.push(v);var cl=$("pc").value.split(",").map(function(x){return x.trim()}).filter(Boolean);if(cl.length)newColors[v]=cl}$("pp").value="";$("pc").value="";renderProj()};
-$("psave").onclick=async function(){var n=$("pn").value.trim();if(!n){$("pmsg").textContent="Isi nama project.";return}
- if(projs.some(function(p){return p.name.toLowerCase()==n.toLowerCase()})){$("pmsg").textContent="Nama project sudah ada.";return}
- try{await api("POST","projects",{name:n,parts:newParts.slice(),colors:newColors,ts:Date.now()});last.p="";await loadP();$("proj").value=n;setParts();$("pn").value="";newParts=[];newColors={};$("pmsg").textContent="Project tersimpan ✓";renderProj()}catch(e){$("pmsg").textContent="Gagal: "+e.message.slice(0,120)}};
+$("psave").onclick=async function(){var n=$("pn").value.trim();if(!n){$("pmsg").textContent="Enter a project name.";return}
+ if(projs.some(function(p){return p.name.toLowerCase()==n.toLowerCase()})){$("pmsg").textContent="Project name already exists.";return}
+ try{await api("POST","projects",{name:n,parts:newParts.slice(),colors:newColors,ts:Date.now()});last.p="";await loadP();$("proj").value=n;setParts();$("pn").value="";newParts=[];newColors={};$("pmsg").textContent="Project saved ✓";renderProj()}catch(e){$("pmsg").textContent="Failed: "+e.message.slice(0,120)}};
 
 /* filter + data */
 function filtered(){var p=$("fp").value,a=$("fd1").value,b=$("fd2").value,m=$("fm").value,r=$("fr").value,q=$("fq").value.toLowerCase();
  return rows.filter(function(x){var d=iso(T(x));return (!p||x.project==p)&&(!a||d>=a)&&(!b||d<=b)&&(!m||x.method==m)&&(!r||x.res==r)&&(!q||JSON.stringify(x).toLowerCase().indexOf(q)>=0)})}
 ["fp","fd1","fd2","fm","fr"].forEach(function(i){$(i).onchange=render});$("fq").oninput=render;
 $("freset").onclick=function(){["fp","fd1","fd2","fm","fr","fq"].forEach(function(i){$(i).value=""});render()};
-function summary(f){var g={};f.forEach(function(x){if(!x.cat||x.cat=="Tidak ada kendala")return;var k=(x.project||"-")+"||"+x.cat,o=g[k]=g[k]||{project:x.project||"-",cat:x.cat,n:0,fail:0,hold:0,ng:0,parts:[],last:0,detail:""};
+function summary(f){var g={};f.forEach(function(x){if(!x.cat||x.cat=="No issue")return;var k=(x.project||"-")+"||"+x.cat,o=g[k]=g[k]||{project:x.project||"-",cat:x.cat,n:0,fail:0,hold:0,ng:0,parts:[],last:0,detail:""};
  o.n++;if(x.res=="Fail")o.fail++;if(x.res=="Hold")o.hold++;o.ng+=x.ng||0;var pt=x.method+" "+x.pos;if(o.parts.indexOf(pt)<0)o.parts.push(pt);if(T(x)>=o.last){o.last=T(x);o.detail=x.issue||""}});
  return Object.keys(g).map(function(k){return g[k]}).sort(function(a,b){return a.project<b.project?-1:a.project>b.project?1:b.n-a.n})}
 function progress(f){var g={};f.forEach(function(x){var k=[x.project,x.stage,x.method,x.pos].join("|");(g[k]=g[k]||{project:x.project||"-",stage:x.stage,method:x.method,pos:x.pos,t:[]}).t.push(x)});
  return Object.keys(g).map(function(k){var o=g[k];o.t.sort(function(a,b){return (a.no||1)-(b.no||1)||T(a)-T(b)});var last=o.t[o.t.length-1];
-  o.n=o.t.length;o.ok=last.res=="Pass"?last:null;o.final=o.ok?"OK (Trial "+(last.no||1)+")":last.res=="Hold"?"Hold":"Belum OK";
+  o.n=o.t.length;o.ok=last.res=="Pass"?last:null;o.final=o.ok?"OK (Trial "+(last.no||1)+")":last.res=="Hold"?"Hold":"Not OK yet";
   o.hist=o.t.map(function(x){return "T"+(x.no||1)+" "+x.res}).join(" → ");return o}).sort(function(a,b){var x=[a.project,a.stage,a.method,a.pos].join("|"),y=[b.project,b.stage,b.method,b.pos].join("|");return x<y?-1:x>y?1:0})}
 function render(){if(cur=="ringkasan")rDash();else if(cur=="data")rData();else if(cur=="galeri")rGal();else if(cur=="lab")rLab()}
 
 function kpi(l,v,sub,c){return "<div class=kpi><div class=kpi-label>"+l+"</div><div class=kpi-value style=\"color:"+c+"\">"+v+"</div><div class=kpi-sub>"+sub+"</div></div>"}
 function mk(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg)}
 function rDash(){var f=filtered(),c=function(r){return f.filter(function(x){return x.res==r}).length},q=f.reduce(function(a,x){return a+x.qty},0),n=f.reduce(function(a,x){return a+x.ng},0),s=summary(f);
- $("kpi").innerHTML=kpi("Total Trial",f.length,"trial tercatat","#4a9fe0")+kpi("Pass",c("Pass"),"hasil OK","#4ecb8e")+kpi("Fail",c("Fail"),"perlu tindakan","#f0687c")+kpi("Hold",c("Hold"),"menunggu","#f6b73c")+kpi("NG Rate",(q?(n/q*100).toFixed(1):"0")+"%",n+" / "+q+" pcs","#9b7ff0")+kpi("Jenis Kendala",s.length,"kombinasi project-kendala","#4dd0c1")+(function(){var pg=progress(f);return kpi("Part OK",pg.filter(function(o){return o.ok}).length+"/"+pg.length,"hasil akhir OK","#4ecb8e")})();
+ $("kpi").innerHTML=kpi("Total Trial",f.length,"trials recorded","#4a9fe0")+kpi("Pass",c("Pass"),"OK results","#4ecb8e")+kpi("Fail",c("Fail"),"need action","#f0687c")+kpi("Hold",c("Hold"),"pending","#f6b73c")+kpi("NG Rate",(q?(n/q*100).toFixed(1):"0")+"%",n+" / "+q+" pcs","#9b7ff0")+kpi("Issue Types",s.length,"project-issue combinations","#4dd0c1")+(function(){var pg=progress(f);return kpi("Part OK",pg.filter(function(o){return o.ok}).length+"/"+pg.length,"final result OK","#4ecb8e")})();
  var d={};f.slice().reverse().forEach(function(x){var k=iso(T(x));d[k]=d[k]||{t:0,ng:0};d[k].t++;d[k].ng+=x.ng});var ks=Object.keys(d).sort();
- mk("cTrend",{type:"line",data:{labels:ks.map(function(k){return day(k)}),datasets:[{label:"Trial",data:ks.map(function(k){return d[k].t}),borderColor:"#4a9fe0",backgroundColor:"#e3f1fb",fill:true,tension:.3},{label:"Qty NG",data:ks.map(function(k){return d[k].ng}),borderColor:"#f0687c",tension:.3}]},options:{maintainAspectRatio:false}});
- var ct={};f.forEach(function(x){if(x.cat&&x.cat!="Tidak ada kendala")ct[x.cat]=(ct[x.cat]||0)+1});var cs=Object.keys(ct).sort(function(a,b){return ct[b]-ct[a]});
+ mk("cTrend",{type:"line",data:{labels:ks.map(function(k){return day(k)}),datasets:[{label:"Trial",data:ks.map(function(k){return d[k].t}),borderColor:"#4a9fe0",backgroundColor:"#e3f1fb",fill:true,tension:.3},{label:"NG qty",data:ks.map(function(k){return d[k].ng}),borderColor:"#f0687c",tension:.3}]},options:{maintainAspectRatio:false}});
+ var ct={};f.forEach(function(x){if(x.cat&&x.cat!="No issue")ct[x.cat]=(ct[x.cat]||0)+1});var cs=Object.keys(ct).sort(function(a,b){return ct[b]-ct[a]});
  mk("cDist",{type:"doughnut",data:{labels:cs,datasets:[{data:cs.map(function(k){return ct[k]}),backgroundColor:BARC}]},options:{maintainAspectRatio:false,plugins:{legend:{position:"right"}}}});
- var mx=cs.length?ct[cs[0]]:1;$("topKendala").innerHTML=cs.slice(0,8).map(function(k,i){return "<div class=barrow><div class=lbl>"+esc(k)+"</div><div class=track><div class=fill style=\"width:"+Math.max(6,ct[k]/mx*100)+"%;background:"+BARC[i%7]+"\"></div></div><div class=val>"+ct[k]+"</div></div>"}).join("")||"<div class=sub>Belum ada kendala.</div>";
+ var mx=cs.length?ct[cs[0]]:1;$("topKendala").innerHTML=cs.slice(0,8).map(function(k,i){return "<div class=barrow><div class=lbl>"+esc(k)+"</div><div class=track><div class=fill style=\"width:"+Math.max(6,ct[k]/mx*100)+"%;background:"+BARC[i%7]+"\"></div></div><div class=val>"+ct[k]+"</div></div>"}).join("")||"<div class=sub>No issues yet.</div>";
  var pn=Array.from(new Set(f.map(function(x){return x.project||"-"})));
  mk("cProj",{type:"bar",data:{labels:pn,datasets:[["Pass","#4ecb8e"],["Fail","#f0687c"],["Hold","#f6b73c"]].map(function(a){return {label:a[0],backgroundColor:a[1],data:pn.map(function(p){return f.filter(function(x){return (x.project||"-")==p&&x.res==a[0]}).length})}})},options:{maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true,ticks:{precision:0}}}}})}
 function rData(){var f=filtered(),s=summary(f),pg=progress(f),sc=schedule();renderPlanCmp();
- $("sch").innerHTML=sc.length?"<table><tr><th>Project</th><th>Trial pertama</th><th>EP</th><th>FEP</th><th>PP2K</th><th>PP3K</th><th>Trial terakhir</th><th>Target release</th><th>Release aktual</th><th>Status</th><th>Durasi</th></tr>"+sc.map(function(o){return "<tr><td><b>"+esc(o.name)+"</b>"+(o.rn?"<div class=sub>Catatan: "+esc(o.rn)+"</div>":"")+"</td><td>"+(o.first?day(o.first):"-")+"</td><td>"+stTxt(o.st.EP)+"</td><td>"+stTxt(o.st.FEP)+"</td><td>"+stTxt(o.st.PP2K)+"</td><td>"+stTxt(o.st.PP3K)+"</td><td>"+(o.last?day(o.last):"-")+"</td><td>"+fd(o.rt)+"</td><td>"+fd(o.rd)+"</td><td><span class=\"pill "+(o.rs=="Released"?"Pass":o.rs=="Siap release"?"Hold":"")+"\">"+esc(o.rs)+"</span></td><td>"+durTxt(o)+"</td></tr>"}).join("")+"</table>":"<div class=sub>Belum ada project.</div>";
- $("prog").innerHTML=pg.length?"<table><tr><th>Project</th><th>Tahap</th><th>Metode / Part</th><th>Riwayat trial</th><th>Hasil akhir</th><th>Trial OK</th></tr>"+pg.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.method)+"<div class=sub>"+esc(o.pos)+"</div></td><td>"+o.t.map(function(x){return "<span class=\"pill "+x.res+"\">T"+(x.no||1)+" "+x.res+"</span>"}).join(" → ")+"</td><td><span class=\"pill "+(o.ok?"Pass":o.t[o.t.length-1].res)+"\">"+esc(o.final)+"</span></td><td>"+(o.ok?"T"+(o.ok.no||1)+" · "+day(T(o.ok)):"-")+"</td></tr>"}).join("")+"</table>":"<div class=sub>Belum ada data.</div>";
- $("sum").innerHTML=s.length?"<table><tr><th>Project</th><th>Kendala</th><th>Kejadian</th><th>Fail</th><th>Hold</th><th>NG pcs</th><th>Part terdampak</th><th>Terakhir</th></tr>"+s.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.cat)+(o.detail?"<div class=sub>"+esc(o.detail)+"</div>":"")+"</td><td>"+o.n+"</td><td>"+o.fail+"</td><td>"+o.hold+"</td><td>"+o.ng+"</td><td>"+esc(o.parts.join(", "))+"</td><td>"+day(o.last)+"</td></tr>"}).join("")+"</table>":"<div class=sub>Belum ada kendala tercatat.</div>";
- $("log").innerHTML=f.length?"<table><tr><th>Waktu trial</th><th>Project</th><th>Tahap</th><th>Metode / Part</th><th>Trial</th><th>Mesin</th><th>Qty / NG</th><th>Warna cat / hasil</th><th>Hasil</th><th>Kendala &amp; tindakan</th><th>Oleh</th><th>Foto produk</th><th>Foto mesin</th></tr>"+f.map(function(x){
-  return "<tr class=clk data-id=\""+esc(x.id)+"\"><td>"+fmt(T(x))+"</td><td>"+esc(x.project)+"</td><td>"+esc(x.stage)+"</td><td>"+esc(x.method)+"<div class=sub>"+esc(x.pos)+"</div></td><td>T"+(x.no||1)+"</td><td>"+esc(x.mc)+"</td><td>"+x.qty+" / "+x.ng+"</td><td>"+esc(x.paint||"-")+"<div class=sub>"+esc(x.color||"-")+"</div></td><td><span class=\"pill "+x.res+"\">"+x.res+"</span></td><td>"+(x.cat&&x.cat!="Tidak ada kendala"?"<b>"+esc(x.cat)+"</b> "+esc(x.issue):"-")+(x.act?"<div class=sub>Tindakan: "+esc(x.act)+"</div>":"")+"</td><td>"+esc(x.by)+"</td><td>"+(x.photos||[]).map(function(u){return "<img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\">"}).join(" ")+"</td><td>"+mpThumbs(x)+"</td></tr>"}).join("")+"</table>":"<div class=sub>Belum ada data.</div>";labelT("sch");labelT("prog");labelT("sum");labelT("log")}
+ $("sch").innerHTML=sc.length?"<table><tr><th>Project</th><th>First trial</th><th>EP</th><th>FEP</th><th>PP2K</th><th>PP3K</th><th>Last trial</th><th>Release target</th><th>Actual release</th><th>Status</th><th>Duration</th></tr>"+sc.map(function(o){return "<tr><td><b>"+esc(o.name)+"</b>"+(o.rn?"<div class=sub>Notes: "+esc(o.rn)+"</div>":"")+"</td><td>"+(o.first?day(o.first):"-")+"</td><td>"+stTxt(o.st.EP)+"</td><td>"+stTxt(o.st.FEP)+"</td><td>"+stTxt(o.st.PP2K)+"</td><td>"+stTxt(o.st.PP3K)+"</td><td>"+(o.last?day(o.last):"-")+"</td><td>"+fd(o.rt)+"</td><td>"+fd(o.rd)+"</td><td><span class=\"pill "+(o.rs=="Released"?"Pass":o.rs=="Ready to release"?"Hold":"")+"\">"+esc(o.rs)+"</span></td><td>"+durTxt(o)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No projects yet.</div>";
+ $("prog").innerHTML=pg.length?"<table><tr><th>Project</th><th>Stage</th><th>Method / Part</th><th>Trial history</th><th>Final result</th><th>Trial OK</th></tr>"+pg.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.method)+"<div class=sub>"+esc(o.pos)+"</div></td><td>"+o.t.map(function(x){return "<span class=\"pill "+x.res+"\">T"+(x.no||1)+" "+x.res+"</span>"}).join(" → ")+"</td><td><span class=\"pill "+(o.ok?"Pass":o.t[o.t.length-1].res)+"\">"+esc(o.final)+"</span></td><td>"+(o.ok?"T"+(o.ok.no||1)+" · "+day(T(o.ok)):"-")+"</td></tr>"}).join("")+"</table>":"<div class=sub>No data yet.</div>";
+ $("sum").innerHTML=s.length?"<table><tr><th>Project</th><th>Issue</th><th>Occurrences</th><th>Fail</th><th>Hold</th><th>NG pcs</th><th>Affected parts</th><th>Last</th></tr>"+s.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.cat)+(o.detail?"<div class=sub>"+esc(o.detail)+"</div>":"")+"</td><td>"+o.n+"</td><td>"+o.fail+"</td><td>"+o.hold+"</td><td>"+o.ng+"</td><td>"+esc(o.parts.join(", "))+"</td><td>"+day(o.last)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No issues recorded.</div>";
+ $("log").innerHTML=f.length?"<table><tr><th>Trial time</th><th>Project</th><th>Stage</th><th>Method / Part</th><th>Trial</th><th>Machine</th><th>Qty / NG</th><th>Paint color / result</th><th>Result</th><th>Issue &amp; action</th><th>By</th><th>Product photos</th><th>Machine photos</th></tr>"+f.map(function(x){
+  return "<tr class=clk data-id=\""+esc(x.id)+"\"><td>"+fmt(T(x))+"</td><td>"+esc(x.project)+"</td><td>"+esc(x.stage)+"</td><td>"+esc(x.method)+"<div class=sub>"+esc(x.pos)+"</div></td><td>T"+(x.no||1)+"</td><td>"+esc(x.mc)+"</td><td>"+x.qty+" / "+x.ng+"</td><td>"+esc(x.paint||"-")+"<div class=sub>"+esc(x.color||"-")+"</div></td><td><span class=\"pill "+x.res+"\">"+x.res+"</span></td><td>"+(x.cat&&x.cat!="No issue"?"<b>"+esc(x.cat)+"</b> "+esc(x.issue):"-")+(x.act?"<div class=sub>Action: "+esc(x.act)+"</div>":"")+"</td><td>"+esc(x.by)+"</td><td>"+(x.photos||[]).map(function(u){return "<img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\">"}).join(" ")+"</td><td>"+mpThumbs(x)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No data yet.</div>";labelT("sch");labelT("prog");labelT("sum");labelT("log")}
 function labelT(id){document.querySelectorAll("#"+id+" table").forEach(function(t){var h=Array.from(t.rows[0].cells).map(function(c){return c.textContent});Array.from(t.rows).slice(1).forEach(function(r){Array.from(r.cells).forEach(function(c,i){c.setAttribute("data-l",h[i]||"")})})})}
-var CAT=[["p","Foto Produk"],["hmi","Parameter Mesin – HMI"],["speed","Parameter Mesin – Speed"],["angin","Parameter Mesin – Angin"],["proses","Parameter Mesin – Proses"]];
-var MPK=[["hmi","HMI"],["speed","Speed"],["angin","Angin"],["proses","Proses"]];
+var CAT=[["p","Product Photos"],["hmi","Machine Parameters – HMI"],["speed","Machine Parameters – Speed"],["angin","Machine Parameters – Air"],["proses","Machine Parameters – Process"]];
+var MPK=[["hmi","HMI"],["speed","Speed"],["angin","Air"],["proses","Process"]];
 function photosOf(x,c){return c=="p"?(x.photos||[]):((x.mp||{})[c]||[])}
 function mpThumbs(x){return MPK.filter(function(k){return photosOf(x,k[0]).length}).map(function(k){return "<div class=sub>"+k[1]+"</div>"+photosOf(x,k[0]).map(function(u){return "<img class=table-thumb title=\""+k[1]+"\" data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\">"}).join(" ")}).join("")||"-"}
-function rGal(){var g={};filtered().forEach(function(x){CAT.forEach(function(c){photosOf(x,c[0]).forEach(function(u){var k=(x.project||"-")+"||"+iso(T(x)),o=g[k]=g[k]||{p:x.project||"-",d:T(x),c:{}};(o.c[c[0]]=o.c[c[0]]||[]).push({u:u,t:x.method+" · "+x.pos+" · T"+(x.no||1)+" · "+x.res+" · "+new Date(T(x)).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})})})})});
- var ks=Object.keys(g).sort();$("gal").innerHTML=ks.length?ks.map(function(k){var o=g[k];return "<div class=gh>"+esc(o.p)+" · "+day(o.d)+"</div>"+CAT.filter(function(c){return o.c[c[0]]}).map(function(c){return "<div class=sub style=\"margin:8px 0\">"+c[1]+"</div><div class=gallery-grid>"+o.c[c[0]].map(function(i){return "<div class=photo-card><img class=gimg data-zoom=\""+esc(i.u)+"\" src=\""+esc(i.u)+"\"><div class=cap>"+esc(i.t)+"</div></div>"}).join("")+"</div>"}).join("")}).join(""):"<div class=sub>Belum ada foto.</div>"}
+function rGal(){var g={};filtered().forEach(function(x){CAT.forEach(function(c){photosOf(x,c[0]).forEach(function(u){var k=(x.project||"-")+"||"+iso(T(x)),o=g[k]=g[k]||{p:x.project||"-",d:T(x),c:{}};(o.c[c[0]]=o.c[c[0]]||[]).push({u:u,t:x.method+" · "+x.pos+" · T"+(x.no||1)+" · "+x.res+" · "+new Date(T(x)).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})})})})});
+ var ks=Object.keys(g).sort();$("gal").innerHTML=ks.length?ks.map(function(k){var o=g[k];return "<div class=gh>"+esc(o.p)+" · "+day(o.d)+"</div>"+CAT.filter(function(c){return o.c[c[0]]}).map(function(c){return "<div class=sub style=\"margin:8px 0\">"+c[1]+"</div><div class=gallery-grid>"+o.c[c[0]].map(function(i){return "<div class=photo-card><img class=gimg data-zoom=\""+esc(i.u)+"\" src=\""+esc(i.u)+"\"><div class=cap>"+esc(i.t)+"</div></div>"}).join("")+"</div>"}).join("")}).join(""):"<div class=sub>No photos yet.</div>"}
 /* Detail & Edit trial */
 var BYS=["Yesaya","Bintang","Qohar","Munir","Habibi"],ed=null;
 function allParts(){var u=[];projs.forEach(function(p){p.parts.forEach(function(x){if(u.indexOf(x)<0)u.push(x)})});return u}
@@ -790,82 +789,82 @@ document.addEventListener("keydown",function(e){if(e.key=="Escape")closeModal()}
 function openDetail(id){var x=rows.filter(function(r){return r.id==id})[0];if(!x)return;
  var pr=Object.keys(x.params||{}),ph=CAT.filter(function(c){return photosOf(x,c[0]).length});
  var kv=function(l,v){return "<div class=field><label>"+l+"</label><div style=\"font-weight:700\">"+(v===""||v==null?"-":esc(v))+"</div></div>"};
- openModal("<h2>Detail Trial <span><button class=\"btn small\" id=\"dEdit\" type=\"button\">✎ Edit</button> <button class=\"btn ghost small\" id=\"dClose\" type=\"button\">Tutup</button></span></h2><div class=fg>"+kv("Project",x.project)+kv("Tahap",x.stage)+kv("Metode",x.method)+kv("Part",x.pos)+kv("Trial ke-","T"+(x.no||1))+kv("Waktu trial",fmt(T(x)))+kv("Mesin / Line",x.mc)+kv("Diupdate oleh",x.by)+kv("Qty trial",x.qty)+kv("Qty NG",x.ng+(x.qty?" ("+(x.ng/x.qty*100).toFixed(1)+"%)":""))+kv("Warna cat",x.paint)+kv("Hasil warna",x.color)+"<div class=field><label>Hasil</label><span class=\"pill "+x.res+"\">"+x.res+"</span></div></div>"
-  +"<div class=gh>Parameter aktual</div>"+(pr.length?"<div class=fg>"+pr.map(function(k){return kv(k,x.params[k])}).join("")+"</div>":"<div class=sub>Tidak ada parameter diisi.</div>")
-  +"<div class=gh>Kendala</div>"+kv("Kategori",x.cat)+kv("Detail kendala",x.issue)+kv("Tindakan / perbaikan",x.act)
-  +"<div class=gh>Foto</div>"+(ph.length?ph.map(function(c){return "<div class=sub style=\"margin:6px 0\">"+c[1]+"</div><div class=gallery-grid>"+photosOf(x,c[0]).map(function(u){return "<div class=photo-card><img class=gimg data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"></div>"}).join("")+"</div>"}).join(""):"<div class=sub>Tidak ada foto.</div>"));
+ openModal("<h2>Detail Trial <span><button class=\"btn small\" id=\"dEdit\" type=\"button\">✎ Edit</button> <button class=\"btn ghost small\" id=\"dClose\" type=\"button\">Close</button></span></h2><div class=fg>"+kv("Project",x.project)+kv("Stage",x.stage)+kv("Method",x.method)+kv("Part",x.pos)+kv("Trial no.","T"+(x.no||1))+kv("Trial time",fmt(T(x)))+kv("Machine / Line",x.mc)+kv("Updated by",x.by)+kv("Trial qty",x.qty)+kv("NG qty",x.ng+(x.qty?" ("+(x.ng/x.qty*100).toFixed(1)+"%)":""))+kv("Paint color",x.paint)+kv("Color result",x.color)+"<div class=field><label>Result</label><span class=\"pill "+x.res+"\">"+x.res+"</span></div></div>"
+  +"<div class=gh>Actual parameters</div>"+(pr.length?"<div class=fg>"+pr.map(function(k){return kv(k,x.params[k])}).join("")+"</div>":"<div class=sub>No parameters entered.</div>")
+  +"<div class=gh>Issue</div>"+kv("Category",x.cat)+kv("Issue detail",x.issue)+kv("Action / correction",x.act)
+  +"<div class=gh>Photos</div>"+(ph.length?ph.map(function(c){return "<div class=sub style=\"margin:6px 0\">"+c[1]+"</div><div class=gallery-grid>"+photosOf(x,c[0]).map(function(u){return "<div class=photo-card><img class=gimg data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"></div>"}).join("")+"</div>"}).join(""):"<div class=sub>No photos.</div>"));
  $("dClose").onclick=closeModal;$("dEdit").onclick=function(){openEdit(x)}}
 function eParams(m,vals){$("e_params").innerHTML=PAR[m].map(function(k){return pfield(k,pv(vals,k),"ep")}).join("")}
-function eThumbs(){CAT.forEach(function(c){var arr=c[0]=="p"?ed.photos:(ed.mp[c[0]]=ed.mp[c[0]]||[]);$("e_x_"+c[0]).innerHTML=arr.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-rm=\""+c[0]+"|"+i+"\">✕</button></span>"}).join("")||"<span class=sub>Belum ada.</span>"})}
+function eThumbs(){CAT.forEach(function(c){var arr=c[0]=="p"?ed.photos:(ed.mp[c[0]]=ed.mp[c[0]]||[]);$("e_x_"+c[0]).innerHTML=arr.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-rm=\""+c[0]+"|"+i+"\">✕</button></span>"}).join("")||"<span class=sub>None yet.</span>"})}
 $("mbody").addEventListener("click",function(e){var t=e.target;if(t.dataset&&t.dataset.rm&&ed){var a=t.dataset.rm.split("|"),arr=a[0]=="p"?ed.photos:ed.mp[a[0]];arr.splice(+a[1],1);eThumbs()}});
 function openEdit(x){ed={id:x.id,ts:x.ts,photos:(x.photos||[]).slice(),mp:JSON.parse(JSON.stringify(x.mp||{})),p0:x.params||{},m0:x.method};
  openModal("<h2>Edit Trial</h2><div class=fg>"
  +"<div class=field><label>Project</label><select id=e_proj>"+selOpts(projs.map(function(p){return p.name}),x.project)+"</select></div>"
- +"<div class=field><label>Diupdate oleh</label><select id=e_by>"+selOpts(BYS,x.by)+"</select></div>"
- +"<div class=field><label>Tanggal &amp; jam trial</label><input id=e_dt type=datetime-local value=\""+isoLocal(T(x)).replace(" ","T")+"\"></div>"
- +"<div class=field><label>Tahap</label><select id=e_stage>"+selOpts(STAGES,x.stage)+"</select></div>"
- +"<div class=field><label>Metode</label><select id=e_method>"+selOpts(["Handspray","Pad Print"],x.method)+"</select></div>"
+ +"<div class=field><label>Updated by</label><select id=e_by>"+selOpts(BYS,x.by)+"</select></div>"
+ +"<div class=field><label>Trial date &amp; time</label><input id=e_dt type=datetime-local value=\""+isoLocal(T(x)).replace(" ","T")+"\"></div>"
+ +"<div class=field><label>Stage</label><select id=e_stage>"+selOpts(STAGES,x.stage)+"</select></div>"
+ +"<div class=field><label>Method</label><select id=e_method>"+selOpts(["Handspray","Pad Print"],x.method)+"</select></div>"
  +"<div class=field><label>Part</label><select id=e_pos>"+selOpts(allParts(),x.pos)+"</select></div>"
- +"<div class=field><label>Warna cat</label><input id=e_paint list=e_paintl value=\""+esc(x.paint||"")+"\"><datalist id=e_paintl>"+allPaints().map(function(c){return "<option value=\""+esc(c)+"\">"}).join("")+"</datalist></div>"
- +"<div class=field><label>Trial ke-</label><select id=e_tno>"+selOpts(Array.from({length:10},function(_,i){return String(i+1)}),String(x.no||1))+"</select></div>"
- +"<div class=field><label>Mesin / Line</label><input id=e_mc value=\""+esc(x.mc)+"\"></div>"
- +"<div class=field><label>Qty trial (pcs)</label><input id=e_qty type=number value=\""+x.qty+"\"></div>"
- +"<div class=field><label>Qty NG (pcs)</label><input id=e_ng type=number value=\""+x.ng+"\"></div>"
- +"<div class=field><label>Hasil warna</label><select id=e_color>"+selOpts(["OK","Revisi mixed"],x.color)+"</select></div>"
- +"<div class=field><label>Hasil</label><select id=e_res>"+selOpts(["Pass","Fail","Hold"],x.res)+"</select></div></div>"
- +"<div class=gh>Parameter aktual</div><div class=fg id=e_params></div>"
- +"<div class=gh>Kendala</div><div class=field><label>Kategori kendala</label><input id=e_cat list=catl value=\""+esc(x.cat)+"\"></div>"
- +"<div class=field><label>Detail kendala</label><textarea id=e_issue>"+esc(x.issue)+"</textarea></div>"
- +"<div class=field><label>Tindakan / perbaikan</label><textarea id=e_act>"+esc(x.act)+"</textarea></div>"
- +"<div class=gh>Foto (hapus yang salah atau tambah baru)</div>"+CAT.map(function(c){return "<div class=sub style=\"margin:8px 0 2px\">"+c[1]+"</div><div id=\"e_x_"+c[0]+"\"></div><input type=file accept=\"image/*\" multiple id=\"e_f_"+c[0]+"\">"}).join("")
- +"<div style=\"margin-top:16px\"><button class=btn id=eSave type=button>Simpan perubahan</button> <button class=\"btn ghost\" id=eCancel type=button>Batal</button> <span id=eMsg class=sub></span></div>");
+ +"<div class=field><label>Paint color</label><input type=text id=e_paint list=e_paintl value=\""+esc(x.paint||"")+"\"><datalist id=e_paintl>"+allPaints().map(function(c){return "<option value=\""+esc(c)+"\">"}).join("")+"</datalist></div>"
+ +"<div class=field><label>Trial no.</label><select id=e_tno>"+selOpts(Array.from({length:10},function(_,i){return String(i+1)}),String(x.no||1))+"</select></div>"
+ +"<div class=field><label>Machine / Line</label><input type=text id=e_mc value=\""+esc(x.mc)+"\"></div>"
+ +"<div class=field><label>Trial qty (pcs)</label><input id=e_qty type=number value=\""+x.qty+"\"></div>"
+ +"<div class=field><label>NG qty (pcs)</label><input id=e_ng type=number value=\""+x.ng+"\"></div>"
+ +"<div class=field><label>Color result</label><select id=e_color>"+selOpts(["OK","Mixed revision"],x.color)+"</select></div>"
+ +"<div class=field><label>Result</label><select id=e_res>"+selOpts(["Pass","Fail","Hold"],x.res)+"</select></div></div>"
+ +"<div class=gh>Actual parameters</div><div class=fg id=e_params></div>"
+ +"<div class=gh>Issue</div><div class=field><label>Issue category</label><input type=text id=e_cat list=catl value=\""+esc(x.cat)+"\"></div>"
+ +"<div class=field><label>Issue detail</label><textarea id=e_issue>"+esc(x.issue)+"</textarea></div>"
+ +"<div class=field><label>Action / correction</label><textarea id=e_act>"+esc(x.act)+"</textarea></div>"
+ +"<div class=gh>Photos (remove wrong ones or add new)</div>"+CAT.map(function(c){return "<div class=sub style=\"margin:8px 0 2px\">"+c[1]+"</div><div id=\"e_x_"+c[0]+"\"></div><input type=file accept=\"image/*\" multiple id=\"e_f_"+c[0]+"\">"}).join("")
+ +"<div style=\"margin-top:16px\"><button class=btn id=eSave type=button>Save changes</button> <button class=\"btn ghost\" id=eCancel type=button>Cancel</button> <span id=eMsg class=sub></span></div>");
  eParams(x.method,x.params||{});eThumbs();
  $("e_method").onchange=function(){var v={};document.querySelectorAll(".ep").forEach(function(i){v[i.dataset.k]=i.value});eParams($("e_method").value,v)};
  $("eCancel").onclick=function(){openDetail(x.id)};$("eSave").onclick=saveEdit}
-async function saveEdit(){var b=$("eSave");b.disabled=true;$("eMsg").textContent="Menyimpan…";
- try{var params={};if(ed.m0==$("e_method").value)Object.keys(ed.p0).forEach(function(k){if(k!="Din cup (detik)"&&PAR[ed.m0].indexOf(k)<0)params[k]=ed.p0[k]});document.querySelectorAll(".ep").forEach(function(i){if(i.value.trim())params[i.dataset.k]=i.value.trim()});
+async function saveEdit(){var b=$("eSave");b.disabled=true;$("eMsg").textContent="Saving…";
+ try{var params={};if(ed.m0==$("e_method").value)Object.keys(ed.p0).forEach(function(k){if(k!="Din cup (s)"&&PAR[ed.m0].indexOf(k)<0)params[k]=ed.p0[k]});document.querySelectorAll(".ep").forEach(function(i){if(i.value.trim())params[i.dataset.k]=i.value.trim()});
   for(var c of CAT){var fl=$("e_f_"+c[0]).files,arr=c[0]=="p"?ed.photos:(ed.mp[c[0]]=ed.mp[c[0]]||[]);for(var i=0;i<fl.length;i++)arr.push(await upPhoto(fl[i]))}
   var rec={ts:ed.ts,trialAt:new Date($("e_dt").value).getTime()||Date.now(),project:$("e_proj").value,by:$("e_by").value,stage:$("e_stage").value,method:$("e_method").value,pos:$("e_pos").value,mc:$("e_mc").value.trim(),qty:Number($("e_qty").value)||0,ng:Number($("e_ng").value)||0,color:$("e_color").value,paint:$("e_paint").value.trim(),res:$("e_res").value,params:params,cat:$("e_cat").value.trim(),issue:$("e_issue").value.trim(),act:$("e_act").value.trim(),photos:ed.photos,mp:ed.mp,no:Number($("e_tno").value)||1},id=ed.id;
-  await api("PATCH","trials",toT(rec),"?id=eq."+id);last.t="";await loadT();toast("Perubahan tersimpan ✓");openDetail(id)}
- catch(e){$("eMsg").textContent="Gagal: "+e.message.slice(0,120);b.disabled=false}}
+  await api("PATCH","trials",toT(rec),"?id=eq."+id);last.t="";await loadT();toast("Changes saved ✓");openDetail(id)}
+ catch(e){$("eMsg").textContent="Failed: "+e.message.slice(0,120);b.disabled=false}}
 $("log").addEventListener("click",function(e){if(e.target.dataset&&e.target.dataset.zoom)return;var tr=e.target.closest("tr[data-id]");if(tr)openDetail(tr.dataset.id)});
 
 /* Jadwal & release */
 var relDone=false;
-function fillRel(){var p=projs.filter(function(x){return x.name==$("rp").value})[0]||{};$("rt").value=p.rt||"";$("rd").value=p.rd||"";$("rs").value=p.rs||"Belum release";$("rn").value=p.rn||""}
+function fillRel(){var p=projs.filter(function(x){return x.name==$("rp").value})[0]||{};$("rt").value=p.rt||"";$("rd").value=p.rd||"";$("rs").value=p.rs||"Not released";$("rn").value=p.rn||""}
 $("rp").onchange=fillRel;
-$("rsave").onclick=async function(){var p=projs.filter(function(x){return x.name==$("rp").value})[0];if(!p){$("rmsg").textContent="Pilih project dulu.";return}
- try{await api("PATCH","projects",{release_target:$("rt").value||null,release_date:$("rd").value||null,release_status:$("rs").value,release_note:$("rn").value.trim()},"?id=eq."+p.id);last.p="";await loadP();fillRel();$("rmsg").textContent="Tersimpan ✓";toast("Data release tersimpan")}catch(e){$("rmsg").textContent="Gagal: "+e.message.slice(0,140)}};
+$("rsave").onclick=async function(){var p=projs.filter(function(x){return x.name==$("rp").value})[0];if(!p){$("rmsg").textContent="Select a project first.";return}
+ try{await api("PATCH","projects",{release_target:$("rt").value||null,release_date:$("rd").value||null,release_status:$("rs").value,release_note:$("rn").value.trim()},"?id=eq."+p.id);last.p="";await loadP();fillRel();$("rmsg").textContent="Saved ✓";toast("Release data saved")}catch(e){$("rmsg").textContent="Failed: "+e.message.slice(0,140)}};
 function schedule(names){var pf=$("fp").value;return projs.filter(function(p){return names?names.indexOf(p.name)>=0:(!pf||p.name==pf)}).map(function(p){var f=rows.filter(function(x){return x.project==p.name}),st={};
  STAGES.forEach(function(s){var a=f.filter(function(x){return x.stage==s});if(a.length){var ts=a.map(T);st[s]={a:Math.min.apply(null,ts),b:Math.max.apply(null,ts),n:a.length}}});
  var ts=f.map(T),first=ts.length?Math.min.apply(null,ts):null,lt=ts.length?Math.max.apply(null,ts):null,rd=p.rd||"";
- return {name:p.name,first:first,last:lt,st:st,rt:p.rt||"",rd:rd,rs:p.rs||"Belum release",rn:p.rn||"",dur:first&&rd?Math.round((new Date(rd)-new Date(iso(first)))/864e5):null,run:first&&!rd?Math.round((Date.now()-first)/864e5):null}})}
+ return {name:p.name,first:first,last:lt,st:st,rt:p.rt||"",rd:rd,rs:p.rs||"Not released",rn:p.rn||"",dur:first&&rd?Math.round((new Date(rd)-new Date(iso(first)))/864e5):null,run:first&&!rd?Math.round((Date.now()-first)/864e5):null}})}
 function stTxt(o){return o?day(o.a)+(o.b!=o.a?" – "+day(o.b):"")+" ("+o.n+" trial)":"-"}
-function durTxt(o){return o.dur!=null?o.dur+" hari":o.run!=null?o.run+" hari (berjalan)":"-"}
+function durTxt(o){return o.dur!=null?o.dur+" days":o.run!=null?o.run+" days (ongoing)":"-"}
 function fd(s){return s?day(new Date(s+"T00:00:00").getTime()):"-"}
 function fillSchedule(ws,names){var sc=schedule(names);widths(ws,[2.6,5,22,14,14,26,26,26,26,14,14,14,18,40]);
- put(ws,1,2,10,"Jadwal Project: Trial Pertama sampai Release",{b:true,sz:13,fill:BLUE});
- ["No","Project","Trial Pertama","Trial Terakhir","EP","FEP","PP2K","PP3K","Target Release","Release Aktual","Status Release","Durasi","Catatan Release"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+ put(ws,1,2,10,"Project Schedule (PA-based milestones)",{b:true,sz:13,fill:BLUE});
+ ["No","Project","First Trial","Last Trial","EP","FEP","PP2K","PP3K","Release Target","Actual Release","Release Status","Duration","Release Notes"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
  sc.forEach(function(o,i){[i+1,o.name,o.first?day(o.first):"-",o.last?day(o.last):"-",stTxt(o.st.EP),stTxt(o.st.FEP),stTxt(o.st.PP2K),stTxt(o.st.PP3K),fd(o.rt),fd(o.rd),o.rs,durTxt(o),o.rn].forEach(function(a,j){put(ws,4+i,2+j,2+j,a,{bd:true,h:j==0||j==2||j==3||j>=8&&j<=11?"center":"left"})})})}
 
 /* Parameter, warna cat, dokumen lab */
 function pfield(k,v,c){var a=" data-k=\""+esc(k)+"\""+(c?" class="+c:"");return "<div class=field><label>"+esc(k)+"</label>"+(SELOPT[k]?"<select"+a+"><option value=\"\">-</option>"+SELOPT[k].map(function(o){return "<option"+(o==v?" selected":"")+">"+o+"</option>"}).join("")+"</select>":"<input"+a+" value=\""+esc(v)+"\">")+"</div>"}
-function pv(vals,k){return vals[k]||(k=="CT Cat"?vals["Din cup (detik)"]:"")||""}
-function pval(x,k){if(k=="Warna Cat")return x.paint||"";return pv(x.params||{},k)}
+function pv(vals,k){return vals[k]||(k=="CT Cat"?vals["Din cup (s)"]:"")||""}
+function pval(x,k){if(k=="Paint Color")return x.paint||"";return pv(x.params||{},k)}
 function libColors(part){var c=[];projs.forEach(function(p){if(!c.length&&p.co&&p.co[part]&&p.co[part].length)c=p.co[part].slice()});return c}
-function paintOpts(pj,pos){var p=projs.filter(function(x){return x.name==pj})[0],c=p&&p.co&&p.co[pos]||[];if(!c.length)c=libColors(pos);return c.concat(["Cat trial"])}
-function allPaints(){var u=[];projs.forEach(function(p){Object.keys(p.co||{}).forEach(function(k){p.co[k].forEach(function(c){if(u.indexOf(c)<0)u.push(c)})})});return u.concat(["Cat trial"])}
+function paintOpts(pj,pos){var p=projs.filter(function(x){return x.name==pj})[0],c=p&&p.co&&p.co[pos]||[];if(!c.length)c=libColors(pos);return c.concat(["Trial paint"])}
+function allPaints(){var u=[];projs.forEach(function(p){Object.keys(p.co||{}).forEach(function(k){p.co[k].forEach(function(c){if(u.indexOf(c)<0)u.push(c)})})});return u.concat(["Trial paint"])}
 function setPaint(){var k=$("proj").value+"|"+$("pos").value,chg=k!=pk;if(chg){pk=k;$("paint").value=""}$("paintl").innerHTML=paintOpts($("proj").value,$("pos").value).map(function(c){return "<option value=\""+esc(c)+"\">"}).join("");planSync(chg)}
-function fillCol(){var p=projs.filter(function(x){return x.name==$("cp").value})[0];$("cpBox").innerHTML=p&&p.parts.length?p.parts.map(function(part){return "<div class=field><label>"+esc(part)+"</label><input class=cpi data-p=\""+esc(part)+"\" value=\""+esc(((p.co||{})[part]||[]).join(", "))+"\" placeholder=\"mis. Hitam, Putih, Merah\"></div>"}).join(""):"<div class=sub>Project belum punya part.</div>"}
+function fillCol(){var p=projs.filter(function(x){return x.name==$("cp").value})[0];$("cpBox").innerHTML=p&&p.parts.length?p.parts.map(function(part){return "<div class=field><label>"+esc(part)+"</label><input type=text class=cpi data-p=\""+esc(part)+"\" value=\""+esc(((p.co||{})[part]||[]).join(", "))+"\" placeholder=\"e.g. Black, White, Red\"></div>"}).join(""):"<div class=sub>This project has no parts yet.</div>"}
 $("cp").onchange=fillCol;
-$("csave").onclick=async function(){var p=projs.filter(function(x){return x.name==$("cp").value})[0];if(!p){$("cmsg").textContent="Pilih project dulu.";return}
+$("csave").onclick=async function(){var p=projs.filter(function(x){return x.name==$("cp").value})[0];if(!p){$("cmsg").textContent="Select a project first.";return}
  var co={};document.querySelectorAll(".cpi").forEach(function(i){var l=i.value.split(",").map(function(x){return x.trim()}).filter(Boolean);if(l.length)co[i.dataset.p]=l});
- try{await api("PATCH","projects",{colors:co},"?id=eq."+p.id);last.p="";await loadP();fillCol();$("cmsg").textContent="Tersimpan ✓";toast("Warna cat tersimpan")}catch(e){$("cmsg").textContent="Gagal: "+e.message.slice(0,140)}};
-function rLabDocs(){$("labDocs").innerHTML=workDocs.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-rmd=\""+i+"\">✕</button></span>"}).join("")||"<span class=sub>Belum ada foto dokumen.</span>"}
+ try{await api("PATCH","projects",{colors:co},"?id=eq."+p.id);last.p="";await loadP();fillCol();$("cmsg").textContent="Saved ✓";toast("Paint colors saved")}catch(e){$("cmsg").textContent="Failed: "+e.message.slice(0,140)}};
+function rLabDocs(){$("labDocs").innerHTML=workDocs.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-rmd=\""+i+"\">✕</button></span>"}).join("")||"<span class=sub>No document photos yet.</span>"}
 $("labDocs").addEventListener("click",function(e){var t=e.target;if(t.dataset&&t.dataset.rmd){workDocs.splice(+t.dataset.rmd,1);rLabDocs()}});
 async function labDocSheet(wb,proj){var d=secs.filter(function(y){return y.project==proj&&y.section=="lab_docs"&&y.rows.length});if(!d.length)return;
- var ws=wb.addWorksheet(sname(wb,proj,"Lab Docs"),{views:[{showGridLines:false}]});widths(ws,[2.6,26,26,26,26,26]);var r=1;put(ws,r,2,6,proj+" – Dokumen Lab",{b:true,sz:13,fill:BLUE});r+=2;
- for(var y of d){put(ws,r,2,6,"Tahap: "+y.stage,{b:true,fill:GREY,bd:true});r++;var us=y.rows.map(function(x){return x[0]});
+ var ws=wb.addWorksheet(sname(wb,proj,"Lab Docs"),{views:[{showGridLines:false}]});widths(ws,[2.6,26,26,26,26,26]);var r=1;put(ws,r,2,6,proj+" – Lab Documents",{b:true,sz:13,fill:BLUE});r+=2;
+ for(var y of d){put(ws,r,2,6,"Stage: "+y.stage,{b:true,fill:GREY,bd:true});r++;var us=y.rows.map(function(x){return x[0]});
   for(var i=0;i<us.length;i+=5){var ch=us.slice(i,i+5);ws.getRow(r).height=150;
    for(var j=0;j<ch.length;j++){try{var im=await imgBuf(ch[j]),sc=Math.min(170/im.w,190/im.h),id=wb.addImage({buffer:im.buf,extension:"jpeg"});ws.addImage(id,{tl:{col:1+j+.05,row:r-1+.05},ext:{width:im.w*sc,height:im.h*sc}})}catch(e){put(ws,r,2+j,2+j,ch[j],{sz:8})}}
    r++}r++}}
@@ -888,67 +887,65 @@ async function importPlan(list){var by={},msg=[];list.forEach(function(x){(by[x.
   if(!ex)await api("POST","projects",{name:name,parts:parts,colors:co,ts:Date.now()});
   else{var np=ex.parts.slice();parts.forEach(function(p){if(np.indexOf(p)<0)np.push(p)});var nc=JSON.parse(JSON.stringify(ex.co||{}));Object.keys(co).forEach(function(k){nc[k]=nc[k]||[];co[k].forEach(function(c){if(nc[k].indexOf(c)<0)nc[k].push(c)})});await api("PATCH","projects",{parts:np,colors:nc},"?id=eq."+ex.id)}
   await api("POST","sections",[{project:name,stage:"ALL",section:"decoplan",rows:L.map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}),ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");
-  msg.push(name+": "+L.length+" baris, "+parts.length+" part")}
- last.p="";last.s="";await loadP();await loadS();return "Terimpor → "+msg.join(" · ")}
+  msg.push(name+": "+L.length+" rows, "+parts.length+" part")}
+ last.p="";last.s="";await loadP();await loadS();return "Imported → "+msg.join(" · ")}
 $("dpbtn").onclick=function(){$("dpf").click()};
-$("dpf").onchange=async function(){var f=this.files[0];this.value="";if(!f)return;$("dpmsg").textContent="Membaca file…";
+$("dpf").onchange=async function(){var f=this.files[0];this.value="";if(!f)return;$("dpmsg").textContent="Reading file…";
  try{var R=null;if(/\.csv$/i.test(f.name)){R=parseCSV((await f.text()).replace(/^\ufeff/,""))}
   else{var wb=new ExcelJS.Workbook();await wb.xlsx.load(await f.arrayBuffer());wb.eachSheet(function(ws){if(R)return;var a=[];ws.eachRow({includeEmpty:false},function(row){var r=[];for(var c=1;c<=ws.columnCount;c++)r.push(cellText(row.getCell(c).value));a.push(r)});if(parsePlan(a))R=a})}
-  var L=R&&parsePlan(R);if(!L||!L.length){$("dpmsg").textContent="Format tidak dikenali. Butuh kolom Project ID, Position, Face/Part, Number Process, Color.";return}
-  $("dpmsg").textContent=await importPlan(L);toast("Decoplan diimpor")}catch(e){$("dpmsg").textContent="Gagal impor: "+e.message.slice(0,140)}};
+  var L=R&&parsePlan(R);if(!L||!L.length){$("dpmsg").textContent="Format not recognized. Required columns: Project ID, Position, Face/Part, Number Process, Color.";return}
+  $("dpmsg").textContent=await importPlan(L);toast("Decoplan imported")}catch(e){$("dpmsg").textContent="Import failed: "+e.message.slice(0,140)}};
 function planSync(fromPart){var pn=$("proj").value,ps=$("pos").value,pl=planOf(pn).filter(function(x){return en(x.part)==ps}),box=$("planRef");
  if(!pl.length){box.innerHTML="";return}
  if(fromPart){var ms=Array.from(new Set(pl.map(function(x){return x.method})));if(ms.length==1&&PAR[ms[0]]&&$("method").value!=ms[0]){$("method").value=ms[0];setMethod();suggestNo()}}
  var pt=$("paint").value.trim().toLowerCase(),mt=pl.filter(function(x){return en(x.color).toLowerCase()==pt})[0]||(pl.length==1?pl[0]:null);
- box.innerHTML="Acuan Decoplan: "+pl.map(function(x){return "<span class=chip style=\""+(mt===x?"background:var(--green-soft);color:#1f9d63":"")+"\">J"+esc(x.job)+" · "+esc(en(x.pos))+" · "+esc(x.method)+(x.method=="Pad Print"&&x.proc?" · Tampo "+esc(x.proc)+"×":"")+" · "+esc(en(x.color))+"</span>"}).join("");
- if(mt&&$("method").value=="Pad Print"&&mt.proc){var tf=document.querySelector("#params [data-k=\"Jumlah tampo (kali)\"]");if(tf&&!tf.value)tf.value=mt.proc}}
+ box.innerHTML="Decoplan reference: "+pl.map(function(x){return "<span class=chip style=\""+(mt===x?"background:var(--green-soft);color:#1f9d63":"")+"\">J"+esc(x.job)+" · "+esc(en(x.pos))+" · "+esc(x.method)+(x.method=="Pad Print"&&x.proc?" · Pads "+esc(x.proc)+"×":"")+" · "+esc(en(x.color))+"</span>"}).join("");
+ if(mt&&$("method").value=="Pad Print"&&mt.proc){var tf=document.querySelector("#params [data-k=\"Number of pads (times)\"]");if(tf&&!tf.value)tf.value=mt.proc}}
 $("paint").oninput=$("paint").onchange=function(){planSync(false)};
 function planCmp(names){var out=[];projs.forEach(function(p){if(names&&names.indexOf(p.name)<0)return;var pl=planOf(p.name).sort(function(a,b){return (Number(a.job)||0)-(Number(b.job)||0)});
  pl.forEach(function(x){var pn=en(x.part),cn=en(x.color).toLowerCase(),many=pl.filter(function(y){return en(y.part)==pn}).length>1,
   tr=rows.filter(function(t){return t.project==p.name&&t.pos==pn&&(!many||String(t.paint||"").toLowerCase()==cn)}).sort(function(a,b){return T(a)-T(b)}),l=tr[tr.length-1],ok=!!l&&l.res=="Pass";
-  var ta=l?pval(l,"Jumlah tampo (kali)"):"",kes="-";
-  if(l){var bad=[];if(x.method=="Pad Print"&&x.proc&&String(ta).trim()!=String(x.proc).trim())bad.push("Tampo "+(ta||"kosong")+" (acuan "+x.proc+")");if(!many&&cn&&String(l.paint||"").toLowerCase()!=cn)bad.push("Cat: "+(l.paint||"kosong"));kes=bad.length?bad.join("; "):"Sesuai"}
-  out.push({project:p.name,x:x,n:tr.length,l:l,ok:ok,ta:ta,pa:l?l.paint||"":"",kes:kes,st:!l?"Belum trial":(ok?"OK":l.res)+" · "+l.stage+" T"+(l.no||1)})})});return out}
+  var ta=l?pval(l,"Number of pads (times)"):"",kes="-";
+  if(l){var bad=[];if(x.method=="Pad Print"&&x.proc&&String(ta).trim()!=String(x.proc).trim())bad.push("Pads "+(ta||"empty")+" (reference "+x.proc+")");if(!many&&cn&&String(l.paint||"").toLowerCase()!=cn)bad.push("Paint: "+(l.paint||"empty"));kes=bad.length?bad.join("; "):"Matches"}
+  out.push({project:p.name,x:x,n:tr.length,l:l,ok:ok,ta:ta,pa:l?l.paint||"":"",kes:kes,st:!l?"Not trialed yet":(ok?"OK":l.res)+" · "+l.stage+" T"+(l.no||1)})})});return out}
 function renderPlanCmp(){var pc=planCmp($("fp").value?[$("fp").value]:null);
- $("dplan").innerHTML=pc.length?"<table><tr><th>Project</th><th>Job</th><th>Position / Part</th><th>Metode</th><th>Tampo (acuan)</th><th>Warna (acuan)</th><th>Jml trial</th><th>Status terakhir</th><th>Tampo aktual</th><th>Cat aktual</th><th>Kesesuaian</th></tr>"+pc.map(function(o){var x=o.x;return "<tr><td>"+esc(o.project)+"</td><td>"+esc(x.job)+"</td><td><b>"+esc(en(x.part))+"</b><div class=sub>"+esc(en(x.pos))+"</div></td><td>"+esc(x.method)+"</td><td>"+(x.method=="Pad Print"&&x.proc?esc(x.proc)+"×":"-")+"</td><td>"+esc(en(x.color))+"</td><td>"+o.n+"</td><td><span class=\"pill "+(!o.l?"":o.ok?"Pass":o.l.res)+"\">"+esc(o.st)+"</span></td><td>"+(o.ta?esc(o.ta)+"×":"-")+"</td><td>"+esc(o.pa||"-")+"</td><td>"+esc(o.kes)+"</td></tr>"}).join("")+"</table>":"<div class=sub>Belum ada data Decoplan. Impor lewat tab Project.</div>";labelT("dplan")}
-function fillPlan(ws,pc){widths(ws,[2.6,5,16,10,28,28,12,14,26,10,26,12,18,32]);put(ws,1,2,10,"Decoplan – Acuan Release Trial PP2K",{b:true,sz:13,fill:BLUE});
- ["No","Project","Job Flow","Position","Part","Metode","Number Process (Tampo)","Warna (Acuan)","Jml Trial","Status Terakhir","Tampo Aktual","Cat Aktual","Kesesuaian"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+ $("dplan").innerHTML=pc.length?"<table><tr><th>Project</th><th>Job</th><th>Position / Part</th><th>Method</th><th>Pads (reference)</th><th>Color (reference)</th><th>Trials</th><th>Last status</th><th>Actual pads</th><th>Actual paint</th><th>Compliance</th></tr>"+pc.map(function(o){var x=o.x;return "<tr><td>"+esc(o.project)+"</td><td>"+esc(x.job)+"</td><td><b>"+esc(en(x.part))+"</b><div class=sub>"+esc(en(x.pos))+"</div></td><td>"+esc(x.method)+"</td><td>"+(x.method=="Pad Print"&&x.proc?esc(x.proc)+"×":"-")+"</td><td>"+esc(en(x.color))+"</td><td>"+o.n+"</td><td><span class=\"pill "+(!o.l?"":o.ok?"Pass":o.l.res)+"\">"+esc(o.st)+"</span></td><td>"+(o.ta?esc(o.ta)+"×":"-")+"</td><td>"+esc(o.pa||"-")+"</td><td>"+esc(o.kes)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No Decoplan data yet. Import it from the Project tab.</div>";labelT("dplan")}
+function fillPlan(ws,pc){widths(ws,[2.6,5,16,10,28,28,12,14,26,10,26,12,18,32]);put(ws,1,2,10,"Decoplan – PP2K Trial Release Reference",{b:true,sz:13,fill:BLUE});
+ ["No","Project","Job Flow","Position","Part","Method","Number Process (Pads)","Color (Reference)","Trials","Last Status","Actual Pads","Actual Paint","Compliance"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
  pc.forEach(function(o,i){var x=o.x,r=4+i;[i+1,o.project,x.job,x.pos,x.part,x.method,x.method=="Pad Print"&&x.proc?x.proc:"-",x.color,o.n,o.st,o.ta||"-",o.pa||"-",o.kes].forEach(function(a,j){put(ws,r,2+j,2+j,a,{bd:true,h:j==0||j==2||j==5||j==6||j==8||j==10?"center":"left"})});
   ws.getCell(r,11).font={name:"Arial",size:10,bold:true,color:{argb:!o.l?"FF888888":o.ok?"FF1F9D63":"FFD6405A"}}})}
 
 function dl(name,data){var a=document.createElement("a"),u=URL.createObjectURL(new Blob([data],{type:"application/octet-stream"}));a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},500)}
 var SEC={completeness:{t:"Received Decoration Completeness",c:["Item Name","Received Date","Qty","Status","Remark"],d:["Reference Sample","Engineering Sample","SAS Sample","Deco Plan","Standard Operating Procedure (SOP)","Paint / Ink","Spray Mask","Pad Print Fixtures","Pad Print Plates","3D Design Fixtures","CAD file Artwork","Reference Plastic Part"].map(function(x){return [x]})},
 spray_tools:{t:"Spray First Set Tools Readiness",c:["Tools","Position","Copy Date","Qty","Status","Remark"],d:[]},
-pad_tools:{t:"Pad Print First Set Tool Readiness",c:["Method","Position","Copy Date","Qty","Status","Remark"],d:[]},
-lab:{t:"Lab Report",c:["Item Name","Test Methode","Qty","Result","Remark"],d:[]}};
-["As Receive","After Aging"].forEach(function(a){[["Adhesion",50],["Abrasion",13],["Rubbing",5],["With Sanitizer",5],["Nail",10]].forEach(function(t){SEC.lab.d.push([a,t[0],String(t[1])])})});
+pad_tools:{t:"Pad Print First Set Tool Readiness",c:["Method","Position","Copy Date","Qty","Status","Remark"],d:[]}};
 var secs=[],work={},workKey="";
-async function loadS(){var a=await api("GET","sections",null,"?select=*"),k=JSON.stringify(a);if(k==last.s)return;last.s=k;secs=a;if(cur=="lab"&&!workKey)rLab()}
+async function loadS(){var a=await api("GET","sections",null,"?select=*"),k=JSON.stringify(a);if(k==last.s)return;last.s=k;secs=a;secs.forEach(function(y){if(y.stage=="Trial Lain")y.stage="Other Trial"});if(cur=="lab"&&!workKey)rLab()}
 
-/* Kelengkapan & Lab */
+/* Readiness & Lab */
 function secRows(p,s,k){var x=secs.filter(function(y){return y.project==p&&y.stage==s&&y.section==k})[0],n=SEC[k].c.length,src=x?x.rows:SEC[k].d;
  return src.map(function(r){var o=[];for(var i=0;i<n;i++)o.push(r[i]==null?"":String(r[i]));return o})}
 function rLab(force){var p=$("lp").value,s=$("ls").value,key=p+"|"+s;
- if(!p){$("labBox").innerHTML="<div class=sub>Buat project dulu di tab Project.</div>";return}
+ if(!p){$("labBox").innerHTML="<div class=sub>Create a project first in the Project tab.</div>";return}
  if(force||key!=workKey){workKey=key;work={};Object.keys(SEC).forEach(function(k){work[k]=secRows(p,s,k)});var dx=secs.filter(function(y){return y.project==p&&y.stage==s&&y.section=="lab_docs"})[0];workDocs=dx?dx.rows.map(function(r){return r[0]}):[]}
- rLabDocs();$("labBox").innerHTML=Object.keys(SEC).map(function(k){var S=SEC[k];return "<div class=gh>"+S.t+"</div><div class=\"ov stk\"><table><tr><th>No</th>"+S.c.map(function(c){return "<th>"+c+"</th>"}).join("")+"<th></th></tr>"+work[k].map(function(r,i){return "<tr><td data-l=No>"+(i+1)+"</td>"+r.map(function(v,j){return "<td data-l=\""+S.c[j]+"\"><input class=si"+(S.c[j]=="Result"?" list=resl":"")+" data-k=\""+k+"\" data-i=\""+i+"\" data-j=\""+j+"\" value=\""+esc(v)+"\"></td>"}).join("")+"<td><button type=button class=chip data-del=\""+k+"|"+i+"\">✕</button></td></tr>"}).join("")+"</table></div><button type=button class=\"btn ghost small\" data-add=\""+k+"\">＋ Baris</button>"}).join("")}
+ rLabDocs();$("labBox").innerHTML=Object.keys(SEC).map(function(k){var S=SEC[k];return "<div class=gh>"+S.t+"</div><div class=\"ov stk\"><table><tr><th>No</th>"+S.c.map(function(c){return "<th>"+c+"</th>"}).join("")+"<th></th></tr>"+work[k].map(function(r,i){return "<tr><td data-l=No>"+(i+1)+"</td>"+r.map(function(v,j){return "<td data-l=\""+S.c[j]+"\"><input type=text class=si"+(S.c[j]=="Result"?" list=resl":"")+" data-k=\""+k+"\" data-i=\""+i+"\" data-j=\""+j+"\" value=\""+esc(v)+"\"></td>"}).join("")+"<td><button type=button class=chip data-del=\""+k+"|"+i+"\">✕</button></td></tr>"}).join("")+"</table></div><button type=button class=\"btn ghost small\" data-add=\""+k+"\">＋ Row</button>"}).join("")}
 $("labBox").addEventListener("input",function(e){var t=e.target;if(t.classList.contains("si"))work[t.dataset.k][+t.dataset.i][+t.dataset.j]=t.value});
 $("labBox").addEventListener("click",function(e){var t=e.target;if(t.dataset.add){work[t.dataset.add].push(SEC[t.dataset.add].c.map(function(){return ""}));rLab()}if(t.dataset.del){var a=t.dataset.del.split("|");work[a[0]].splice(+a[1],1);rLab()}});
 $("lp").onchange=$("ls").onchange=function(){rLab()};
 $("lreset").onclick=function(){rLab(true)};
-$("lsave").onclick=async function(){var p=$("lp").value,s=$("ls").value;if(!p)return toast("Pilih project dulu");
+$("lsave").onclick=async function(){var p=$("lp").value,s=$("ls").value;if(!p)return toast("Select a project first");
  var body=Object.keys(SEC).map(function(k){return {project:p,stage:s,section:k,rows:work[k].filter(function(r){return r.some(function(x){return x.trim()})}),ts:Date.now()}});
- try{var fl=$("labf").files;for(var i=0;i<fl.length;i++)workDocs.push(await upPhoto(fl[i]));$("labf").value="";rLabDocs();body.push({project:p,stage:s,section:"lab_docs",rows:workDocs.map(function(u){return [u]}),ts:Date.now()});await api("POST","sections",body,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();toast("Kelengkapan & lab tersimpan ✓")}catch(e){toast("Gagal: "+e.message.slice(0,100))}};
+ try{var fl=$("labf").files;for(var i=0;i<fl.length;i++)workDocs.push(await upPhoto(fl[i]));$("labf").value="";rLabDocs();body.push({project:p,stage:s,section:"lab_docs",rows:workDocs.map(function(u){return [u]}),ts:Date.now()});await api("POST","sections",body,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();toast("Completeness & tools saved ✓")}catch(e){toast("Failed: "+e.message.slice(0,100))}};
 
-/* Impor */
+/* Import */
 function cellText(v){if(v==null)return "";if(v instanceof Date)return v.toISOString().slice(0,10);if(typeof v=="object"){if(v.richText)return v.richText.map(function(x){return x.text}).join("").trim();if("result" in v)return cellText(v.result);if(v.text!=null)return String(v.text).trim();return ""}return String(v).trim()}
 function parseCSV(t){var R=[],r=[],c="",q=false;for(var i=0;i<t.length;i++){var ch=t[i];if(q){if(ch=="\""){if(t[i+1]=="\""){c+="\"";i++}else q=false}else c+=ch}else if(ch=="\""){q=true}else if(ch==","){r.push(c);c=""}else if(ch=="\n"||ch=="\r"){if(ch=="\r"&&t[i+1]=="\n")i++;r.push(c);c="";R.push(r);r=[]}else c+=ch}if(c!==""||r.length){r.push(c);R.push(r)}return R}
-var TH_=["Project","Waktu","Tahap","Metode","Part","Mesin","Qty","NG","Warna","Hasil","Kendala","Detail","Tindakan","Oleh","Parameter","Foto","Trial","Foto Mesin","Warna Cat"];
+var TH_=["Project","Time","Stage","Method","Part","Machine","Qty","NG","Color","Result","Issue","Detail","Action","By","Parameter","Photos","Trial","Machine Photos","Paint Color"];
 function isoLocal(ts){var d=new Date(ts),p=function(n){return String(n).padStart(2,"0")};return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())}
 function trialRow(x){return [x.project,isoLocal(T(x)),x.stage,x.method,x.pos,x.mc,x.qty,x.ng,x.color,x.res,x.cat,x.issue,x.act,x.by,JSON.stringify(x.params||{}),(x.photos||[]).join(" "),x.no||1,JSON.stringify(x.mp||{}),x.paint||""]}
-function trialsFromRows(R){if(!R.length)return null;var h=R[0].map(function(x){return String(x||"").trim()}),ix={};TH_.forEach(function(k){ix[k]=h.indexOf(k)});if(ix.Project<0||ix.Waktu<0||ix.Part<0)return null;
+function trialsFromRows(R){if(!R.length)return null;var h=R[0].map(function(x){return String(x||"").trim()}),ix={};TH_.forEach(function(k){ix[k]=h.indexOf(k);if(ix[k]<0)for(var o in LEG.hd)if(LEG.hd[o]==k&&h.indexOf(o)>=0)ix[k]=h.indexOf(o)});if(ix.Project<0||ix.Time<0||ix.Part<0)return null;
  return R.slice(1).filter(function(r){return r[ix.Project]}).map(function(r){var g=function(k){return ix[k]<0?"":String(r[ix[k]]==null?"":r[ix[k]]).trim()},pr={};try{pr=JSON.parse(g("Parameter")||"{}")}catch(e){}
-  var t=new Date(g("Waktu").replace(" ","T")).getTime();return {ts:Date.now(),trialAt:isNaN(t)?Date.now():t,project:g("Project"),by:g("Oleh"),stage:g("Tahap")||"Trial Lain",method:g("Metode")||"Handspray",pos:g("Part"),mc:g("Mesin"),qty:Number(g("Qty"))||0,ng:Number(g("NG"))||0,color:g("Warna"),res:g("Hasil")||"Pass",params:pr,cat:g("Kendala"),issue:g("Detail"),act:g("Tindakan"),photos:g("Foto").split(/\s+/).filter(Boolean),no:Math.min(10,Math.max(1,Number(g("Trial"))||1)),mp:(function(){try{return JSON.parse(g("Foto Mesin")||"{}")}catch(e){return {}}})(),paint:g("Warna Cat")}})}
+  var t=new Date(g("Time").replace(" ","T")).getTime();return {ts:Date.now(),trialAt:isNaN(t)?Date.now():t,project:g("Project"),by:g("By"),stage:g("Stage")||"Other Trial",method:g("Method")||"Handspray",pos:g("Part"),mc:g("Machine"),qty:Number(g("Qty"))||0,ng:Number(g("NG"))||0,color:g("Color"),res:g("Result")||"Pass",params:pr,cat:g("Issue"),issue:g("Detail"),act:g("Action"),photos:g("Photos").split(/\s+/).filter(Boolean),no:Math.min(10,Math.max(1,Number(g("Trial"))||1)),mp:(function(){try{return JSON.parse(g("Machine Photos")||"{}")}catch(e){return {}}})(),paint:g("Paint Color")}})}
 function normH(s){return s.toLowerCase().replace("methode","method").replace(/\s+/g," ").trim()}
 function scanSheet(ws){var sm=(ws.name||"").match(/\b(FEP|PP2K|PP3K|EP)\b/i);if(!sm)return null;var R=[];
  ws.eachRow({includeEmpty:false},function(row){var cs=[];row.eachCell({includeEmpty:false},function(c,cn){if(c.isMerged&&c.master&&c.master.address!==c.address)return;var t=cellText(c.value);if(t!=="")cs.push({c:cn,t:t})});if(cs.length)R.push(cs)});
@@ -957,7 +954,7 @@ function scanSheet(ws){var sm=(ws.name||"").match(/\b(FEP|PP2K|PP3K|EP)\b/i);if(
  var TTL=[[/decoration completeness/i,"completeness"],[/^decoration method/i,"method"],[/spray first set tools/i,"spray_tools"],[/pad print first set tool/i,"pad_tools"],[/^lab report/i,"lab"]];
  function fin(){if(cur&&cur.rows.length){if(cur.k=="method")cur.rows.forEach(function(x){if(x[1]&&out.parts.indexOf(x[1])<0)out.parts.push(x[1])});else out.secs[cur.k]=cur.rows}cur=null}
  R.forEach(function(cs){var t0=cs[0].t,hit=null;TTL.forEach(function(p){if(p[0].test(t0))hit=p[1]});
-  if(hit){fin();cur={k:hit,map:null,rows:[]};return}
+  if(hit){fin();cur=hit=="lab"?null:{k:hit,map:null,rows:[]};return}
   if(!cur)return;
   var cols=cur.k=="method"?["Part Name","Position","Plan","Actual","Remark"]:SEC[cur.k].c;
   if(!cur.map){if(t0.toLowerCase()=="no"){cur.map=[];cs.slice(1).forEach(function(c){var i=cols.map(normH).indexOf(normH(c.t));if(i>=0)cur.map.push({c:c.c,i:i})})}else cur=null;return}
@@ -974,19 +971,19 @@ async function applyImport(trials,scans){var nt=0,ns=0,np=0,pm={};
   for(var i=0;i<nw.length;i+=100){await api("POST","trials",nw.slice(i,i+100).map(toT))}nt=nw.length}
  var sb=[];scans.forEach(function(s){Object.keys(s.secs).forEach(function(k){sb.push({project:s.project,stage:s.stage,section:k,rows:s.secs[k],ts:Date.now()})})});
  if(sb.length){await api("POST","sections",sb,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");ns=sb.length}
- return "Impor selesai: "+nt+" trial, "+ns+" tabel kelengkapan/lab, "+np+" project baru"}
+ return "Import complete"}
 $("im").onclick=function(){$("imf").click()};
-$("imf").onchange=async function(){var f=this.files[0];this.value="";if(!f)return;toast("Membaca file…");
+$("imf").onchange=async function(){var f=this.files[0];this.value="";if(!f)return;toast("Reading file…");
  try{var trials=null,scans=[];
   if(/\.csv$/i.test(f.name)){trials=trialsFromRows(parseCSV((await f.text()).replace(/^\ufeff/,"")))}
   else{var wb=new ExcelJS.Workbook();await wb.xlsx.load(await f.arrayBuffer());var dt=wb.getWorksheet("Data Trial");
    if(dt){var R=[];dt.eachRow({includeEmpty:false},function(row){var a=[];for(var c=1;c<=TH_.length;c++)a.push(cellText(row.getCell(c).value));R.push(a)});trials=trialsFromRows(R)}
    wb.eachSheet(function(ws){var s=scanSheet(ws);if(s&&s.project)scans.push(s)})}
-  if(!trials&&!scans.length)return toast("Format file tidak dikenali.");
-  var msg=await applyImport(trials,scans);last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();toast(msg)}catch(e){toast("Gagal impor: "+e.message.slice(0,100))}};
+  if(!trials&&!scans.length)return toast("File format not recognized.");
+  var msg=await applyImport(trials,scans);last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();toast(msg)}catch(e){toast("Import failed: "+e.message.slice(0,100))}};
 
 /* CSV */
-$("cs").onclick=function(){var f=filtered();if(!f.length)return toast("Tidak ada data");var q=function(v){return "\""+String(v==null?"":v).replace(/"/g,"\"\"")+"\""};
+$("cs").onclick=function(){var f=filtered();if(!f.length)return toast("No data");var q=function(v){return "\""+String(v==null?"":v).replace(/"/g,"\"\"")+"\""};
  dl("Data_Trial.csv","\ufeff"+[TH_.map(q).join(",")].concat(f.map(function(x){return trialRow(x).map(q).join(",")})).join("\n"))};
 
 /* EXCEL — format mengikuti file awal (Cover / FEP / PP2K / Attachment) */
@@ -1010,12 +1007,12 @@ function stageSheet(wb,proj,stage,f,sc){
   data.forEach(function(d,k){put(ws,r,2,2,k+1,{bd:true,h:"center"});d.forEach(function(v,i){put(ws,r,sp[i][0],sp[i][1],v,{bd:true,h:cols[i]=="Qty"?"center":"left"})});r++});r++}
  if(sc.completeness)tbl(SEC.completeness.t,SEC.completeness.c,sc.completeness,SP.completeness);
  if(f.length){var pm={};f.forEach(function(x){var k=x.method+"|"+x.pos;pm[k]=pm[k]||{m:x.method,p:x.pos,mc:[],n:0};pm[k].n++;if(x.mc&&pm[k].mc.indexOf(x.mc)<0)pm[k].mc.push(x.mc)});
-  tbl("Decoration Method",["Part Name","Position","Plan","Actual","Remark"],Object.keys(pm).map(function(k){var o=pm[k];return [o.m,o.p,o.m,o.m,"Mesin "+(o.mc.join(", ")||"-")+" · "+o.n+" trial"]}),SP.method)}
- if(stage=="PP2K"){var pl=planOf(proj);if(pl.length)tbl("Decoplan (Acuan Release PP2K)",["Position","Part","Metode","Tampo","Warna (Acuan)"],pl.sort(function(a,b){return (Number(a.job)||0)-(Number(b.job)||0)}).map(function(x){return ["J"+x.job+" · "+en(x.pos),en(x.part),x.method,x.method=="Pad Print"&&x.proc?x.proc+"×":"-",x.color]}),[[3,4],[5,9],[10,10],[11,11],[12,13]])}
+  tbl("Decoration Method",["Part Name","Position","Plan","Actual","Remark"],Object.keys(pm).map(function(k){var o=pm[k];return [o.m,o.p,o.m,o.m,"Machine "+(o.mc.join(", ")||"-")+" · "+o.n+" trial"]}),SP.method)}
+ if(stage=="PP2K"){var pl=planOf(proj);if(pl.length)tbl("Decoplan (PP2K Release Reference)",["Position","Part","Method","Pads","Color (Reference)"],pl.sort(function(a,b){return (Number(a.job)||0)-(Number(b.job)||0)}).map(function(x){return ["J"+x.job+" · "+en(x.pos),en(x.part),x.method,x.method=="Pad Print"&&x.proc?x.proc+"×":"-",x.color]}),[[3,4],[5,9],[10,10],[11,11],[12,13]])}
  if(sc.spray_tools)tbl(SEC.spray_tools.t,SEC.spray_tools.c,sc.spray_tools,SP.tools);
  if(sc.pad_tools)tbl(SEC.pad_tools.t,SEC.pad_tools.c,sc.pad_tools,SP.tools);
  put(ws,r,2,15,"2. "+stage+" Parameters",{b:true});r++;
- if(!f.length){put(ws,r,2,15,"Belum ada trial.",{bd:true});r+=2}
+ if(!f.length){put(ws,r,2,15,"No trials yet.",{bd:true});r+=2}
  ["Handspray","Pad Print"].forEach(function(m){var fm=f.filter(function(x){return x.method==m});if(!fm.length)return;
   put(ws,r,2,15,(m=="Handspray"?"Spray":"Pad Print")+" Piloting Parameters",{b:true});r++;
   var parts=Array.from(new Set(fm.map(function(x){return x.pos})));
@@ -1023,94 +1020,93 @@ function stageSheet(wb,proj,stage,f,sc){
   for(var s=0;s<parts.length;s+=4){var ch=parts.slice(s,s+4);
    put(ws,r,2,2,"No",{b:true,bd:true,fill:GREY,h:"center"});put(ws,r,3,4,"Item Name",{b:true,bd:true,fill:GREY});
    ch.forEach(function(p,i){put(ws,r,5+i*2,6+i*2,p,{b:true,bd:true,fill:GREY,h:"center"})});r++;
-   ["Warna Cat"].concat(PAR[m]).forEach(function(it,j){put(ws,r,2,2,j+1,{bd:true,h:"center"});put(ws,r,3,4,it,{bd:true});
+   ["Paint Color"].concat(PAR[m]).forEach(function(it,j){put(ws,r,2,2,j+1,{bd:true,h:"center"});put(ws,r,3,4,it,{bd:true});
     ch.forEach(function(p,i){var xs=fm.filter(function(x){return x.pos==p&&pval(x,it)}).sort(function(a,b){return (b.res=="Pass")-(a.res=="Pass")||(b.no||1)-(a.no||1)||T(b)-T(a)});put(ws,r,5+i*2,6+i*2,xs.length?pval(xs[0],it):"",{bd:true,h:"center"})});r++});
    r++}});
  put(ws,r,2,15,"3. "+stage+" Result",{b:true});r++;
- if(sc.lab)tbl(SEC.lab.t,SEC.lab.c,sc.lab,SP.lab);
- if(sc.lab_results&&sc.lab_results.length)tbl("Hasil Test Lab (Input)",["Part","Metode","Qty","Hasil","Foto"],sc.lab_results.map(function(r){return [r[1],r[2]+(r[7]?" – "+r[7]:""),r[3],r[4],r[5]?String(r[5]).split(/\s+/).length+" foto (lihat sheet Test Lab)":"-"]}),SP.lab);
- if(sc.lab_docs&&sc.lab_docs.length){put(ws,r,2,15,"Foto Dokumen Lab: "+sc.lab_docs.length+" file (lihat sheet Lab Docs)",{});r+=2}
- if(f.length){tbl("Summary Hasil Trial per Part",["Part","Metode","Jml Trial","Riwayat Trial","Hasil Akhir","Trial OK ke-","Tanggal OK"],progress(f).map(function(o){return [o.pos,o.method,o.n,o.hist,o.final,o.ok?"T"+(o.ok.no||1):"-",o.ok?day(T(o.ok)):"-"]}),[[3,4],[5,5],[6,7],[8,12],[13,13],[14,14],[15,15]]);put(ws,r,2,15,"Trial Result",{b:true});r++;
-  ["No","Tanggal & Jam","Part","Metode","Mesin","Qty","NG","NG %","Warna Cat · Hasil","Hasil","Kendala","Detail Kendala","Tindakan","Oleh"].forEach(function(h,i){put(ws,r,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});r++;
-  f.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x,i){var v=[i+1,fmt(T(x)),x.pos+" · T"+(x.no||1),x.method,x.mc,x.qty,x.ng,x.qty?+(x.ng/x.qty*100).toFixed(1):0,(x.paint?x.paint+" · ":"")+(x.color||""),x.res,(x.cat&&x.cat!="Tidak ada kendala")?x.cat:"-",x.issue,x.act,x.by];
+ if(sc.lab_results&&sc.lab_results.length)tbl("Lab Test Results",["Part","Method","Qty","Result","Photos"],sc.lab_results.map(function(r){return [r[1],r[2]+(r[7]?" – "+r[7]:""),r[3],r[4],r[5]?String(r[5]).split(/\s+/).length+" photos (see Test Lab sheet)":"-"]}),SP.lab);
+ if(sc.lab_docs&&sc.lab_docs.length){put(ws,r,2,15,"Lab Document Photos: "+sc.lab_docs.length+" files (see Lab Docs sheet)",{});r+=2}
+ if(f.length){tbl("Trial Results Summary per Part",["Part","Method","Trials","Trial History","Final Result","OK at trial #","OK Date"],progress(f).map(function(o){return [o.pos,o.method,o.n,o.hist,o.final,o.ok?"T"+(o.ok.no||1):"-",o.ok?day(T(o.ok)):"-"]}),[[3,4],[5,5],[6,7],[8,12],[13,13],[14,14],[15,15]]);put(ws,r,2,15,"Trial Result",{b:true});r++;
+  ["No","Date & Time","Part","Method","Machine","Qty","NG","NG %","Paint Color · Result","Result","Issue","Issue Detail","Action","By"].forEach(function(h,i){put(ws,r,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});r++;
+  f.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x,i){var v=[i+1,fmt(T(x)),x.pos+" · T"+(x.no||1),x.method,x.mc,x.qty,x.ng,x.qty?+(x.ng/x.qty*100).toFixed(1):0,(x.paint?x.paint+" · ":"")+(x.color||""),x.res,(x.cat&&x.cat!="No issue")?x.cat:"-",x.issue,x.act,x.by];
    v.forEach(function(a,j){put(ws,r,2+j,2+j,a,{bd:true,h:j>=5&&j<=9||j==0?"center":"left"})});
    ws.getCell(r,11).font={name:"Arial",size:10,bold:true,color:{argb:x.res=="Pass"?"FF1F9D63":x.res=="Fail"?"FFD6405A":"FFC58A10"}};r++});r++;
   put(ws,r,2,15,"Problem Summary",{b:true});r++;
-  [["No",2,2],["Kendala",3,5],["Kejadian",6,7],["Fail",8,8],["Hold",9,9],["NG pcs",10,10],["Part terdampak",11,12],["Terakhir",13,13],["Detail terakhir",14,15]].forEach(function(h){put(ws,r,h[1],h[2],h[0],{b:true,bd:true,fill:GREY,h:"center"})});r++;
-  var sm=summary(f);if(!sm.length){put(ws,r,2,15,"Tidak ada kendala tercatat.",{bd:true});r++}
+  [["No",2,2],["Issue",3,5],["Occurrences",6,7],["Fail",8,8],["Hold",9,9],["NG pcs",10,10],["Affected parts",11,12],["Last",13,13],["Latest detail",14,15]].forEach(function(h){put(ws,r,h[1],h[2],h[0],{b:true,bd:true,fill:GREY,h:"center"})});r++;
+  var sm=summary(f);if(!sm.length){put(ws,r,2,15,"No issues recorded.",{bd:true});r++}
   sm.forEach(function(o,i){[[i+1,2,2],[o.cat,3,5],[o.n,6,7],[o.fail,8,8],[o.hold,9,9],[o.ng,10,10],[o.parts.join(", "),11,12],[day(o.last),13,13],[o.detail,14,15]].forEach(function(a){put(ws,r,a[1],a[2],a[0],{bd:true,h:a[1]==3||a[1]==11||a[1]==14?"left":"center"})});r++})}
  r+=2;put(ws,r,2,15,"Note :",{b:true})}
 async function imgBuf(u){var b=await (await fetch(u)).blob(),bm=await createImageBitmap(b),sc=Math.min(1,800/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.round(bm.width*sc);c.height=Math.round(bm.height*sc);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
  var jb=await new Promise(function(r){c.toBlob(r,"image/jpeg",.8)});return {buf:await jb.arrayBuffer(),w:c.width,h:c.height}}
 async function attachSheet(wb,proj,f){var ph=f.filter(function(x){return CAT.some(function(c){return photosOf(x,c[0]).length})});if(!ph.length)return;
  var ws=wb.addWorksheet(sname(wb,proj,"Attachment"),{views:[{showGridLines:false}]});widths(ws,[2.6,26,26,26,26,26]);var r=1;
- put(ws,r,2,6,proj+" – Attachment (foto produk & parameter mesin)",{b:true,sz:13,fill:BLUE});r+=2;
+ put(ws,r,2,6,proj+" – Attachment (product photos & machine parameters)",{b:true,sz:13,fill:BLUE});r+=2;
  var g={};ph.sort(function(a,b){return T(a)-T(b)}).forEach(function(x){(g[iso(T(x))]=g[iso(T(x))]||[]).push(x)});
  for(var d of Object.keys(g).sort()){put(ws,r,2,6,day(d),{b:true,fill:GREY,bd:true});r++;
   for(var c of CAT){var items=[];g[d].forEach(function(x){photosOf(x,c[0]).forEach(function(u){items.push({x:x,u:u})})});if(!items.length)continue;
    put(ws,r,2,6,c[1],{b:true,fill:BLUE});r++;
    for(var i=0;i<items.length;i+=5){var ch=items.slice(i,i+5);ws.getRow(r).height=110;ws.getRow(r+1).height=40;
-    for(var j=0;j<ch.length;j++){var it=ch[j],x=it.x;put(ws,r+1,2+j,2+j,x.method+" · "+x.pos+" · T"+(x.no||1)+"\n"+x.res+" · "+new Date(T(x)).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+(x.cat&&x.cat!="Tidak ada kendala"?"\n"+x.cat:""),{sz:8,bd:true});
+    for(var j=0;j<ch.length;j++){var it=ch[j],x=it.x;put(ws,r+1,2+j,2+j,x.method+" · "+x.pos+" · T"+(x.no||1)+"\n"+x.res+" · "+new Date(T(x)).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+(x.cat&&x.cat!="No issue"?"\n"+x.cat:""),{sz:8,bd:true});
      try{var im=await imgBuf(it.u),sc=Math.min(170/im.w,140/im.h),id=wb.addImage({buffer:im.buf,extension:"jpeg"});ws.addImage(id,{tl:{col:1+j+.05,row:r-1+.05},ext:{width:im.w*sc,height:im.h*sc}})}catch(e){put(ws,r,2+j,2+j,it.u,{sz:8})}}
     r+=2}}
   r++}}
 function fillSummary(sm,f){var pg=progress(f);widths(sm,[2.6,5,22,9,12,22,9,38,12,9,12,10,7,7,20,32,48,10,24]);
- put(sm,1,2,10,"Summary Hasil Trial per Part (trial awal sampai OK)",{b:true,sz:13,fill:BLUE});
- ["No","Project","Tahap","Metode","Part","Jml Trial","Riwayat Trial","Hasil Akhir","Trial OK ke-","Tanggal OK","Mesin OK","Qty OK","NG OK","Warna Cat · Hasil OK","Kendala sebelum OK","Parameter OK","Oleh","Foto OK (Produk/HMI/Speed/Angin/Proses)"].forEach(function(h,i){put(sm,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
- pg.forEach(function(o,i){var ok=o.ok,r=4+i,kd=Array.from(new Set(o.t.filter(function(x){return x.res!="Pass"&&x.cat&&x.cat!="Tidak ada kendala"}).map(function(x){return "T"+(x.no||1)+": "+x.cat}))).join("; ");
+ put(sm,1,2,10,"Trial Results Summary per Part (first trial to OK)",{b:true,sz:13,fill:BLUE});
+ ["No","Project","Stage","Method","Part","Trials","Trial History","Final Result","OK at trial #","OK Date","OK Machine","Qty OK","NG OK","Paint Color · OK Result","Issues before OK","OK Parameters","By","OK Photos (Product/HMI/Speed/Air/Process)"].forEach(function(h,i){put(sm,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+ pg.forEach(function(o,i){var ok=o.ok,r=4+i,kd=Array.from(new Set(o.t.filter(function(x){return x.res!="Pass"&&x.cat&&x.cat!="No issue"}).map(function(x){return "T"+(x.no||1)+": "+x.cat}))).join("; ");
   var v=[i+1,o.project,o.stage,o.method,o.pos,o.n,o.hist,o.final,ok?"T"+(ok.no||1):"-",ok?day(T(ok)):"-",ok?ok.mc:"",ok?ok.qty:"",ok?ok.ng:"",ok?(ok.paint?ok.paint+" · ":"")+(ok.color||""):"",kd||"-",ok?Object.keys(ok.params||{}).map(function(k){return k+": "+ok.params[k]}).join("; "):"",ok?ok.by:o.t[o.t.length-1].by,ok?CAT.map(function(c){return photosOf(ok,c[0]).length}).join(" / "):"-"];
   v.forEach(function(a,j){put(sm,r,2+j,2+j,a,{bd:true,h:j==0||j==5||j>=8&&j<=12?"center":"left"})});
   sm.getCell(r,9).font={name:"Arial",size:10,bold:true,color:{argb:ok?"FF1F9D63":"FFD6405A"}}})}
-async function buildReport(f,fname,b){if(!f.length&&!labScopeHas())return toast("Tidak ada data untuk diekspor");var lbl=b.textContent;b.disabled=true;b.textContent="Menyiapkan…";
+async function buildReport(f,fname,b){if(!f.length&&!labScopeHas())return toast("No data to export");var lbl=b.textContent;b.disabled=true;b.textContent="Preparing…";
  try{var wb=new ExcelJS.Workbook(),pr=prList(f);
   var cv=wb.addWorksheet("Cover",{views:[{showGridLines:false}]});widths(cv,[2.6,22,3,18,18,18,18,18]);
   put(cv,2,2,8,"Trial Report ME – Handspray & Pad Print",{b:true,sz:16});
   put(cv,4,2,2,"Project Name",{b:true});put(cv,4,3,3,":");put(cv,4,4,8,pr.join("\n"));cv.getRow(4).height=Math.max(18,pr.length*16);
   put(cv,5,2,2,"PIC Member ME",{b:true});put(cv,5,3,3,":");put(cv,5,4,8,"ME Team");
-  put(cv,6,2,2,"Periode trial",{b:true});put(cv,6,3,3,":");put(cv,6,4,8,f.length?day(Math.min.apply(null,f.map(T)))+" – "+day(Math.max.apply(null,f.map(T))):"-");
-  put(cv,7,2,2,"Total trial",{b:true});put(cv,7,3,3,":");put(cv,7,4,8,f.length+" trial");
+  put(cv,6,2,2,"Trial period",{b:true});put(cv,6,3,3,":");put(cv,6,4,8,f.length?day(Math.min.apply(null,f.map(T)))+" – "+day(Math.max.apply(null,f.map(T))):"-");
+  put(cv,7,2,2,"Total trials",{b:true});put(cv,7,3,3,":");put(cv,7,4,8,f.length+" trial");
   put(cv,10,2,2,"Prepared by",{b:true,bd:true,fill:GREY,h:"center"});put(cv,10,4,8,"Approved by",{b:true,bd:true,fill:GREY,h:"center"});
   put(cv,11,2,2,"ME",{bd:true,h:"center"});["Engineering Director","Production","Production","QA","Production Director"].forEach(function(t,i){put(cv,11,4+i,4+i,t,{bd:true,h:"center"})});
-  cv.getRow(11).height=80;[2,4,5,6,7,8].forEach(function(ci){cv.getCell(11,ci).alignment={vertical:"bottom",horizontal:"center",wrapText:true}});var sm=wb.addWorksheet("Summary Trial",{views:[{showGridLines:false}]}),jr=wb.addWorksheet("Jadwal & Release",{views:[{showGridLines:false}]});var pcs=planCmp(pr),dp=pcs.length?wb.addWorksheet("Decoplan (Acuan)",{views:[{showGridLines:false}]}):null;
+  cv.getRow(11).height=80;[2,4,5,6,7,8].forEach(function(ci){cv.getCell(11,ci).alignment={vertical:"bottom",horizontal:"center",wrapText:true}});var sm=wb.addWorksheet("Summary Trial",{views:[{showGridLines:false}]}),jr=wb.addWorksheet("Schedule & Release",{views:[{showGridLines:false}]});var pcs=planCmp(pr),dp=pcs.length?wb.addWorksheet("Decoplan (Reference)",{views:[{showGridLines:false}]}):null;
   for(var p of pr){var fp=f.filter(function(x){return (x.project||"-")==p});
    for(var s of STAGES){var fs=fp.filter(function(x){return x.stage==s}),sc={};secs.filter(function(y){return y.project==p&&y.stage==s}).forEach(function(y){if(y.section=="lab_results"&&!(y.rows||[]).length)return;sc[y.section]=y.rows});
     if(fs.length||Object.keys(sc).length)stageSheet(wb,p,s,fs,sc)}
    await attachSheet(wb,p,fp);await labDocSheet(wb,p);await labResSheet(wb,p)}
   fillSummary(sm,f,pr);fillSchedule(jr,pr);if(dp)fillPlan(dp,pcs);var dt=wb.addWorksheet("Data Trial");dt.addRow(TH_);f.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x){dt.addRow(trialRow(x))});dt.getRow(1).font={bold:true};widths(dt,TH_.map(function(){return 18}));
-  dl(fname,await wb.xlsx.writeBuffer());toast("Excel dibuat")}catch(e){toast("Gagal ekspor: "+e.message)}
+  dl(fname,await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl}
 $("xl").onclick=function(){buildReport(filtered(),"Trial_Report_ME.xlsx",$("xl"))};
-$("xr").onclick=function(){var p=$("xp").value,f=rows.filter(function(x){return !p||x.project==p});buildReport(f,"Laporan_"+(p||"Semua_Project").replace(/[^\w-]+/g,"_")+".xlsx",$("xr"))};
+$("xr").onclick=function(){var p=$("xp").value,f=rows.filter(function(x){return !p||x.project==p});buildReport(f,"Report_"+(p||"All_Projects").replace(/[^\w-]+/g,"_")+".xlsx",$("xr"))};
 $("xm").onclick=function(){meetingReport($("xd").value,$("xm"))};
 function yest(){var d=new Date();d.setDate(d.getDate()-1);return iso(d.getTime())}
 $("xd").value=yest();
 
-/* Summary meeting harian */
-function colRes(v){return /^OK|^Pass/.test(v)?"FF1F9D63":/Fail|Belum/.test(v)?"FFD6405A":"FFC58A10"}
+/* Summary meeting daysan */
+function colRes(v){return /^OK|^Pass/.test(v)?"FF1F9D63":/Fail|Not OK/.test(v)?"FFD6405A":"FFC58A10"}
 function gtbl(ws,r,title,cols,data,sp){if(title){put(ws,r,2,15,title,{b:true});r++}
  put(ws,r,2,2,"No",{b:true,bd:true,fill:GREY,h:"center"});cols.forEach(function(c,i){put(ws,r,sp[i][0],sp[i][1],c,{b:true,bd:true,fill:GREY,h:"center"})});r++;
  if(!data.length){put(ws,r,2,15,"-",{bd:true});r++}
- data.forEach(function(d,k){put(ws,r,2,2,k+1,{bd:true,h:"center"});d.forEach(function(v,i){put(ws,r,sp[i][0],sp[i][1],v,{bd:true,h:/^(Qty|NG|Trial|Jam|Hasil)$/.test(cols[i])?"center":"left"});
-  if(cols[i]=="Hasil"||cols[i]=="Status Sekarang")ws.getCell(r,sp[i][0]).font={name:"Arial",size:10,bold:true,color:{argb:colRes(String(v))}}});r++});return r+1}
-async function meetingReport(d,b){if(!d)return toast("Pilih tanggal dulu");
- var f=rows.filter(function(x){return iso(T(x))==d}).sort(function(a,b){return T(a)-T(b)});if(!f.length)return toast("Tidak ada trial pada "+day(d));
- var lbl=b.textContent;b.disabled=true;b.textContent="Menyiapkan…";
+ data.forEach(function(d,k){put(ws,r,2,2,k+1,{bd:true,h:"center"});d.forEach(function(v,i){put(ws,r,sp[i][0],sp[i][1],v,{bd:true,h:/^(Qty|NG|Trial|Time|Result)$/.test(cols[i])?"center":"left"});
+  if(cols[i]=="Result"||cols[i]=="Current Status")ws.getCell(r,sp[i][0]).font={name:"Arial",size:10,bold:true,color:{argb:colRes(String(v))}}});r++});return r+1}
+async function meetingReport(d,b){if(!d)return toast("Select a date first");
+ var f=rows.filter(function(x){return iso(T(x))==d}).sort(function(a,b){return T(a)-T(b)});if(!f.length)return toast("No trials on "+day(d));
+ var lbl=b.textContent;b.disabled=true;b.textContent="Preparing…";
  try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Meeting "+d,{views:[{showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0}});
   widths(ws,[2.6,5,22,11,22,7,9,8,7,7,20,26,34,30,10]);
   var c=function(x){return f.filter(function(y){return y.res==x}).length},q=f.reduce(function(a,x){return a+x.qty},0),n=f.reduce(function(a,x){return a+x.ng},0),pr=Array.from(new Set(f.map(function(x){return x.project||"-"}))),r=1;
   put(ws,r,2,15,"Summary Meeting Trial – "+day(d),{b:true,sz:14,fill:BLUE});r++;
   put(ws,r,2,15,"Total "+f.length+" trial · Pass "+c("Pass")+" · Fail "+c("Fail")+" · Hold "+c("Hold")+" · NG rate "+(q?(n/q*100).toFixed(1):"0")+"% ("+n+"/"+q+" pcs) · "+pr.length+" project · PIC: "+names(f,"by").join(", "),{});r+=2;
-  put(ws,r,2,15,"1. Hasil Trial per Project",{b:true});r++;
-  var SP1=[[3,3],[4,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,11],[12,12],[13,13],[14,14],[15,15]],H1=["Metode","Part","Trial","Jam","Hasil","Qty","NG","Warna Cat · Hasil","Kendala","Detail Kendala","Tindakan","Oleh"];
+  put(ws,r,2,15,"1. Trial Results per Project",{b:true});r++;
+  var SP1=[[3,3],[4,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,11],[12,12],[13,13],[14,14],[15,15]],H1=["Method","Part","Trial","Time","Result","Qty","NG","Paint Color · Result","Issue","Issue Detail","Action","By"];
   pr.forEach(function(p){var fp=f.filter(function(x){return (x.project||"-")==p});put(ws,r,2,15,"Project: "+p+"  ("+fp.length+" trial)",{b:true,fill:GREY});r++;
-   r=gtbl(ws,r,"",H1,fp.map(function(x){return [x.method,x.pos,"T"+(x.no||1),new Date(T(x)).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}),x.res,x.qty,x.ng,(x.paint?x.paint+" · ":"")+(x.color||""),(x.cat&&x.cat!="Tidak ada kendala")?x.cat:"-",x.issue,x.act,x.by]}),SP1)});
+   r=gtbl(ws,r,"",H1,fp.map(function(x){return [x.method,x.pos,"T"+(x.no||1),new Date(T(x)).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),x.res,x.qty,x.ng,(x.paint?x.paint+" · ":"")+(x.color||""),(x.cat&&x.cat!="No issue")?x.cat:"-",x.issue,x.act,x.by]}),SP1)});
   var keys={};f.forEach(function(x){keys[[x.project,x.stage,x.method,x.pos].join("|")]=1});
   var pg=progress(rows.filter(function(x){return pr.indexOf(x.project||"-")>=0})).filter(function(o){return keys[[o.project,o.stage,o.method,o.pos].join("|")]});
-  r=gtbl(ws,r,"2. Status Part Terkini & Tindak Lanjut",["Project","Metode","Part","Trial hari ini","Riwayat Trial","Status Sekarang","Tindak Lanjut"],pg.map(function(o){var last=o.t[o.t.length-1],lc=last.cat&&last.cat!="Tidak ada kendala"?last.cat:"",tn=f.filter(function(x){return x.project==o.project&&x.stage==o.stage&&x.method==o.method&&x.pos==o.pos}).map(function(x){return "T"+(x.no||1)}).join(", ");
-   return [o.project,o.method,o.pos,tn,o.hist,o.final,o.ok?"Selesai – OK di T"+(o.ok.no||1):(last.no||1)>=10?"Sudah T10 – perlu keputusan":"Trial ulang → T"+((last.no||1)+1)+(lc?" · kendala: "+lc:"")]}),[[3,3],[4,4],[5,5],[6,7],[8,12],[13,13],[14,15]]);
-  r=gtbl(ws,r,"3. Kendala Hari Ini",["Project","Kendala","Kejadian","Fail","Hold","NG pcs","Part terdampak","Detail terakhir"],summary(f).map(function(o){return [o.project,o.cat,o.n,o.fail,o.hold,o.ng,o.parts.join(", "),o.detail]}),[[3,3],[4,5],[6,7],[8,8],[9,9],[10,10],[11,13],[14,15]]);
+  r=gtbl(ws,r,"2. Latest Part Status & Follow-up",["Project","Method","Part","Trials today","Trial History","Current Status","Follow-up"],pg.map(function(o){var last=o.t[o.t.length-1],lc=last.cat&&last.cat!="No issue"?last.cat:"",tn=f.filter(function(x){return x.project==o.project&&x.stage==o.stage&&x.method==o.method&&x.pos==o.pos}).map(function(x){return "T"+(x.no||1)}).join(", ");
+   return [o.project,o.method,o.pos,tn,o.hist,o.final,o.ok?"Done – OK at T"+(o.ok.no||1):(last.no||1)>=10?"Already T10 – decision needed":"Retrial → T"+((last.no||1)+1)+(lc?" · issue: "+lc:"")]}),[[3,3],[4,4],[5,5],[6,7],[8,12],[13,13],[14,15]]);
+  r=gtbl(ws,r,"3. Today's Issues",["Project","Issue","Occurrences","Fail","Hold","NG pcs","Affected parts","Latest detail"],summary(f).map(function(o){return [o.project,o.cat,o.n,o.fail,o.hold,o.ng,o.parts.join(", "),o.detail]}),[[3,3],[4,5],[6,7],[8,8],[9,9],[10,10],[11,13],[14,15]]);
   for(var p of pr)await attachSheet(wb,p,f.filter(function(x){return (x.project||"-")==p}));
-  dl("Meeting_Trial_"+d+".xlsx",await wb.xlsx.writeBuffer());toast("Summary meeting dibuat")}catch(e){toast("Gagal ekspor: "+e.message)}
+  dl("Meeting_Trial_"+d+".xlsx",await wb.xlsx.writeBuffer());toast("Meeting summary created")}catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl}
 
 
@@ -1118,14 +1114,113 @@ async function meetingReport(d,b){if(!d)return toast("Pilih tanggal dulu");
 init();tab("ringkasan");
 </script>
 <script>
-/* ===================== TAMBAHAN: Edit, Impor-Update, Test Lab ===================== */
+/* ===================== EXTENSIONS ===================== */
 var LABSCOPE=null,tlEd=null,tlPh=[],pe=null,de=null;
-var _noop=function(){};
-
-/* modal: reset lebar tiap dibuka */
 var _openModal=openModal;openModal=function(h){$("mbody").style.maxWidth="";_openModal(h)};
 
-/* ---------- Data Test Lab (disimpan di tabel sections, section = lab_results) ---------- */
+/* ---------- Legacy (Indonesian) stored values -> English, applied when data is read ---------- */
+var LEG={stage:{"Trial Lain":"Other Trial"},
+ cat:{"Tidak ada kendala":"No issue","Kualitas cat (kasar, orange peel)":"Paint quality (rough, orange peel)","Cat bocor / bleeding":"Paint leak / bleeding","Ketebalan tidak rata":"Uneven thickness","Dust / kontaminasi":"Dust / contamination","Fixture longgar / posisi geser":"Loose fixture / shifted position","Plate (kurang/lebih dalam)":"Plate (too shallow/deep)","Ink (viskositas / kering)":"Ink (viscosity / dry)","Image tidak lengkap / blur":"Incomplete / blurred image"},
+ col:{"Revisi mixed":"Mixed revision"},paint:{"Cat trial":"Trial paint"},
+ rel:{"Belum release":"Not released","Siap release":"Ready to release"},
+ pk:{"Mode spray":"Spray mode","Rasio cat":"Paint ratio","Kode masking":"Masking code","Tekanan udara (MPa)":"Air pressure (MPa)","Frek. cleaning mask (pcs)":"Mask cleaning freq. (pcs)","Konsumsi cat (g/pcs)":"Paint consumption (g/pcs)","Jumlah tampo (kali)":"Number of pads (times)","Warna ink":"Ink color","Viskositas (KU)":"Viscosity (KU)","Delay transfer ke part (s)":"Delay transfer to part (s)","Jarak rear/front stopper (mm)":"Rear/front stopper distance (mm)","Din cup (detik)":"Din cup (s)"},
+ pvv:{"Mesin":"Machine"},
+ hd:{"Waktu":"Time","Tahap":"Stage","Metode":"Method","Mesin":"Machine","Warna":"Color","Hasil":"Result","Kendala":"Issue","Tindakan":"Action","Oleh":"By","Foto":"Photos","Foto Mesin":"Machine Photos","Warna Cat":"Paint Color"}};
+function lg(m,v){return Object.prototype.hasOwnProperty.call(m,v)?m[v]:v}
+var _fromT=fromT;fromT=function(r){var x=_fromT(r);x.stage=lg(LEG.stage,x.stage);x.cat=lg(LEG.cat,x.cat);x.color=lg(LEG.col,x.color);x.paint=lg(LEG.paint,x.paint);
+ var p={};Object.keys(x.params||{}).forEach(function(k){var nk=lg(LEG.pk,k),v=x.params[k];if(nk=="Spray mode")v=lg(LEG.pvv,v);p[nk]=v});x.params=p;return x};
+
+/* ---------- Generic project picker (checkbox chips) ---------- */
+var PICK={},PICKL={};
+function pickHTML(id,label,full){return "<div class=field style=\""+(full?"grid-column:1/-1;":"")+"margin-bottom:10px\"><label>"+label+"</label><div id=\""+id+"\" style=\"display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px\"></div><button type=button class=\"btn ghost small\" data-pall=\""+id+"\">Select all</button> <button type=button class=\"btn ghost small\" data-pnone=\""+id+"\">Clear</button></div>"}
+function pickRender(id,list){PICKL[id]=list;var st=PICK[id]=PICK[id]||{};Object.keys(st).forEach(function(k){if(list.indexOf(k)<0)delete st[k]});
+ $(id).innerHTML=list.length?list.map(function(k){return "<label class=chip style=\"display:inline-flex;align-items:center;gap:6px;cursor:pointer\"><input type=checkbox data-pk=\""+id+"\" data-v=\""+esc(k)+"\""+(st[k]?" checked":"")+" style=\"width:auto;min-width:0;margin:0\"> "+esc(k)+"</label>"}).join(""):"<span class=sub>None yet.</span>"}
+function pickSel(id){var l=PICKL[id]||[],st=PICK[id]||{};return l.filter(function(k){return st[k]})}
+document.addEventListener("change",function(e){var t=e.target;if(t.dataset&&t.dataset.pk){var st=PICK[t.dataset.pk]=PICK[t.dataset.pk]||{};if(t.checked)st[t.dataset.v]=1;else delete st[t.dataset.v]}});
+document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
+ if(t.dataset.pall){var i=t.dataset.pall;PICK[i]={};(PICKL[i]||[]).forEach(function(k){PICK[i][k]=1});pickRender(i,PICKL[i]||[])}
+ if(t.dataset.pnone){var j=t.dataset.pnone;PICK[j]={};pickRender(j,PICKL[j]||[])}});
+function pickAll(){var n=projs.map(function(p){return p.name});["xpicks","sch_pick","iss_proj"].forEach(function(i){if($(i))pickRender(i,n)});if($("iss_stage"))pickRender("iss_stage",STAGES)}
+
+/* ---------- PA date & milestone schedule ---------- */
+var MS=[{k:"tool",n:"Tooling Readiness",off:-20},{k:"ep",n:"EP Trial",off:-14},{k:"ink",n:"Original Ink",off:1},{k:"fep",n:"FEP",off:2},{k:"pp2k",n:"PP2K",off:7},{k:"rel",n:"Release",off:10}];
+function addDays(s,n){var d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d.getTime())}
+function dDiff(a,b){return Math.round((new Date(a+"T00:00:00")-new Date(b+"T00:00:00"))/864e5)}
+function offTxt(o){return "PA"+(o>=0?"+":"")+o}
+function paOf(name){var y=secs.filter(function(s){return s.project==name&&s.section=="pa_plan"})[0],r=y&&y.rows&&y.rows[0]||[];return {pa:r[0]||"",tool:r[1]||"",ink:r[2]||""}}
+async function savePA(name,v){await api("POST","sections",[{project:name,stage:"ALL",section:"pa_plan",rows:[[v.pa||"",v.tool||"",v.ink||""]],ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
+function msList(name){var pa=paOf(name),f=rows.filter(function(x){return x.project==name}),p=projs.filter(function(x){return x.name==name})[0]||{},today=iso(Date.now());
+ function first(st){var a=f.filter(function(x){return x.stage==st}).map(T);return a.length?iso(Math.min.apply(null,a)):""}
+ var act={tool:pa.tool,ep:first("EP"),ink:pa.ink,fep:first("FEP"),pp2k:first("PP2K"),rel:p.rd||""};
+ return {pa:pa.pa,ms:MS.map(function(m){var plan=pa.pa?addDays(pa.pa,m.off):"",a=act[m.k],st="na",d=0;
+  if(plan){if(a){d=dDiff(a,plan);st=d<=0?"ontime":"late"}else{d=dDiff(today,plan);st=d>0?"overdue":(d>=-3?"soon":"pending")}}
+  return {k:m.k,n:m.n,off:m.off,plan:plan,act:a,st:st,d:d}})}}
+function stLabel(m){return m.st=="ontime"?(m.d<0?"On time ("+(-m.d)+"d early)":"On time"):m.st=="late"?"Late +"+m.d+"d":m.st=="overdue"?"Overdue +"+m.d+"d":m.st=="soon"?"Due in "+(-m.d)+"d":m.st=="pending"?"Pending":"-"}
+function stPill(m){return m.st=="ontime"?"Pass":(m.st=="late"||m.st=="overdue")?"Fail":m.st=="soon"?"Hold":""}
+function overall(ml){if(!ml.pa)return {t:"PA not set",c:"",bad:0};var bad=ml.ms.filter(function(m){return m.st=="late"||m.st=="overdue"}).length,done=ml.ms.filter(function(m){return m.act}).length;
+ return bad?{t:"Behind schedule ("+bad+")",c:"Fail",bad:bad}:done==ml.ms.length?{t:"All on time",c:"Pass",bad:0}:{t:"On track",c:"Pass",bad:0}}
+function onTimeStats(names){var ok=0,tot=0;projs.forEach(function(p){if(names&&names.indexOf(p.name)<0)return;msList(p.name).ms.forEach(function(m){if(m.st=="ontime"){ok++;tot++}else if(m.st=="late"||m.st=="overdue")tot++})});return {ok:ok,tot:tot}}
+function partsTrial(name){var g={};rows.filter(function(x){return x.project==name}).forEach(function(x){var k=x.pos||"-",o=g[k]=g[k]||{part:k,st:[],n:0};o.n++;if(o.st.indexOf(x.stage)<0)o.st.push(x.stage)});
+ return Object.keys(g).map(function(k){var o=g[k];o.st.sort(function(a,b){return STAGES.indexOf(a)-STAGES.indexOf(b)});return o})}
+function rSched(){var sc=schedule();
+ $("sch").innerHTML=sc.length?"<table><tr><th>Project</th><th>Parts trialed</th><th>PA date</th>"+MS.map(function(m){return "<th>"+m.n+"<div class=sub>"+offTxt(m.off)+"</div></th>"}).join("")+"<th>Status</th><th>Duration</th></tr>"
+ +sc.map(function(o){var ml=msList(o.name),ov=overall(ml),pt=partsTrial(o.name);
+  return "<tr><td><b>"+esc(o.name)+"</b>"+(o.rn?"<div class=sub>Notes: "+esc(o.rn)+"</div>":"")+"</td>"
+  +"<td data-l=\"Parts trialed\">"+(pt.length?pt.map(function(p){return "<div><b>"+esc(p.part)+"</b> <span class=sub>"+esc(p.st.join(", "))+" · "+p.n+" trial</span></div>"}).join(""):"-")+"</td>"
+  +"<td>"+(ml.pa?fd(ml.pa):"<span class=sub>not set</span>")+"</td>"
+  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
+  +"<td><span class=\"pill "+ov.c+"\">"+esc(ov.t)+"</span><div style=\"margin-top:4px\"><span class=\"pill "+(o.rs=="Released"?"Pass":o.rs=="Ready to release"?"Hold":"")+"\">"+esc(o.rs)+"</span></div></td><td>"+durTxt(o)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No projects yet.</div>";
+ var h=Array.from(document.querySelectorAll("#sch table th")).map(function(t){return t.textContent});document.querySelectorAll("#sch table tr").forEach(function(r,i){if(i)Array.from(r.cells).forEach(function(c,j){c.setAttribute("data-l",h[j]||"")})})}
+fillSchedule=function(ws,names){var sc=schedule(names),W=[2.6,5,22,12];MS.forEach(function(){W.push(12,12,17)});W.push(22,16,16,30);widths(ws,W);
+ put(ws,1,2,12,"Project Schedule (PA-based milestones)",{b:true,sz:13,fill:BLUE});
+ function hd(c1,c2,t,r2){put(ws,3,c1,c2,t,{b:true,bd:true,fill:GREY,h:"center"});if(r2)ws.mergeCells(3,c1,4,c1)}
+ hd(2,2,"No",1);hd(3,3,"Project",1);hd(4,4,"PA Date",1);
+ MS.forEach(function(m,i){var b=5+i*3;hd(b,b+2,m.n+" ("+offTxt(m.off)+")");["Plan","Actual","Status"].forEach(function(t,j){put(ws,4,b+j,b+j,t,{b:true,bd:true,fill:GREY,h:"center"})})});
+ var e=5+MS.length*3;hd(e,e,"Overall",1);hd(e+1,e+1,"Release Status",1);hd(e+2,e+2,"Duration",1);hd(e+3,e+3,"Notes",1);
+ var ok=0,tot=0;
+ sc.forEach(function(o,i){var r=5+i,ml=msList(o.name),ov=overall(ml);put(ws,r,2,2,i+1,{bd:true,h:"center"});put(ws,r,3,3,o.name,{bd:true,b:true});put(ws,r,4,4,ml.pa?fd(ml.pa):"-",{bd:true,h:"center"});
+  ml.ms.forEach(function(m,k){var b=5+k*3;put(ws,r,b,b,m.plan?fd(m.plan):"-",{bd:true,h:"center"});put(ws,r,b+1,b+1,m.act?fd(m.act):"-",{bd:true,h:"center"});put(ws,r,b+2,b+2,stLabel(m),{bd:true,h:"center",b:true});
+   ws.getCell(r,b+2).font={name:"Arial",size:10,bold:true,color:{argb:m.st=="ontime"?"FF1F9D63":(m.st=="late"||m.st=="overdue")?"FFD6405A":m.st=="soon"?"FFC58A10":"FF888888"}};
+   if(m.st=="ontime"){ok++;tot++}else if(m.st=="late"||m.st=="overdue")tot++});
+  put(ws,r,e,e,ov.t,{bd:true,h:"center",b:true});ws.getCell(r,e).font={name:"Arial",size:10,bold:true,color:{argb:ov.c=="Fail"?"FFD6405A":ov.c=="Pass"?"FF1F9D63":"FF888888"}};
+  put(ws,r,e+1,e+1,o.rs,{bd:true,h:"center"});put(ws,r,e+2,e+2,durTxt(o),{bd:true,h:"center"});put(ws,r,e+3,e+3,o.rn||"",{bd:true})});
+ put(ws,6+sc.length,2,10,"On-time milestones: "+ok+" / "+tot+" (completed on or before plan; overdue counted as late)",{b:true})};
+$("sch").parentNode.insertAdjacentHTML("afterbegin","");
+$("sch").insertAdjacentHTML("beforebegin",pickHTML("sch_pick","Projects to export (leave empty = all)")+"<button type=button class=btn id=sch_x style=\"margin-bottom:14px\">Export Schedule (Excel)</button>");
+$("sch_x").onclick=async function(){var b=$("sch_x"),lbl=b.textContent,sel=pickSel("sch_pick"),names=sel.length?sel:projs.map(function(p){return p.name});
+ if(!names.length)return toast("No projects to export");b.disabled=true;b.textContent="Preparing…";
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Project Schedule",{views:[{showGridLines:false,state:"frozen",xSplit:3,ySplit:4}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0}});
+  fillSchedule(ws,names);dl(names.length==1?"Schedule_"+names[0].replace(/[^\w-]+/g,"_")+".xlsx":"Project_Schedule.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
+ b.disabled=false;b.textContent=lbl};
+
+/* ---------- Issue Summary export (with defect photos) ---------- */
+$("sum").insertAdjacentHTML("beforebegin","<div id=iss_ctl>"+pickHTML("iss_proj","Projects to export (leave empty = all)")+pickHTML("iss_stage","Trial stages (leave empty = all)")
+ +"<label class=chip style=\"display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-right:10px\"><input type=checkbox id=iss_ph checked style=\"width:auto;min-width:0;margin:0\"> Include defect photos</label><button type=button class=btn id=iss_x>Export Issue Summary (Excel)</button></div><div style=\"height:14px\"></div>");
+$("iss_x").onclick=async function(){var b=$("iss_x"),lbl=b.textContent,ps=pickSel("iss_proj"),ss=pickSel("iss_stage"),withPh=$("iss_ph").checked;
+ var f=rows.filter(function(x){return x.cat&&x.cat!="No issue"&&(!ps.length||ps.indexOf(x.project)>=0)&&(!ss.length||ss.indexOf(x.stage)>=0)}).sort(function(a,b){return (a.project<b.project?-1:a.project>b.project?1:0)||STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||T(a)-T(b)});
+ if(!f.length)return toast("No issues match the selection");
+ b.disabled=true;b.textContent="Preparing…";
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Issue Summary",{views:[{showGridLines:false}]});widths(ws,[2.6,5,16,12,34,10,9,10,10,26,18]);
+  put(ws,1,2,11,"Issue Summary"+(ps.length?" – "+ps.join(", "):" – All projects")+(ss.length?" ("+ss.join(", ")+")":""),{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Issue","Occurrences","Fail","Hold","NG pcs","Affected parts","Latest"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  var g={};f.forEach(function(x){var k=[x.project,x.stage,x.cat].join("|"),o=g[k]=g[k]||{project:x.project,stage:x.stage,cat:x.cat,n:0,fail:0,hold:0,ng:0,parts:[],last:0};o.n++;if(x.res=="Fail")o.fail++;if(x.res=="Hold")o.hold++;o.ng+=x.ng||0;var pt=x.method+" "+x.pos;if(o.parts.indexOf(pt)<0)o.parts.push(pt);if(T(x)>o.last)o.last=T(x)});
+  Object.keys(g).map(function(k){return g[k]}).forEach(function(o,i){[i+1,o.project,o.stage,o.cat,o.n,o.fail,o.hold,o.ng,o.parts.join(", "),day(o.last)].forEach(function(a,j){put(ws,4+i,2+j,2+j,a,{bd:true,h:j==0||j>=4&&j!=8?"center":"left"})})});
+  var d=wb.addWorksheet("Defect Details",{views:[{showGridLines:false}]});widths(d,[2.6,5,16,10,16,22,7,22,34,30,9,9,17,17,17,17,17]);
+  put(d,1,2,14,"Defect Details"+(withPh?" (with photos)":""),{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Date","Method / Part","Trial","Issue category","Issue detail","Action","Result","NG pcs"].forEach(function(h,i){put(d,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  if(withPh)put(d,3,13,17,"Defect photos",{b:true,bd:true,fill:GREY,h:"center"});
+  var r=4;
+  for(var i=0;i<f.length;i++){var x=f[i],ph=withPh?(x.photos||[]):[],nr=Math.max(1,Math.ceil(ph.length/5));
+   [i+1,x.project,x.stage,day(T(x)),x.method+" / "+x.pos,"T"+(x.no||1),x.cat,x.issue||"-",x.act||"-",x.res,x.ng||0].forEach(function(a,j){put(d,r,2+j,2+j,a,{bd:true,h:j==0||j==5||j==9||j==10?"center":"left"})});
+   d.getCell(r,11).font={name:"Arial",size:10,bold:true,color:{argb:x.res=="Pass"?"FF1F9D63":x.res=="Fail"?"FFD6405A":"FFC58A10"}};
+   for(var q=0;q<nr;q++){d.getRow(r+q).height=ph.length?92:24;
+    for(var j=0;j<5;j++){var u=ph[q*5+j];if(!u)continue;
+     try{var im=await imgBuf(u),sc=Math.min(112/im.w,96/im.h),id=wb.addImage({buffer:im.buf,extension:"jpeg"});d.addImage(id,{tl:{col:12+j+.05,row:r-1+q+.05},ext:{width:im.w*sc,height:im.h*sc}})}catch(e){put(d,r+q,13+j,13+j,"(photo unavailable)",{sz:8})}}}
+   r+=nr}
+  dl("Issue_Summary.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
+ b.disabled=false;b.textContent=lbl};
+
+/* ---------- Test Lab data (stored in `sections`, section = lab_results) ---------- */
 function labResAll(){var out=[];secs.forEach(function(y){if(y.section!="lab_results")return;(y.rows||[]).forEach(function(r){out.push({id:r[0],project:y.project,stage:y.stage,part:r[1]||"",method:r[2]||"",qty:r[3]==null?"":r[3],res:r[4]||"OK",photos:String(r[5]||"").split(/\s+/).filter(Boolean),ts:Number(r[6])||0,desc:r[7]||""})})});return out}
 function labRow(o){return [o.id,o.part,o.method,String(o.qty),o.res,o.photos.join(" "),String(o.ts),o.desc||""]}
 function labGroup(p,s){return labResAll().filter(function(o){return o.project==p&&o.stage==s})}
@@ -1134,14 +1229,12 @@ function labSort(a,b){return (a.project<b.project?-1:a.project>b.project?1:0)||S
 function descSub(o){return o.desc?"<div class=sub>"+esc(o.desc)+"</div>":""}
 function labPill(r){return "<span class=\"pill "+(r=="OK"?"OK":"NG")+"\">"+esc(r)+"</span>"}
 function thumbsOf(l){return l.length?l.map(function(u){return "<img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\">"}).join(" "):"-"}
-
-/* ---------- Form input Test Lab ---------- */
 function tlProjSel(){var n=projs.map(function(p){return p.name}),c=$("tl_proj").value;
- $("tl_proj").innerHTML=n.length?opts(n):"<option value=\"\">(buat project dulu di tab Project)</option>";if(n.indexOf(c)>=0)$("tl_proj").value=c;tlParts();
- var f=$("tl_fp").value;$("tl_fp").innerHTML="<option value=\"\">Semua project</option>"+opts(n);$("tl_fp").value=f}
+ $("tl_proj").innerHTML=n.length?opts(n):"<option value=\"\">(create a project first in the Project tab)</option>";if(n.indexOf(c)>=0)$("tl_proj").value=c;tlParts();
+ var f=$("tl_fp").value;$("tl_fp").innerHTML="<option value=\"\">All projects</option>"+opts(n);$("tl_fp").value=f}
 function tlParts(){var pn=$("tl_proj").value,p=projs.filter(function(x){return x.name==pn})[0],l=p?p.parts.slice():[],c=$("tl_part").value,ep=tlEd&&tlEd.project==pn?tlEd.part:"";
  if(ep&&l.indexOf(ep)<0)l.push(ep);if(l.indexOf(c)<0)c=ep||l[0]||"";
- $("tl_part").innerHTML=l.length?selOpts(l,c):"<option value=\"\">(isi part di tab Project)</option>";tlMeth()}
+ $("tl_part").innerHTML=l.length?selOpts(l,c):"<option value=\"\">(add parts in the Project tab)</option>";tlMeth()}
 function tlMeth(){if(tlEd)return;var pl=planOf($("tl_proj").value).filter(function(x){return en(x.part)==$("tl_part").value}),ms=Array.from(new Set(pl.map(function(x){return x.method})));
  var m=$("tl_method");if(ms.length==1&&(!m.value||m.dataset.auto=="1")){m.value=ms[0];m.dataset.auto="1"}}
 $("tl_method").oninput=function(){this.dataset.auto="0"};
@@ -1150,14 +1243,14 @@ $("tl_part").onchange=tlMeth;
 $("tl_fp").onchange=function(){rLabList()};
 function tlThumbs(){$("tl_ph").innerHTML=tlPh.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-tlrm=\""+i+"\">✕</button></span>"}).join("")}
 $("tl_ph").addEventListener("click",function(e){var t=e.target;if(t.dataset&&t.dataset.tlrm!=null&&t.dataset.tlrm!==""){tlPh.splice(+t.dataset.tlrm,1);tlThumbs()}});
-function tlReset(){tlEd=null;tlPh=[];tlThumbs();$("tl_qty").value="";$("tl_res").value="OK";$("tl_f").value="";$("tl_desc").value="";$("tl_mode").textContent="";$("tl_cancel").classList.add("hidden");$("tl_save").textContent="Simpan hasil test lab";$("tl_method").dataset.auto="1";tlMeth()}
+function tlReset(){tlEd=null;tlPh=[];tlThumbs();$("tl_qty").value="";$("tl_res").value="OK";$("tl_f").value="";$("tl_desc").value="";$("tl_mode").textContent="";$("tl_cancel").classList.add("hidden");$("tl_save").textContent="Save lab result";$("tl_method").dataset.auto="1";tlMeth()}
 $("tl_cancel").onclick=function(){tlReset();$("tl_msg").textContent=""};
 $("tl_save").onclick=async function(){
  var pj=$("tl_proj").value,pt=$("tl_part").value,st=$("tl_stage").value,me=$("tl_method").value.trim(),qty=$("tl_qty").value,res=$("tl_res").value,msg=$("tl_msg");
- if(!pj||!pt){msg.textContent="Pilih project dan part dulu.";return}
- if(!me){msg.textContent="Isi metode.";return}
- if(qty===""||Number(qty)<0){msg.textContent="Isi jumlah (pcs).";return}
- var b=$("tl_save");b.disabled=true;msg.textContent="Menyimpan…";
+ if(!pj||!pt){msg.textContent="Select a project and part first.";return}
+ if(!me){msg.textContent="Enter the method.";return}
+ if(qty===""||Number(qty)<0){msg.textContent="Enter the quantity (pcs).";return}
+ var b=$("tl_save");b.disabled=true;msg.textContent="Saving…";
  try{var photos=tlPh.slice(),fl=$("tl_f").files;
   for(var i=0;i<fl.length;i++)photos.push(await upPhoto(fl[i]));
   last.s="";await loadS();
@@ -1166,66 +1259,70 @@ $("tl_save").onclick=async function(){
    await putLabSec(pj,st,labGroup(pj,st).concat([rec]));
    await putLabSec(tlEd.project,tlEd.stage,labGroup(tlEd.project,tlEd.stage).filter(function(o){return o.id!=tlEd.id}))}
   else{var g=labGroup(pj,st),f=false;g=g.map(function(o){if(o.id==rec.id){f=true;return rec}return o});if(!f)g.push(rec);await putLabSec(pj,st,g)}
-  last.s="";await loadS();rLabList();toast("Hasil test lab tersimpan ✓");tlReset();msg.textContent="Tersimpan ✓"}
- catch(e){msg.textContent="Gagal: "+String(e.message||e).slice(0,140)}
+  last.s="";await loadS();rLabList();toast("Lab result saved ✓");tlReset();msg.textContent="Saved ✓"}
+ catch(e){msg.textContent="Failed: "+String(e.message||e).slice(0,140)}
  b.disabled=false};
 function tlEdit(id){var o=labResAll().filter(function(x){return x.id==id})[0];if(!o)return;
  tlEd={id:o.id,project:o.project,stage:o.stage,part:o.part,ts:o.ts};var pj=$("tl_proj");
  if(!Array.from(pj.options).some(function(op){return op.value==o.project}))pj.insertAdjacentHTML("beforeend","<option>"+esc(o.project)+"</option>");
  pj.value=o.project;$("tl_part").value="";tlParts();$("tl_part").value=o.part;$("tl_stage").value=o.stage;$("tl_method").value=o.method;$("tl_method").dataset.auto="0";
  $("tl_qty").value=o.qty;$("tl_res").value=o.res;$("tl_desc").value=o.desc||"";tlPh=o.photos.slice();tlThumbs();$("tl_f").value="";
- $("tl_mode").textContent="Mode edit";$("tl_cancel").classList.remove("hidden");$("tl_save").textContent="Simpan perubahan";$("tl_msg").textContent="";window.scrollTo({top:0,behavior:"smooth"})}
+ $("tl_mode").textContent="Edit mode";$("tl_cancel").classList.remove("hidden");$("tl_save").textContent="Save changes";$("tl_msg").textContent="";window.scrollTo({top:0,behavior:"smooth"})}
 async function tlDel(id){var o=labResAll().filter(function(x){return x.id==id})[0];if(!o)return;
- try{await putLabSec(o.project,o.stage,labGroup(o.project,o.stage).filter(function(x){return x.id!=id}));last.s="";await loadS();rLabList();rLabSum();if(tlEd&&tlEd.id==id)tlReset();toast("Hasil test lab dihapus")}catch(e){toast("Gagal: "+String(e.message||e).slice(0,100))}}
+ try{await putLabSec(o.project,o.stage,labGroup(o.project,o.stage).filter(function(x){return x.id!=id}));last.s="";await loadS();rLabList();rLabSum();if(tlEd&&tlEd.id==id)tlReset();toast("Lab result deleted")}catch(e){toast("Failed: "+String(e.message||e).slice(0,100))}}
+function sure(t,label,fn){if(t.dataset.sure!="1"){t.dataset.sure="1";t.dataset.old=t.textContent;t.textContent=label;setTimeout(function(){if(t.isConnected){t.dataset.sure="";t.textContent=t.dataset.old}},4000);return}fn()}
+function labBtns(o){return "<button type=button class=\"btn ghost small\" data-tle=\""+esc(o.id)+"\">✎</button> <button type=button class=\"btn danger small\" data-tld=\""+esc(o.id)+"\">✕</button>"}
 function rLabList(){var p=$("tl_fp").value,l=labResAll().filter(function(o){return !p||o.project==p}).sort(function(a,b){return b.ts-a.ts}),ok=l.filter(function(o){return o.res=="OK"}).length;
- $("tl_list").innerHTML=l.length?"<div class=sub style=\"margin-bottom:8px\">Total "+l.length+" pengujian · OK "+ok+" · NG "+(l.length-ok)+"</div><table><tr><th>Project</th><th>Jenis trial</th><th>Part</th><th>Metode</th><th>Jumlah</th><th>Hasil</th><th>Foto</th><th>Tanggal</th><th></th></tr>"
-  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.method)+descSub(o)+"</td><td>"+esc(o.qty)+"</td><td>"+labPill(o.res)+"</td><td>"+thumbsOf(o.photos)+"</td><td>"+(o.ts?day(o.ts):"-")+"</td><td style=\"white-space:nowrap\"><button type=button class=\"btn ghost small\" data-tle=\""+esc(o.id)+"\">✎</button> <button type=button class=\"btn danger small\" data-tld=\""+esc(o.id)+"\">✕</button></td></tr>"}).join("")+"</table>"
-  :"<div class=sub>Belum ada hasil test lab.</div>";labelT("tl_list")}
+ $("tl_list").innerHTML=l.length?"<div class=sub style=\"margin-bottom:8px\">Total "+l.length+" tests · OK "+ok+" · NG "+(l.length-ok)+"</div><table><tr><th>Project</th><th>Trial type</th><th>Part</th><th>Method</th><th>Qty</th><th>Result</th><th>Photos</th><th>Date</th><th></th></tr>"
+  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.method)+descSub(o)+"</td><td>"+esc(o.qty)+"</td><td>"+labPill(o.res)+"</td><td>"+thumbsOf(o.photos)+"</td><td>"+(o.ts?day(o.ts):"-")+"</td><td style=\"white-space:nowrap\">"+labBtns(o)+"</td></tr>"}).join("")+"</table>"
+  :"<div class=sub>No lab results yet.</div>";labelT("tl_list")}
 $("tl_list").addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
  if(t.dataset.tle)tlEdit(t.dataset.tle);
- if(t.dataset.tld){if(t.dataset.sure!="1"){t.dataset.sure="1";t.textContent="Yakin?";setTimeout(function(){t.dataset.sure="";t.textContent="✕"},3000);return}tlDel(t.dataset.tld)}});
-
-/* ---------- Ringkasan Test Lab di tab Data & Dashboard ---------- */
+ if(t.dataset.tld)sure(t,"Sure?",function(){tlDel(t.dataset.tld)})});
+function rLabSum(){var el=$("labsum");if(!el)return;var p=$("fp").value,l=labResAll().filter(function(o){return !p||o.project==p}).sort(labSort);
+ if(!l.length){el.innerHTML="<div class=sub>No lab results yet. Enter them in the Readiness &amp; Lab tab.</div>";return}
+ var g={};l.forEach(function(o){var x=g[o.project]=g[o.project]||{n:0,ok:0,q:0};x.n++;if(o.res=="OK")x.ok++;x.q+=Number(o.qty)||0});
+ el.innerHTML="<table><tr><th>Project</th><th>Tests</th><th>Total pcs</th><th>OK</th><th>NG</th><th>% OK</th></tr>"+Object.keys(g).map(function(k){var x=g[k];return "<tr><td><b>"+esc(k)+"</b></td><td>"+x.n+"</td><td>"+x.q+"</td><td>"+x.ok+"</td><td>"+(x.n-x.ok)+"</td><td>"+Math.round(x.ok/x.n*100)+"%</td></tr>"}).join("")+"</table>"
+  +"<div style=\"height:12px\"></div><table><tr><th>Project</th><th>Trial type</th><th>Part</th><th>Method</th><th>Qty</th><th>Result</th><th>Photos</th><th></th></tr>"
+  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.method)+descSub(o)+"</td><td>"+esc(o.qty)+"</td><td>"+labPill(o.res)+"</td><td>"+thumbsOf(o.photos)+"</td><td style=\"white-space:nowrap\">"+labBtns(o)+"</td></tr>"}).join("")+"</table>";labelT("labsum")}
 $("labsum").addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
  if(t.dataset.tle){tab("lab");tlEdit(t.dataset.tle)}
- if(t.dataset.tld){if(t.dataset.sure!="1"){t.dataset.sure="1";t.textContent="Yakin?";setTimeout(function(){t.dataset.sure="";t.textContent="✕"},3000);return}tlDel(t.dataset.tld)}});
-function rLabSum(){var el=$("labsum");if(!el)return;var p=$("fp").value,l=labResAll().filter(function(o){return !p||o.project==p}).sort(labSort);
- if(!l.length){el.innerHTML="<div class=sub>Belum ada hasil test lab. Input lewat tab Kelengkapan &amp; Lab.</div>";return}
- var g={};l.forEach(function(o){var x=g[o.project]=g[o.project]||{n:0,ok:0,q:0};x.n++;if(o.res=="OK")x.ok++;x.q+=Number(o.qty)||0});
- el.innerHTML="<table><tr><th>Project</th><th>Jml pengujian</th><th>Total pcs</th><th>OK</th><th>NG</th><th>% OK</th></tr>"+Object.keys(g).map(function(k){var x=g[k];return "<tr><td><b>"+esc(k)+"</b></td><td>"+x.n+"</td><td>"+x.q+"</td><td>"+x.ok+"</td><td>"+(x.n-x.ok)+"</td><td>"+Math.round(x.ok/x.n*100)+"%</td></tr>"}).join("")+"</table>"
-  +"<div style=\"height:12px\"></div><table><tr><th>Project</th><th>Jenis trial</th><th>Part</th><th>Metode</th><th>Jumlah</th><th>Hasil</th><th>Foto</th><th></th></tr>"
-  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.method)+descSub(o)+"</td><td>"+esc(o.qty)+"</td><td>"+labPill(o.res)+"</td><td>"+thumbsOf(o.photos)+"</td><td style=\"white-space:nowrap\"><button type=button class=\"btn ghost small\" data-tle=\""+esc(o.id)+"\">✎</button> <button type=button class=\"btn danger small\" data-tld=\""+esc(o.id)+"\">✕</button></td></tr>"}).join("")+"</table>";labelT("labsum")}
+ if(t.dataset.tld)sure(t,"Sure?",function(){tlDel(t.dataset.tld)})});
 
-var _rDash=rDash;rDash=function(){_rDash();var p=$("fp").value,l=labResAll().filter(function(o){return !p||o.project==p}),ok=l.filter(function(o){return o.res=="OK"}).length;
- $("kpi").insertAdjacentHTML("beforeend",kpi("Test Lab",ok+"/"+l.length,"hasil lab OK","#4dd0c1"))};
-var _rData=rData;rData=function(){_rData();rLabSum()};
+/* ---------- Wrappers: dashboard KPI, data tab, lab tab, polling ---------- */
+var _rDash=rDash;rDash=function(){_rDash();var p=$("fp").value,l=labResAll().filter(function(o){return !p||o.project==p}),ok=l.filter(function(o){return o.res=="OK"}).length,ot=onTimeStats(p?[p]:null);
+ $("kpi").insertAdjacentHTML("beforeend",kpi("Lab Tests",ok+"/"+l.length,"lab results OK","#4dd0c1")+kpi("On-Time Milestones",ot.tot?ot.ok+"/"+ot.tot:"-","completed on schedule","#4ecb8e"))};
+var _rData=rData;rData=function(){_rData();rSched();rLabSum()};
 var _rLab=rLab;rLab=function(f){_rLab(f);rLabList()};
 var _loadS=loadS;loadS=async function(){var b=last.s;await _loadS();if(cur=="lab"&&last.s!==b)rLabList()};
-var _setProjSel=setProjSel;setProjSel=function(){_setProjSel();tlProjSel()};
+var _setProjSel=setProjSel;setProjSel=function(){_setProjSel();tlProjSel();pickAll()};
 
-/* ---------- Edit Project & Part ---------- */
-function syncPe(){if(!$("pe_name"))return;pe.name=$("pe_name").value;document.querySelectorAll(".pe_p").forEach(function(i){pe.parts[+i.dataset.i].n=i.value})}
-function openProjEdit(name){var p=projs.filter(function(x){return x.name==name})[0];if(!p)return;
- pe={id:p.id,old:p.name,name:p.name,parts:p.parts.map(function(x){return {o:x,n:x}}),co:JSON.parse(JSON.stringify(p.co||{}))};drawProjEdit()}
-function drawProjEdit(){openModal("<h2>Edit Project &amp; Part <button class=\"btn ghost small\" id=pe_x type=button>Tutup</button></h2>"
- +"<div class=field><label>Nama project</label><input type=text id=pe_name value=\""+esc(pe.name)+"\"></div>"
- +"<div class=gh>Part</div><div class=sub style=\"margin-bottom:8px\">Mengubah nama part atau project ikut memperbarui data trial, Decoplan, dan hasil test lab yang sudah tersimpan.</div>"
+/* ---------- Edit Project & Part (+ PA date) ---------- */
+function syncPe(){if(!$("pe_name"))return;pe.name=$("pe_name").value;pe.pa=$("pe_pa").value;pe.tool=$("pe_tool").value;pe.ink=$("pe_ink").value;document.querySelectorAll(".pe_p").forEach(function(i){pe.parts[+i.dataset.i].n=i.value})}
+function openProjEdit(name){var p=projs.filter(function(x){return x.name==name})[0];if(!p)return;var pa=paOf(name);
+ pe={id:p.id,old:p.name,name:p.name,pa:pa.pa,tool:pa.tool,ink:pa.ink,parts:p.parts.map(function(x){return {o:x,n:x}}),co:JSON.parse(JSON.stringify(p.co||{}))};drawProjEdit()}
+function drawProjEdit(){openModal("<h2>Edit Project &amp; Part <button class=\"btn ghost small\" id=pe_x type=button>Close</button></h2>"
+ +"<div class=field><label>Project name</label><input type=text id=pe_name value=\""+esc(pe.name)+"\"></div>"
+ +"<div class=gh>PA date &amp; milestones</div><div class=sub style=\"margin-bottom:8px\">Plan dates are derived from PA: Tooling Readiness PA-20 · EP Trial PA-14 · Original Ink PA+1 · FEP PA+2 · PP2K PA+7 · Release PA+10. EP/FEP/PP2K actuals come from the first trial of that stage; Release actual comes from the release data.</div>"
+ +"<div class=fg><div class=field><label>PA date</label><input type=date id=pe_pa value=\""+esc(pe.pa)+"\"></div><div class=field><label>Tooling readiness (actual date)</label><input type=date id=pe_tool value=\""+esc(pe.tool)+"\"></div><div class=field><label>Original ink (actual date)</label><input type=date id=pe_ink value=\""+esc(pe.ink)+"\"></div></div>"
+ +"<div class=gh>Parts</div><div class=sub style=\"margin-bottom:8px\">Renaming a part or project also updates saved trial data, Decoplan, and lab results.</div>"
  +pe.parts.map(function(x,i){return "<div class=fbar style=\"margin-bottom:6px\"><input type=text class=pe_p data-i=\""+i+"\" value=\""+esc(x.n)+"\"><button type=button class=\"btn danger small\" data-pedel=\""+i+"\">✕</button></div>"}).join("")
- +"<button type=button class=\"btn ghost small\" id=pe_add>＋ Tambah part</button>"
- +"<div style=\"margin-top:16px\"><button class=btn id=pe_save type=button>Simpan perubahan</button> <button class=\"btn ghost\" id=pe_cancel type=button>Batal</button> <span id=pe_msg class=sub></span></div>")}
-async function saveProjEdit(){syncPe();var nm=pe.name.trim(),msg=$("pe_msg");if(!nm){msg.textContent="Nama project tidak boleh kosong.";return}
- if(projs.some(function(x){return x.id!=pe.id&&x.name.toLowerCase()==nm.toLowerCase()})){msg.textContent="Nama project sudah dipakai.";return}
+ +"<button type=button class=\"btn ghost small\" id=pe_add>＋ Add part</button>"
+ +"<div style=\"margin-top:16px\"><button class=btn id=pe_save type=button>Save changes</button> <button class=\"btn ghost\" id=pe_cancel type=button>Cancel</button> <span id=pe_msg class=sub></span></div>")}
+async function saveProjEdit(){syncPe();var nm=pe.name.trim(),msg=$("pe_msg");if(!nm){msg.textContent="Project name cannot be empty.";return}
+ if(projs.some(function(x){return x.id!=pe.id&&x.name.toLowerCase()==nm.toLowerCase()})){msg.textContent="Project name is already used.";return}
  var parts=[],ren=[],nco={};pe.parts.forEach(function(x){var n=x.n.trim();if(!n||parts.indexOf(n)>=0)return;parts.push(n);if(x.o&&x.o!=n)ren.push([x.o,n]);var c=pe.co[x.o||n]||pe.co[n];if(c)nco[n]=c});
- var b=$("pe_save");b.disabled=true;msg.textContent="Menyimpan…";var E=encodeURIComponent;
+ var b=$("pe_save");b.disabled=true;msg.textContent="Saving…";var E=encodeURIComponent;
  try{await api("PATCH","projects",{name:nm,parts:parts,colors:nco},"?id=eq."+pe.id);
   if(nm!=pe.old){await api("PATCH","trials",{project:nm},"?project=eq."+E(pe.old));await api("PATCH","sections",{project:nm},"?project=eq."+E(pe.old))}
   if(ren.length){last.s="";await loadS();var up=[];
    for(var r of ren)await api("PATCH","trials",{pos:r[1]},"?project=eq."+E(nm)+"&pos=eq."+E(r[0]));
    secs.filter(function(y){return y.project==nm&&(y.section=="decoplan"||y.section=="lab_results")}).forEach(function(y){var ch=false,rw=(y.rows||[]).map(function(row){var c=row.slice(),ix=y.section=="decoplan"?2:1;ren.forEach(function(r){if((y.section=="decoplan"?en(c[ix]):c[ix])==r[0]){c[ix]=r[1];ch=true}});return c});if(ch)up.push({project:nm,stage:y.stage,section:y.section,rows:rw,ts:Date.now()})});
    if(up.length)await api("POST","sections",up,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
-  last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();toast("Project & part diperbarui ✓");closeModal();pe=null}
- catch(e){msg.textContent="Gagal: "+String(e.message||e).slice(0,140);b.disabled=false}}
-$("mbody").addEventListener("click",function(e){var t=e.target;if(!t.id&&!(t.dataset&&t.dataset.pedel!=null))return;
+  await savePA(nm,{pa:pe.pa,tool:pe.tool,ink:pe.ink});
+  last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();toast("Project & part updated ✓");closeModal();pe=null}
+ catch(e){msg.textContent="Failed: "+String(e.message||e).slice(0,140);b.disabled=false}}
+$("mbody").addEventListener("click",function(e){var t=e.target;if(!t.id&&!(t.dataset&&(t.dataset.pedel!=null||t.dataset.dedel!=null)))return;
  if(t.id=="pe_x"||t.id=="pe_cancel")closeModal();
  else if(t.id=="pe_add"){syncPe();pe.parts.push({o:"",n:""});drawProjEdit()}
  else if(t.dataset&&t.dataset.pedel!=null&&t.dataset.pedel!==""){syncPe();pe.parts.splice(+t.dataset.pedel,1);drawProjEdit()}
@@ -1233,38 +1330,59 @@ $("mbody").addEventListener("click",function(e){var t=e.target;if(!t.id&&!(t.dat
  else if(t.id=="de_x"||t.id=="de_cancel")closeModal();
  else if(t.id=="de_add"){syncDe();de.rows.push(["","","","Handspray","",""]);drawDeco()}
  else if(t.dataset&&t.dataset.dedel!=null&&t.dataset.dedel!==""){syncDe();de.rows.splice(+t.dataset.dedel,1);drawDeco()}
- else if(t.id=="de_save")saveDeco()});
+ else if(t.id=="de_save")saveDeco();
+ else if(t.id=="sql_x")closeModal();
+ else if(t.id=="sql_c"){var ta=$("sql_t");ta.select();try{navigator.clipboard.writeText(DEL_SQL).then(function(){$("sql_m").textContent="Copied ✓"},function(){document.execCommand("copy");$("sql_m").textContent="Copied ✓"})}catch(x){document.execCommand("copy");$("sql_m").textContent="Copied ✓"}}});
 
-/* ---------- Edit Decoplan (file yang diimpor) ---------- */
+/* ---------- Edit Decoplan ---------- */
 function syncDe(){document.querySelectorAll(".de_i").forEach(function(i){de.rows[+i.dataset.r][+i.dataset.c]=i.value})}
 function openDecoEdit(name){de={name:name,rows:planOf(name).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]})};drawDeco()}
-function drawDeco(){var H=["Job","Position","Part (Face)","Metode","Tampo","Warna"];
- openModal("<h2>Edit Decoplan – "+esc(de.name)+" <button class=\"btn ghost small\" id=de_x type=button>Tutup</button></h2><div class=sub style=\"margin-bottom:10px\">Ubah, tambah, atau hapus baris acuan hasil impor. Impor berikutnya akan memperbarui baris dengan posisi yang sama, bukan menimpa semuanya.</div>"
+function drawDeco(){var H=["Job","Position","Part (Face)","Method","Pads","Color"];
+ openModal("<h2>Edit Decoplan – "+esc(de.name)+" <button class=\"btn ghost small\" id=de_x type=button>Close</button></h2><div class=sub style=\"margin-bottom:10px\">Edit, add, or delete the imported reference rows. A later import updates rows with the same position instead of overwriting everything.</div>"
  +"<div class=\"ov stk\"><table><tr>"+H.map(function(h){return "<th>"+h+"</th>"}).join("")+"<th></th></tr>"
  +de.rows.map(function(r,i){return "<tr>"+[0,1,2,3,4,5].map(function(c){var a=" class=\"de_i si\" data-r=\""+i+"\" data-c=\""+c+"\"";return "<td data-l=\""+H[c]+"\">"+(c==3?"<select"+a+">"+selOpts(["Handspray","Pad Print"],r[3])+"</select>":"<input type=text"+a+" value=\""+esc(r[c])+"\">")+"</td>"}).join("")+"<td><button type=button class=chip data-dedel=\""+i+"\">✕</button></td></tr>"}).join("")+"</table></div>"
- +(de.rows.length?"":"<div class=sub>Belum ada baris.</div>")
- +"<div style=\"margin-top:10px\"><button type=button class=\"btn ghost small\" id=de_add>＋ Baris</button></div>"
- +"<div style=\"margin-top:16px\"><button class=btn id=de_save type=button>Simpan Decoplan</button> <button class=\"btn ghost\" id=de_cancel type=button>Batal</button> <span id=de_msg class=sub></span></div>");
+ +(de.rows.length?"":"<div class=sub>No rows yet.</div>")
+ +"<div style=\"margin-top:10px\"><button type=button class=\"btn ghost small\" id=de_add>＋ Row</button></div>"
+ +"<div style=\"margin-top:16px\"><button class=btn id=de_save type=button>Save Decoplan</button> <button class=\"btn ghost\" id=de_cancel type=button>Cancel</button> <span id=de_msg class=sub></span></div>");
  $("mbody").style.maxWidth="1100px"}
 async function saveDeco(){syncDe();var rows=de.rows.map(function(r){return r.map(function(x){return String(x).trim()})}).filter(function(r){return r.some(Boolean)}),msg=$("de_msg");
- if(rows.some(function(r){return !r[2]})){msg.textContent="Kolom Part wajib diisi di setiap baris.";return}
- var b=$("de_save");b.disabled=true;msg.textContent="Menyimpan…";
+ if(rows.some(function(r){return !r[2]})){msg.textContent="The Part column is required in every row.";return}
+ var b=$("de_save");b.disabled=true;msg.textContent="Saving…";
  try{await api("POST","sections",[{project:de.name,stage:"ALL",section:"decoplan",rows:rows,ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");
   var ex=projs.filter(function(p){return p.name==de.name})[0];
   if(ex){var np=ex.parts.slice(),nc=JSON.parse(JSON.stringify(ex.co||{}));rows.forEach(function(r){var pn=en(r[2]),cn=en(r[5]);if(pn&&np.indexOf(pn)<0)np.push(pn);if(pn&&cn){nc[pn]=nc[pn]||[];if(nc[pn].indexOf(cn)<0)nc[pn].push(cn)}});
    if(np.length!=ex.parts.length||JSON.stringify(nc)!=JSON.stringify(ex.co||{}))await api("PATCH","projects",{parts:np,colors:nc},"?id=eq."+ex.id)}
-  last.p=last.s="";await loadP();await loadS();render();toast("Decoplan tersimpan ✓");closeModal();de=null}
- catch(e){msg.textContent="Gagal: "+String(e.message||e).slice(0,140);b.disabled=false}}
+  last.p=last.s="";await loadP();await loadS();render();toast("Decoplan saved ✓");closeModal();de=null}
+ catch(e){msg.textContent="Failed: "+String(e.message||e).slice(0,140);b.disabled=false}}
 
-/* tombol edit di daftar project & tabel acuan */
+/* ---------- Project list buttons / PA line / delete ---------- */
 var _renderProj=renderProj;renderProj=function(){_renderProj();var els=document.querySelectorAll("#plist .hot-row");
- projs.forEach(function(p,i){var el=els[i];if(!el)return;el.insertAdjacentHTML("beforeend","<div style=\"margin-top:8px\"><button type=button class=\"btn ghost small\" data-pedit=\""+esc(p.name)+"\">✎ Edit project &amp; part</button> <button type=button class=\"btn ghost small\" data-dedit=\""+esc(p.name)+"\">✎ Edit Decoplan</button></div>")})};
+ projs.forEach(function(p,i){var el=els[i];if(!el)return;var pa=paOf(p.name),subs=el.querySelectorAll(".sub"),last=subs[subs.length-1];
+  if(last)last.insertAdjacentHTML("afterend","<div class=sub>PA date: "+(pa.pa?fd(pa.pa):"not set")+"</div>");
+  el.insertAdjacentHTML("beforeend","<div style=\"margin-top:8px\"><button type=button class=\"btn ghost small\" data-pedit=\""+esc(p.name)+"\">✎ Edit project &amp; part</button> <button type=button class=\"btn ghost small\" data-dedit=\""+esc(p.name)+"\">✎ Edit Decoplan</button> <button type=button class=\"btn danger small\" data-ddel=\""+esc(p.name)+"\">🗑 Delete Decoplan</button> <button type=button class=\"btn danger small\" data-pdel=\""+esc(p.name)+"\">🗑 Delete Project</button></div>")})};
 var _rpc=renderPlanCmp;renderPlanCmp=function(){_rpc();var t=document.querySelector("#dplan table");if(!t)return;
  Array.from(t.rows).forEach(function(r,i){r.insertAdjacentHTML("beforeend",i==0?"<th></th>":"<td data-l=\"\"><button type=button class=\"btn ghost small\" data-dedit=\""+esc(r.cells[0].textContent)+"\">✎ Edit</button></td>")})};
-document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;if(t.dataset.pedit)openProjEdit(t.dataset.pedit);if(t.dataset.dedit)openDecoEdit(t.dataset.dedit)});
-renderProj();
+async function delDeco(name){await api("POST","sections",[{project:name,stage:"ALL",section:"decoplan",rows:[],ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();render();renderProj();toast("Decoplan of "+name+" deleted")}
+async function sbDel(t,q){var r=await fetch(SB+"/rest/v1/"+t+q,{method:"DELETE",headers:{apikey:KEY,Prefer:"return=representation"}});if(!r.ok)throw new Error(await r.text());return (await r.json()).length}
+var DEL_SQL="create policy \"anon delete projects\" on public.projects for delete to anon using (true);\ncreate policy \"anon delete trials\" on public.trials for delete to anon using (true);\ncreate policy \"anon delete sections\" on public.sections for delete to anon using (true);";
+function showDelHelp(){openModal("<h2>Delete is not allowed by Supabase yet <button class=\"btn ghost small\" id=sql_x type=button>Close</button></h2><div class=sub style=\"margin-bottom:10px\">Supabase refused the delete (no DELETE policy), so nothing was removed and your data is intact. Run this SQL once in Supabase → SQL Editor, then click Delete Project again:</div><textarea id=sql_t readonly rows=5 style=\"font-family:monospace;font-size:12px!important\">"+esc(DEL_SQL)+"</textarea><div style=\"margin-top:10px\"><button class=btn type=button id=sql_c>Copy SQL</button> <span id=sql_m class=sub></span></div>")}
+async function delProject(name){var E=encodeURIComponent,p=projs.filter(function(x){return x.name==name})[0];if(!p)return;
+ try{var n=await sbDel("projects","?id=eq."+p.id);
+  if(!n){showDelHelp();return}
+  var nt=rows.filter(function(x){return x.project==name}).length,dt=await sbDel("trials","?project=eq."+E(name));await sbDel("sections","?project=eq."+E(name));
+  last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();
+  toast(dt<nt?"Project deleted, but "+(nt-dt)+" trials could not be deleted (check the DELETE policy on trials)":"Project "+name+" deleted")}
+ catch(err){toast("Delete failed: "+String(err.message||err).slice(0,120))}}
+document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
+ if(t.dataset.pedit)openProjEdit(t.dataset.pedit);if(t.dataset.dedit)openDecoEdit(t.dataset.dedit);
+ if(t.dataset.ddel){var n=t.dataset.ddel;sure(t,"Sure? Delete Decoplan",function(){delDeco(n)})}
+ if(t.dataset.pdel){var n2=t.dataset.pdel,c=rows.filter(function(x){return x.project==n2}).length;sure(t,"Sure? Delete project"+(c?" + "+c+" trials":""),function(){delProject(n2)})}});
+/* new project form: PA date */
+$("pn").parentNode.insertAdjacentHTML("afterend","<div class=field><label>PA date (reference for all milestones)</label><input type=date id=pn_pa></div>");
+var _psave=$("psave").onclick;$("psave").onclick=async function(){var n=$("pn").value.trim(),pa=$("pn_pa").value,existed=projs.some(function(p){return p.name.toLowerCase()==n.toLowerCase()});
+ await _psave.call(this);if(n&&pa&&!existed&&projs.some(function(p){return p.name==n})){try{await savePA(n,{pa:pa});$("pn_pa").value="";last.s="";await loadS();renderProj()}catch(e){$("pmsg").textContent="Project saved, but PA date failed: "+String(e.message||e).slice(0,100)}}};
 
-/* ---------- Impor: update, bukan timpa ---------- */
+/* ---------- Import: update instead of overwrite ---------- */
 function nk(v){return en(v).toLowerCase().replace(/\s+/g," ").trim()}
 function mergePlan(old,inc){var res=old.map(function(r){return r.map(String)}),used={},st={add:0,upd:0,same:0};
  inc.forEach(function(x){var row=[x.job,x.pos,x.part,x.method,x.proc,x.color].map(function(v){return String(v==null?"":v).trim()}),idx=-1,sp=function(r){return nk(r[1])==nk(row[1])&&nk(r[2])==nk(row[2])};
@@ -1287,8 +1405,8 @@ async function importPlan(list){var by={},msg=[];last.s="";await loadS();list.fo
   else{var np=ex.parts.slice();parts.forEach(function(p){if(np.indexOf(p)<0)np.push(p)});var nc=JSON.parse(JSON.stringify(ex.co||{}));Object.keys(co).forEach(function(k){nc[k]=nc[k]||[];co[k].forEach(function(c){if(nc[k].indexOf(c)<0)nc[k].push(c)})});await api("PATCH","projects",{parts:np,colors:nc},"?id=eq."+ex.id)}
   var old=planOf(name).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}),mg=mergePlan(old,L);
   await api("POST","sections",[{project:name,stage:"ALL",section:"decoplan",rows:mg.rows,ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");
-  msg.push(name+": "+mg.st.add+" baru, "+mg.st.upd+" diperbarui, "+mg.st.same+" tetap")}
- last.p="";last.s="";await loadP();await loadS();return "Impor Decoplan → "+msg.join(" · ")}
+  msg.push(name+": "+mg.st.add+" new, "+mg.st.upd+" updated, "+mg.st.same+" unchanged")}
+ last.p="";last.s="";await loadP();await loadS();return "Decoplan import → "+msg.join(" · ")}
 async function applyImport(trials,scans){var nt=0,nu=0,ns=0,nsu=0,np=0,pm={};last.s="";await loadS();
  (trials||[]).forEach(function(x){pm[x.project]=pm[x.project]||[];if(x.pos&&pm[x.project].indexOf(x.pos)<0)pm[x.project].push(x.pos)});
  scans.forEach(function(s){pm[s.project]=pm[s.project]||[];s.parts.forEach(function(p){if(pm[s.project].indexOf(p)<0)pm[s.project].push(p)})});
@@ -1296,7 +1414,7 @@ async function applyImport(trials,scans){var nt=0,nu=0,ns=0,nsu=0,np=0,pm={};las
   if(!ex){await api("POST","projects",{name:n,parts:pm[n],ts:Date.now()});np++}
   else{var add=pm[n].filter(function(p){return ex.parts.indexOf(p)<0});if(add.length)await api("PATCH","projects",{parts:ex.parts.concat(add)},"?id=eq."+ex.id)}}
  if(trials&&trials.length){var tk=function(x,t){return x.project+"|"+Math.floor(t/60000)+"|"+x.method+"|"+x.pos+"|"+(x.no||1)},have={};rows.forEach(function(x){have[tk(x,T(x))]=x});
-  var nw=[],ups=[],seen={};trials.forEach(function(x){var k=tk(x,x.trialAt),o=have[k];if(o)ups.push([o,x]);else if(!seen[k]){seen[k]=1;nw.push(x)}});
+  var nw=[],ups=[],seen={};trials.forEach(function(x){x.stage=lg(LEG.stage,x.stage);var k=tk(x,x.trialAt),o=have[k];if(o)ups.push([o,x]);else if(!seen[k]){seen[k]=1;nw.push(x)}});
   for(var i=0;i<nw.length;i+=100){await api("POST","trials",nw.slice(i,i+100).map(toT))}nt=nw.length;
   for(var u of ups){var o=u[0],x=u[1],m=JSON.parse(JSON.stringify(o));
    ["by","mc","color","res","cat","issue","act","paint","stage"].forEach(function(k){if(x[k]!==""&&x[k]!=null)m[k]=x[k]});
@@ -1306,83 +1424,41 @@ async function applyImport(trials,scans){var nt=0,nu=0,ns=0,nsu=0,np=0,pm={};las
    if(JSON.stringify(toT(m))!=JSON.stringify(toT(o))){await api("PATCH","trials",toT(m),"?id=eq."+o.id);nu++}}}
  var sb=[];scans.forEach(function(s){Object.keys(s.secs).forEach(function(k){var ex=secs.filter(function(y){return y.project==s.project&&y.stage==s.stage&&y.section==k})[0],mg=mergeRows(k,ex?ex.rows:[],s.secs[k]);ns+=mg.st.add;nsu+=mg.st.upd;sb.push({project:s.project,stage:s.stage,section:k,rows:mg.rows,ts:Date.now()})})});
  if(sb.length)await api("POST","sections",sb,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");
- return "Impor selesai: trial "+nt+" baru / "+nu+" diperbarui · kelengkapan/lab "+ns+" baru / "+nsu+" diperbarui · "+np+" project baru"}
+ return "Import complete: trials "+nt+" new / "+nu+" updated · readiness rows "+ns+" new / "+nsu+" updated · "+np+" new projects"}
 
-/* ---------- Ekspor Excel: Test Lab ikut dalam 1 file ---------- */
+/* ---------- Excel export: lab results, summary, project picker ---------- */
 function prList(f){var a=Array.from(new Set(f.map(function(x){return x.project||"-"})));labResAll().forEach(function(o){if((!LABSCOPE||LABSCOPE.indexOf(o.project)>=0)&&a.indexOf(o.project)<0)a.push(o.project)});return a}
 function labScopeHas(){return labResAll().some(function(o){return !LABSCOPE||LABSCOPE.indexOf(o.project)>=0})}
 async function labResSheet(wb,proj){var l=labResAll().filter(function(o){return o.project==proj}).sort(labSort);if(!l.length)return;
- var ws=wb.addWorksheet(sname(wb,proj,"Test Lab"),{views:[{showGridLines:false}]});widths(ws,[2.6,5,12,22,16,9,9,16,16,16,16,16]);
- put(ws,1,2,12,proj+" – Hasil Test Lab",{b:true,sz:13,fill:BLUE});
- var ok=l.filter(function(o){return o.res=="OK"}).length;put(ws,2,2,12,"Total "+l.length+" pengujian · OK "+ok+" · NG "+(l.length-ok),{});
- ["No","Jenis Trial","Part","Metode","Jumlah","Hasil","Foto"].forEach(function(h,i){put(ws,4,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});put(ws,4,8,12,"Foto",{b:true,bd:true,fill:GREY,h:"center"});
+ var ws=wb.addWorksheet(sname(wb,proj,"Test Lab"),{views:[{showGridLines:false}]});widths(ws,[2.6,5,12,22,24,9,9,16,16,16,16,16]);
+ put(ws,1,2,12,proj+" – Lab Test Results",{b:true,sz:13,fill:BLUE});
+ var ok=l.filter(function(o){return o.res=="OK"}).length;put(ws,2,2,12,"Total "+l.length+" tests · OK "+ok+" · NG "+(l.length-ok),{});
+ ["No","Trial Type","Part","Method","Qty","Result"].forEach(function(h,i){put(ws,4,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});put(ws,4,8,12,"Photos",{b:true,bd:true,fill:GREY,h:"center"});
  var r=5;
  for(var k=0;k<l.length;k++){var o=l[k],nr=Math.max(1,Math.ceil(o.photos.length/5));
-  [k+1,o.stage,o.part,o.method+(o.desc?"\n"+o.desc:""),o.qty,o.res].forEach(function(a,j){put(ws,r,2+j,2+j,a,{bd:true,h:j==0||j>=4?"center":"left"});if(j==3)ws.getCell(r,5).alignment={wrapText:true,vertical:"middle"}});
+  [k+1,o.stage,o.part,o.method+(o.desc?"\n"+o.desc:""),o.qty,o.res].forEach(function(a,j){put(ws,r,2+j,2+j,a,{bd:true,h:j==0||j>=4?"center":"left"})});
   ws.getCell(r,7).font={name:"Arial",size:10,bold:true,color:{argb:o.res=="OK"?"FF1F9D63":"FFD6405A"}};
-  for(var q=0;q<nr;q++){ws.getRow(r+q).height=o.photos.length?88:20;
+  for(var q=0;q<nr;q++){ws.getRow(r+q).height=o.photos.length?88:(o.desc?32:20);
    for(var j=0;j<5;j++){var u=o.photos[q*5+j];if(!u)continue;
     try{var im=await imgBuf(u),sc=Math.min(108/im.w,92/im.h),id=wb.addImage({buffer:im.buf,extension:"jpeg"});ws.addImage(id,{tl:{col:7+j+.05,row:r-1+q+.05},ext:{width:im.w*sc,height:im.h*sc}})}catch(e){put(ws,r+q,8+j,8+j,u,{sz:8})}}}
   r+=nr}}
 var _fillSummary=fillSummary;fillSummary=function(sm,f,pr){_fillSummary(sm,f);var l=labResAll().filter(function(o){return !pr||pr.indexOf(o.project)>=0}).sort(labSort);if(!l.length)return;
  var r=3+progress(f).length+3,ok=l.filter(function(o){return o.res=="OK"}).length;
- put(sm,r,2,10,"Summary Hasil Test Lab",{b:true,sz:13,fill:BLUE});r++;
- put(sm,r,2,10,"Total "+l.length+" pengujian · OK "+ok+" · NG "+(l.length-ok),{});r++;
+ put(sm,r,2,10,"Lab Test Results Summary",{b:true,sz:13,fill:BLUE});r++;
+ put(sm,r,2,10,"Total "+l.length+" tests · OK "+ok+" · NG "+(l.length-ok),{});r++;
  var g={};l.forEach(function(o){var x=g[o.project]=g[o.project]||{n:0,ok:0};x.n++;if(o.res=="OK")x.ok++});
- Object.keys(g).forEach(function(k){put(sm,r,2,10,k+": "+g[k].n+" pengujian · OK "+g[k].ok+" · NG "+(g[k].n-g[k].ok),{});r++});r++;
- ["No","Project","Tahap","Metode","Part","Jumlah","Hasil","Foto"].forEach(function(h,i){put(sm,r,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});r++;
- l.forEach(function(o,i){[i+1,o.project,o.stage,o.method+(o.desc?" – "+o.desc:""),o.part,o.qty,o.res,o.photos.length?o.photos.length+" foto":"-"].forEach(function(a,j){put(sm,r,2+j,2+j,a,{bd:true,h:j==0||j==2||j>=5?"center":"left"})});
+ Object.keys(g).forEach(function(k){put(sm,r,2,10,k+": "+g[k].n+" tests · OK "+g[k].ok+" · NG "+(g[k].n-g[k].ok),{});r++});r++;
+ ["No","Project","Stage","Method","Part","Qty","Result","Photos"].forEach(function(h,i){put(sm,r,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});r++;
+ l.forEach(function(o,i){[i+1,o.project,o.stage,o.method+(o.desc?" – "+o.desc:""),o.part,o.qty,o.res,o.photos.length?o.photos.length+" photos":"-"].forEach(function(a,j){put(sm,r,2+j,2+j,a,{bd:true,h:j==0||j==2||j>=5?"center":"left"})});
   sm.getCell(r,8).font={name:"Arial",size:10,bold:true,color:{argb:o.res=="OK"?"FF1F9D63":"FFD6405A"}};r++})};
 $("xl").onclick=function(){var p=$("fp").value;LABSCOPE=p?[p]:null;buildReport(filtered(),"Trial_Report_ME.xlsx",$("xl"))};
-/* xr diganti oleh pilihan multi-project di bawah */
-
-/* ---------- Jadwal Project: part / posisi yang di-trial ---------- */
-function partsTrial(name){var g={};rows.filter(function(x){return x.project==name}).forEach(function(x){var k=x.pos||"-",o=g[k]=g[k]||{part:k,st:[],n:0};o.n++;if(o.st.indexOf(x.stage)<0)o.st.push(x.stage)});
- return Object.keys(g).map(function(k){var o=g[k];o.st.sort(function(a,b){return STAGES.indexOf(a)-STAGES.indexOf(b)});return o})}
-var _rData2=rData;rData=function(){_rData2();var t=document.querySelector("#sch table");if(!t)return;
- Array.from(t.rows).forEach(function(r,i){if(i==0){r.cells[0].insertAdjacentHTML("afterend","<th>Part / posisi trial</th>");return}
-  var b=r.cells[0].querySelector("b"),l=b?partsTrial(b.textContent):[];
-  r.cells[0].insertAdjacentHTML("afterend","<td data-l=\"Part / posisi trial\">"+(l.length?l.map(function(o){return "<div><b>"+esc(o.part)+"</b> <span class=sub>"+esc(o.st.join(", "))+" · "+o.n+" trial</span></div>"}).join(""):"-")+"</td>")});labelT("sch")};
-var _fillSchedule=fillSchedule;fillSchedule=function(ws,names){_fillSchedule(ws,names);var sc=schedule(names);
- ws.getColumn(15).width=36;put(ws,3,15,15,"Part / Posisi Trial",{b:true,bd:true,fill:GREY,h:"center"});
- sc.forEach(function(o,i){var l=partsTrial(o.name);put(ws,4+i,15,15,l.length?l.map(function(x){return x.part+" · "+x.st.join(", ")+" ("+x.n+" trial)"}).join("\n"):"-",{bd:true});ws.getCell(4+i,15).alignment={wrapText:true,vertical:"top"}})};
-
-/* ---------- Hapus Decoplan / Hapus Project ---------- */
-async function delDeco(name){await api("POST","sections",[{project:name,stage:"ALL",section:"decoplan",rows:[],ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();render();toast("Decoplan "+name+" dihapus")}
-async function sbDel(t,q){var r=await fetch(SB+"/rest/v1/"+t+q,{method:"DELETE",headers:{apikey:KEY,Prefer:"return=representation"}});if(!r.ok)throw new Error(await r.text());return (await r.json()).length}
-var DEL_SQL="create policy \"anon delete projects\" on public.projects for delete to anon using (true);\ncreate policy \"anon delete trials\" on public.trials for delete to anon using (true);\ncreate policy \"anon delete sections\" on public.sections for delete to anon using (true);";
-function showDelHelp(){openModal("<h2>Hapus belum diizinkan Supabase <button class=\"btn ghost small\" id=sql_x type=button>Tutup</button></h2><div class=sub style=\"margin-bottom:10px\">Supabase menolak perintah hapus (tidak ada policy DELETE), jadi project tidak terhapus dan datanya masih utuh. Jalankan SQL ini sekali di Supabase → SQL Editor, lalu klik Hapus Project lagi:</div><textarea id=sql_t readonly rows=5 style=\"font-family:monospace;font-size:12px!important\">"+esc(DEL_SQL)+"</textarea><div style=\"margin-top:10px\"><button class=btn type=button id=sql_c>Salin SQL</button> <span id=sql_m class=sub></span></div>")}
-$("mbody").addEventListener("click",function(e){var t=e.target;if(t.id=="sql_x")closeModal();if(t.id=="sql_c"){var ta=$("sql_t");ta.select();try{navigator.clipboard.writeText(DEL_SQL).then(function(){$("sql_m").textContent="Tersalin ✓"},function(){document.execCommand("copy");$("sql_m").textContent="Tersalin ✓"})}catch(x){document.execCommand("copy");$("sql_m").textContent="Tersalin ✓"}}});
-async function delProject(name){var E=encodeURIComponent,p=projs.filter(function(x){return x.name==name})[0];if(!p)return;
- try{var n=await sbDel("projects","?id=eq."+p.id);
-  if(!n){showDelHelp();return}
-  var nt=rows.filter(function(x){return x.project==name}).length,dt=await sbDel("trials","?project=eq."+E(name));await sbDel("sections","?project=eq."+E(name));
-  last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();
-  toast(dt<nt?"Project dihapus, tapi "+(nt-dt)+" trial gagal dihapus (cek policy DELETE trials)":"Project "+name+" dihapus")}
- catch(err){toast("Gagal hapus: "+String(err.message||err).slice(0,120))}}
-function sure(t,label,fn){if(t.dataset.sure!="1"){t.dataset.sure="1";t.dataset.old=t.textContent;t.textContent=label;setTimeout(function(){if(t.isConnected){t.dataset.sure="";t.textContent=t.dataset.old}},4000);return}fn()}
-document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
- if(t.dataset.ddel){var n=t.dataset.ddel;sure(t,"Yakin hapus Decoplan?",function(){delDeco(n)})}
- if(t.dataset.pdel){var n2=t.dataset.pdel,c=rows.filter(function(x){return x.project==n2}).length;sure(t,"Yakin hapus project"+(c?" + "+c+" trial":"")+"?",function(){delProject(n2)})}});
-var _renderProj2=renderProj;renderProj=function(){_renderProj2();var els=document.querySelectorAll("#plist .hot-row");
- projs.forEach(function(p,i){var el=els[i];if(!el)return;var d=el.lastElementChild;if(d)d.insertAdjacentHTML("beforeend"," <button type=button class=\"btn danger small\" data-ddel=\""+esc(p.name)+"\">🗑 Hapus Decoplan</button> <button type=button class=\"btn danger small\" data-pdel=\""+esc(p.name)+"\">🗑 Hapus Project</button>")})};
-renderProj();
-
-/* ---------- Ekspor: pilih beberapa project -> 1 file, 1 summary ---------- */
-var xsel={};
 $("xp").parentNode.style.display="none";
-$("xp").parentNode.insertAdjacentHTML("afterend","<div class=\"field\" style=\"grid-column:1/-1\"><label>Project untuk laporan lengkap (centang satu atau lebih → jadi 1 file &amp; 1 summary)</label><div id=xpicks style=\"display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px\"></div><button type=button class=\"btn ghost small\" id=xall>Pilih semua</button> <button type=button class=\"btn ghost small\" id=xnone>Kosongkan</button></div>");
-function renderXP(){var n=projs.map(function(p){return p.name});Object.keys(xsel).forEach(function(k){if(n.indexOf(k)<0)delete xsel[k]});
- $("xpicks").innerHTML=n.length?n.map(function(k){return "<label class=chip style=\"display:inline-flex;align-items:center;gap:6px;cursor:pointer\"><input type=checkbox data-xp=\""+esc(k)+"\""+(xsel[k]?" checked":"")+" style=\"width:auto;min-width:0;margin:0\"> "+esc(k)+"</label>"}).join(""):"<span class=sub>Belum ada project.</span>"}
-$("xpicks").addEventListener("change",function(e){var t=e.target;if(t.dataset&&t.dataset.xp!=null){if(t.checked)xsel[t.dataset.xp]=1;else delete xsel[t.dataset.xp]}});
-$("xall").onclick=function(){projs.forEach(function(p){xsel[p.name]=1});renderXP()};
-$("xnone").onclick=function(){xsel={};renderXP()};
-var _setProjSel3=setProjSel;setProjSel=function(){_setProjSel3();renderXP()};
-renderXP();
-$("xr").onclick=function(){var sel=projs.map(function(p){return p.name}).filter(function(k){return xsel[k]});
- if(!sel.length)return toast("Centang minimal 1 project dulu");
+$("xp").parentNode.insertAdjacentHTML("afterend",pickHTML("xpicks","Projects for full report (tick one or more → 1 file &amp; 1 summary)",true));
+$("xr").onclick=function(){var sel=pickSel("xpicks");
+ if(!sel.length)return toast("Tick at least one project first");
  LABSCOPE=sel;var f=rows.filter(function(x){return sel.indexOf(x.project)>=0});
- buildReport(f,sel.length==1?"Laporan_"+sel[0].replace(/[^\w-]+/g,"_")+".xlsx":"Laporan_"+sel.length+"_Project.xlsx",$("xr"))};
+ buildReport(f,sel.length==1?"Report_"+sel[0].replace(/[^\w-]+/g,"_")+".xlsx":"Report_"+sel.length+"_Projects.xlsx",$("xr"))};
+pickAll();renderProj();
 
 </script>
 </body>
