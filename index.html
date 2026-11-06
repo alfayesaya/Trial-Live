@@ -1119,7 +1119,7 @@ var BGW={"title": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJC
 /* ===================== WEEKLY UPDATE BUILDERS (PPTX + HTML) ===================== */
 var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function wkD(s,withYear){if(!s)return "-";var p=String(s).split("-");return p[2]+" "+MON[+p[1]-1]+(withYear?" "+p[0]:"")}
-function wkRange(D){var a=D.from.split("-"),b=D.to.split("-");return a[0]==b[0]?wkD(D.from)+" - "+wkD(D.to,1):wkD(D.from,1)+" - "+wkD(D.to,1)}
+function wkRange(D){if(D.mode=="full")return "All data ("+wkD(D.from,1)+" - "+wkD(D.to,1)+")";var a=D.from.split("-"),b=D.to.split("-");return a[0]==b[0]?wkD(D.from)+" - "+wkD(D.to,1):wkD(D.from,1)+" - "+wkD(D.to,1)}
 function wkCut(s,n){s=String(s==null?"":s).replace(/\s+/g," ").trim();return s.length>n?s.slice(0,n-1)+"…":s}
 function wkChunk(a,n){var o=[];for(var i=0;i<a.length;i+=n)o.push(a.slice(i,i+n));return o}
 var WK_ST={ontime:["1F9D63","E3F6EC"],late:["D6405A","FBE5E9"],overdue:["D6405A","FBE5E9"],soon:["C58A10","FFF3D6"],pending:["8A8A99","F1EFF5"],na:["8A8A99","F1EFF5"]};
@@ -1210,17 +1210,19 @@ function weeklyHtml(D){
  var css="*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#373545;background:#f4f1f8}.hero{background:linear-gradient(135deg,#6b4496,#7a60a1);color:#fff;padding:48px 6vw 40px}.hero h1{margin:0 0 6px;font-size:44px}.hero p{margin:4px 0;font-size:18px;font-weight:700}.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}h2{color:#7a60a1;font-size:24px;margin:34px 0 12px}h3{font-size:16px;margin:22px 0 8px}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{background:#eee6f3;border-radius:12px;padding:16px;text-align:center}.kpi b{display:block;font-size:30px;color:#864ea9}.kpi span{font-size:12px}table{width:100%;border-collapse:collapse;background:#fff;font-size:13px;margin:6px 0 10px}th{background:#7a60a1;color:#fff;padding:8px 6px}td{border:1px solid #dcd8dc;padding:6px;vertical-align:middle}tr:nth-child(even) td{background:#f4f0f8}.c{text-align:center}.ok{color:#1f9d63;font-weight:700}.bad{color:#d6405a;font-weight:700}.warn{color:#c58a10;font-weight:700}.mut{color:#6b6880}.strip{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 16px}figure{margin:0;width:200px}figure img{width:200px;height:140px;object-fit:contain;background:#eee;border-radius:6px}figcaption{font-size:11px;color:#6b6880;margin-top:3px}.proj{background:#fff;border-radius:14px;padding:6px 22px 18px;margin:26px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}.proj h2{margin-top:18px}svg{width:100%;height:auto;background:#fff;border:1px solid #dcd8dc;border-radius:10px}.note{font-size:12px;color:#6b6880}@media print{.proj{break-inside:avoid-page;box-shadow:none}body{background:#fff}}";
  var cls=function(s){return s=="Pass"||s=="OK"?"ok":s=="Fail"||s=="NG"?"bad":"warn"},stc=function(m){return m.st=="ontime"?"ok":(m.st=="late"||m.st=="overdue")?"bad":m.st=="soon"?"warn":"mut"};
  var strip=function(a){a=a.filter(function(i){return i.d}).slice(0,12);return a.length?"<div class=strip>"+a.map(function(i){return "<figure><img src=\"data:"+i.d+"\"><figcaption>"+h(i.cap)+"</figcaption></figure>"}).join("")+"</div>":""};
- var T=D.totals,o="<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Weekly Update "+h(rng)+"</title><style>"+css+"</style></head><body>";
- o+="<div class=hero><h1>WEEKLY UPDATE</h1><p>TRIAL PROJECT – "+h(D.methodLabel.toUpperCase())+"</p><p>WEEK "+h(rng)+"</p><p style=\"font-size:14px;font-weight:400\">Reporter: "+h(D.reporter||"ME")+" · Generated "+h(D.today)+"</p></div><div class=wrap>";
- o+="<h2>Weekly Overview</h2><div class=kpis>"+[[T.trials,"Trials"],[T.trials?Math.round(T.pass/T.trials*100)+"%":"-","Pass rate"],[T.issues,"Issues logged"],[T.qty?(T.ng/T.qty*100).toFixed(1)+"%":"-","NG rate"],[T.labTot?T.labOk+"/"+T.labTot:"-","Lab tests OK"],[T.otTot?T.otOk+"/"+T.otTot:"-","On-time milestones"]].map(function(k){return "<div class=kpi><b>"+h(k[0])+"</b><span>"+k[1]+"</span></div>"}).join("")+"</div>";
+ var T=D.totals,o="<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>"+(D.mode=="full"?"Program Report ":"Weekly Update ")+h(rng)+"</title><style>"+css+"</style></head><body>";
+ o+="<div class=hero><h1>"+(D.mode=="full"?"PROGRAM REPORT":"WEEKLY UPDATE")+"</h1><p>TRIAL PROJECT – "+h(D.methodLabel.toUpperCase())+"</p><p>"+(D.mode=="full"?"":"WEEK ")+h(rng)+"</p><p style=\"font-size:14px;font-weight:400\">Reporter: "+h(D.reporter||"ME")+" · Generated "+h(D.today)+"</p></div><div class=wrap>";
+ o+="<h2>"+(D.mode=="full"?"Program Overview":"Weekly Overview")+"</h2><div class=kpis>"+[[T.trials,"Trials"],[T.trials?Math.round(T.pass/T.trials*100)+"%":"-","Pass rate"],[T.issues,"Issues logged"],[T.qty?(T.ng/T.qty*100).toFixed(1)+"%":"-","NG rate"],[T.labTot?T.labOk+"/"+T.labTot:"-","Lab tests OK"],[T.otTot?T.otOk+"/"+T.otTot:"-","On-time milestones"]].map(function(k){return "<div class=kpi><b>"+h(k[0])+"</b><span>"+k[1]+"</span></div>"}).join("")+"</div>";
  o+=D.projects.length?"<table><tr><th>Project</th><th>Trials</th><th>Pass</th><th>Fail</th><th>Hold</th><th>NG pcs</th><th>NG rate</th><th>Issues</th><th>Lab OK</th><th>Schedule</th></tr>"+D.projects.map(function(p){var a=p.stats;return "<tr><td><b>"+h(p.name)+"</b></td><td class=c>"+a.trials+"</td><td class=\"c ok\">"+a.pass+"</td><td class=c>"+a.fail+"</td><td class=c>"+a.hold+"</td><td class=c>"+a.ng+"</td><td class=c>"+(a.qty?(a.ng/a.qty*100).toFixed(1)+"%":"-")+"</td><td class=c>"+a.issues+"</td><td class=c>"+(a.labTot?a.labOk+"/"+a.labTot:"-")+"</td><td class="+(p.overall.c=="Fail"?"bad":p.overall.c=="Pass"?"ok":"mut")+">"+h(p.overall.t)+"</td></tr>"}).join("")+"</table>":"<p class=mut>No trials were recorded in this period.</p>";
  var sched=D.allProjects||D.projects;
  if(sched.length){o+="<h2>Project Schedule – PA Milestones</h2><table><tr><th>Project</th><th>PA date</th>"+sched[0].ms.map(function(m){return "<th>"+h(m.n)+"<br><small>"+wkOff(m.off)+"</small></th>"}).join("")+"<th>Status</th></tr>"+sched.map(function(p){return "<tr><td><b>"+h(p.name)+"</b></td><td class=c>"+(p.pa?wkD(p.pa,1):"<span class=mut>not set</span>")+"</td>"+p.ms.map(function(m){return m.plan?"<td class=c><span class=mut>Plan "+wkD(m.plan)+"</span><br>Act "+(m.act?wkD(m.act):"-")+"<br><span class="+stc(m)+">"+h(wkStLabel(m))+"</span></td>":"<td class=\"c mut\">-</td>"}).join("")+"<td class=\"c "+(p.overall.c=="Fail"?"bad":p.overall.c=="Pass"?"ok":"mut")+"\">"+h(p.overall.t)+"</td></tr>"}).join("")+"</table><p class=note>Plan dates come from the PA date. EP / FEP / PP2K actuals = first trial of that stage · Release actual = release date · Tooling Readiness / Original Ink = manual dates.</p>"}
  D.projects.forEach(function(p){o+="<div class=proj><h2>"+h(p.name)+"</h2>";
-  if(p.trials.length)o+="<h3>1. Trial results</h3><table><tr><th>Date</th><th>Stage</th><th>Method / Part</th><th>T#</th><th>Qty</th><th>NG</th><th>Color</th><th>Result</th><th>Issue</th></tr>"+p.trials.map(function(r){return "<tr><td class=c>"+wkD(r.date)+"</td><td class=c>"+h(r.stage)+"</td><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>T"+r.no+"</td><td class=c>"+r.qty+"</td><td class=c>"+r.ng+"</td><td>"+h(r.color)+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td><td>"+h(r.cat=="No issue"?"-":r.cat)+"</td></tr>"}).join("")+"</table>"+strip(p.trials.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.res}}));
+  if(p.trials.length)o+="<h3>1. Trial results</h3><table><tr><th>Date</th><th>Stage</th><th>Method / Part</th><th>T#</th><th>Qty</th><th>NG</th><th>Color</th><th>Result</th><th>Issue</th>"+(D.mode=="full"?"<th>Parameters</th>":"")+"</tr>"+p.trials.map(function(r){return "<tr><td class=c>"+wkD(r.date)+"</td><td class=c>"+h(r.stage)+"</td><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>T"+r.no+"</td><td class=c>"+r.qty+"</td><td class=c>"+r.ng+"</td><td>"+h(r.color)+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td><td>"+h(r.cat=="No issue"?"-":r.cat)+"</td>"+(D.mode=="full"?"<td style=\"font-size:11px\">"+h(r.params||"-")+"</td>":"")+"</tr>"}).join("")+"</table>"+strip(p.trials.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.res}}));
   if(p.issues.length)o+="<h3>2. Issues & actions</h3><table><tr><th>Method / Part</th><th>Stage · T#</th><th>Issue category</th><th>Detail</th><th>Action</th><th>NG</th></tr>"+p.issues.map(function(r){return "<tr><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>"+h(r.stage)+" · T"+r.no+"</td><td><b>"+h(r.cat)+"</b></td><td>"+h(r.issue||"-")+"</td><td>"+h(r.act||"-")+"</td><td class=c>"+r.ng+"</td></tr>"}).join("")+"</table>"+strip(p.issues.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.cat}}));
   if(p.lab.length)o+="<h3>3. Lab test results</h3><table><tr><th>Stage</th><th>Part</th><th>Method</th><th>Qty</th><th>Result</th></tr>"+p.lab.map(function(r){return "<tr><td class=c>"+h(r.stage)+"</td><td>"+h(r.part)+"</td><td>"+h(r.method)+(r.desc?"<br><span class=mut>"+h(r.desc)+"</span>":"")+"</td><td class=c>"+r.qty+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td></tr>"}).join("")+"</table>"+strip(p.lab.map(function(r){return {d:r.photo,cap:r.part+" · "+r.method+" · "+r.res}}));
-  if(p.pa)o+="<h3>4. Schedule fishbone (PA-based)</h3>"+fishSvg(p,h);
+  if(p.readiness&&p.readiness.length)o+="<h3>4. Decoration completeness & tools readiness</h3>"+p.readiness.map(function(g){return "<h4 style=\"margin:14px 0 4px;color:#864ea9\">"+h(g.stage)+"</h4>"+g.sections.map(function(s){return "<table><tr><th colspan="+s.cols.length+" style=\"text-align:left\">"+h(s.title)+"</th></tr><tr>"+s.cols.map(function(c){return "<th style=\"background:#9a82bb\">"+h(c)+"</th>"}).join("")+"</tr>"+s.rows.map(function(rw){return "<tr>"+rw.map(function(v){return "<td>"+h(v)+"</td>"}).join("")+"</tr>"}).join("")+"</table>"}).join("")}).join("");
+  if(p.decoplan&&p.decoplan.length)o+="<h3>5. Decoplan reference</h3><table><tr><th>Job</th><th>Position</th><th>Part (Face)</th><th>Method</th><th>Pads</th><th>Color</th></tr>"+p.decoplan.map(function(rw){return "<tr>"+rw.map(function(v){return "<td>"+h(v)+"</td>"}).join("")+"</tr>"}).join("")+"</table>";
+  if(p.pa)o+="<h3>"+(D.mode=="full"?"6":"4")+". Schedule fishbone (PA-based)</h3>"+fishSvg(p,h);
   o+="</div>"});
  return o+"</div></body></html>"}
 function fishSvg(p,h){var G=fishGeom(),col=function(m){return WK_ST[m.st][0]},o="<svg viewBox=\"0.4 1.2 12.8 5.9\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"Arial\"><defs><marker id=\"ar"+h(p.name).replace(/\W/g,"")+"\" markerWidth=\"0.35\" markerHeight=\"0.35\" refX=\"0.3\" refY=\"0.175\" orient=\"auto\" markerUnits=\"userSpaceOnUse\"><path d=\"M0,0 L0.35,0.175 L0,0.35 z\" fill=\"#7a60a1\"/></marker></defs>";
@@ -1588,7 +1590,7 @@ function labOK(o){return !EXPMETH||(o.method!="Handspray"&&o.method!="Pad Print"
 function todayIso(){return iso(Date.now())}
 $("xd").parentNode.parentNode.insertAdjacentHTML("afterend","<div class=fg><div class=field><label>Method to export</label><select id=xmeth><option value=\"\">Handspray &amp; Pad Print</option><option value=\"Handspray\">Handspray only</option><option value=\"Pad Print\">Pad Print only</option></select></div>"
  +"<div class=field><label>Weekly update – from date</label><input type=date id=wk_from></div><div class=field><label>Weekly update – to date</label><input type=date id=wk_to></div><div class=field><label>Reporter</label><input type=text id=wk_rep value=\"ME\"></div></div>");
-$("xr").parentNode.insertAdjacentHTML("beforeend","<button class=btn type=button id=wk_ppt>Weekly Update (PPT)</button><button class=\"btn ghost\" type=button id=wk_html>Weekly Report (HTML)</button>");
+$("xr").parentNode.insertAdjacentHTML("beforeend","<button class=btn type=button id=wk_ppt>Weekly Update (PPT)</button><button class=\"btn ghost\" type=button id=wk_html>Full Program Report (HTML)</button>");
 (function(){var t=new Date();$("wk_to").value=iso(t.getTime());t.setDate(t.getDate()-6);$("wk_from").value=iso(t.getTime())})();
 
 /* method filter for the existing exports */
@@ -1602,34 +1604,35 @@ $("xr").onclick=function(){EXPMETH=$("xmeth").value;var sel=pickSel("xpicks");
 /* ---------- weekly data ---------- */
 function b64(buf){var a=new Uint8Array(buf),s="",i;for(i=0;i<a.length;i+=32768)s+=String.fromCharCode.apply(null,a.subarray(i,i+32768));return btoa(s)}
 async function wkImg(u){if(!u)return "";try{var im=await imgBuf(u);return "image/jpeg;base64,"+b64(im.buf)}catch(e){return ""}}
-async function weeklyData(){
- var from=$("wk_from").value,to=$("wk_to").value;if(!from||!to||from>to)throw new Error("Select a valid from/to date range");
+async function weeklyData(all){
+ var from=$("wk_from").value,to=$("wk_to").value;if(all){from="0000-00-00";to="9999-99-99"}else if(!from||!to||from>to)throw new Error("Select a valid from/to date range");
  EXPMETH=$("xmeth").value;var sel=pickSel("xpicks");
  var rr=rows.filter(function(x){var d=iso(T(x));return d>=from&&d<=to&&methOK(x)&&(!sel.length||sel.indexOf(x.project)>=0)}).sort(function(a,b){return T(a)-T(b)});
  var labs=labResAll().filter(function(o){var d=o.ts?iso(o.ts):"";return d>=from&&d<=to&&labOK(o)&&(!sel.length||sel.indexOf(o.project)>=0)}).sort(labSort);
  var used={};rr.forEach(function(x){used[x.project]=1});labs.forEach(function(o){used[o.project]=1});
  var names=projs.map(function(p){return p.name}).filter(function(n){return used[n]});Object.keys(used).forEach(function(n){if(names.indexOf(n)<0)names.push(n)});
  var plain=function(ml){return ml.ms.map(function(m){return {k:m.k,n:m.n,off:m.off,plan:m.plan,act:m.act,st:m.st,d:m.d}})};
- var mk=function(x,ph){return {date:iso(T(x)),stage:x.stage,method:x.method,pos:x.pos,no:x.no||1,qty:x.qty||0,ng:x.ng||0,color:x.color||"",res:x.res,cat:x.cat||"No issue",issue:x.issue||"",act:x.act||"",photo:ph||""}};
+ var mk=function(x,ph){return {date:iso(T(x)),stage:x.stage,method:x.method,pos:x.pos,no:x.no||1,qty:x.qty||0,ng:x.ng||0,color:x.color||"",res:x.res,cat:x.cat||"No issue",issue:x.issue||"",act:x.act||"",photo:ph||"",params:all?Object.keys(x.params||{}).map(function(k){return k+": "+x.params[k]}).join("; "):""}};
  var P=[],tot={trials:0,pass:0,fail:0,hold:0,qty:0,ng:0,issues:0,labOk:0,labTot:0};
  for(var n of names){var t=rr.filter(function(x){return x.project==n}),is=t.filter(function(x){return x.cat&&x.cat!="No issue"}),lb=labs.filter(function(o){return o.project==n}),ml=msList(n),ov=overall(ml);
-  var tr=[],ch=wkChunk(t,7);for(var c of ch){for(var k=0;k<c.length;k++)tr.push(mk(c[k],k<5&&(c[k].photos||[])[0]?await wkImg(c[k].photos[0]):""))}
-  var ir=[],ci=wkChunk(is,4);for(var c2 of ci){for(var k2=0;k2<c2.length;k2++)ir.push(mk(c2[k2],(c2[k2].photos||[])[0]?await wkImg(c2[k2].photos[0]):""))}
-  var lr=[],cl=wkChunk(lb,6);for(var c3 of cl){for(var k3=0;k3<c3.length;k3++){var o=c3[k3];lr.push({stage:o.stage,part:o.part,method:o.method,desc:o.desc,qty:o.qty,res:o.res,photo:k3<5&&o.photos[0]?await wkImg(o.photos[0]):""})}}
+  var tr=[],ch=wkChunk(t,7),tn=0;for(var c of ch){for(var k=0;k<c.length;k++){var okp=(c[k].photos||[])[0]&&(all?tn<20:k<5);tn++;tr.push(mk(c[k],okp?await wkImg(c[k].photos[0]):""))}}
+  var ir=[],ci=wkChunk(is,4),inn=0;for(var c2 of ci){for(var k2=0;k2<c2.length;k2++){var oki=(c2[k2].photos||[])[0]&&(!all||inn<12);inn++;ir.push(mk(c2[k2],oki?await wkImg(c2[k2].photos[0]):""))}}
+  var lr=[],cl=wkChunk(lb,6);for(var c3 of cl){for(var k3=0;k3<c3.length;k3++){var o=c3[k3];lr.push({stage:o.stage,part:o.part,method:o.method,desc:o.desc,qty:o.qty,res:o.res,photo:(all?lr.length<8:k3<5)&&o.photos[0]?await wkImg(o.photos[0]):""})}}
   var cz={EP:{},FEP:{},PP2K:{}};rows.filter(function(x){return x.project==n&&methOK(x)&&x.cat&&x.cat!="No issue"&&cz[x.stage]}).forEach(function(x){cz[x.stage][x.cat]=(cz[x.stage][x.cat]||0)+1});
   var causes={};Object.keys(cz).forEach(function(s){causes[s]=Object.keys(cz[s]).map(function(k){return [k,cz[s][k]]}).sort(function(a,b){return b[1]-a[1]})});
   var st={trials:t.length,pass:t.filter(function(x){return x.res=="Pass"}).length,fail:t.filter(function(x){return x.res=="Fail"}).length,hold:t.filter(function(x){return x.res=="Hold"}).length,qty:t.reduce(function(a,x){return a+(x.qty||0)},0),ng:t.reduce(function(a,x){return a+(x.ng||0)},0),issues:is.length,labOk:lb.filter(function(o){return o.res=="OK"}).length,labTot:lb.length};
   Object.keys(tot).forEach(function(k){tot[k]+=st[k]});
-  P.push({name:n,pa:ml.pa,overall:ov,ms:plain(ml),stats:st,trials:tr,issues:ir,lab:lr,causes:causes})}
+  P.push({name:n,pa:ml.pa,overall:ov,ms:plain(ml),stats:st,trials:tr,issues:ir,lab:lr,causes:causes,readiness:all?readinessData(n):null,decoplan:all?planOf(n).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}):null})}
  var sn=sel.length?sel:names,all=sn.map(function(n){var ml=msList(n);return {name:n,pa:ml.pa,overall:overall(ml),ms:plain(ml)}}),ot=onTimeStats(sn);
  tot.otOk=ot.ok;tot.otTot=ot.tot;
- return {from:from,to:to,reporter:($("wk_rep").value||"ME").trim(),methodLabel:EXPMETH||"Handspray & Pad Print",today:todayIso().replace(/-/g,"."),totals:tot,projects:P,allProjects:all}}
-async function runWeekly(btn,kind){var lbl=btn.textContent;btn.disabled=true;btn.textContent="Preparing…";
+ if(all){var ds=rr.map(function(x){return iso(T(x))});from=ds.length?ds[0]:todayIso();to=ds.length?ds[ds.length-1]:todayIso()}
+ return {mode:all?"full":"week",from:from,to:to,reporter:($("wk_rep").value||"ME").trim(),methodLabel:EXPMETH||"Handspray & Pad Print",today:todayIso().replace(/-/g,"."),totals:tot,projects:P,allProjects:all}}
+async function runWeekly(btn,kind){var full=kind=="html";var lbl=btn.textContent;btn.disabled=true;btn.textContent="Preparing…";
  try{if(kind=="ppt"&&typeof PptxGenJS=="undefined")throw new Error("PowerPoint library not loaded (check internet connection)");
-  var D=await weeklyData(),base="Weekly_Update_"+D.from+"_to_"+D.to+(EXPMETH?"_"+EXPMETH.replace(/\W+/g,""):"");
+  var D=await weeklyData(full),base=(full?"Program_Report_"+todayIso():"Weekly_Update_"+D.from+"_to_"+D.to)+(EXPMETH?"_"+EXPMETH.replace(/\W+/g,""):"");
   if(kind=="ppt"){var pres=weeklyPptx(PptxGenJS,D,BGW);await pres.writeFile({fileName:base+".pptx"})}
   else{var blob=new Blob([weeklyHtml(D)],{type:"text/html"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=base+".html";document.body.appendChild(a);a.click();a.remove()}
-  toast((kind=="ppt"?"PowerPoint":"HTML report")+" created")}
+  toast((kind=="ppt"?"PowerPoint":"Full program report")+" created")}
  catch(e){toast("Export failed: "+String(e.message||e).slice(0,140))}
  btn.disabled=false;btn.textContent=lbl}
 $("wk_ppt").onclick=function(){runWeekly($("wk_ppt"),"ppt")};
@@ -1643,6 +1646,78 @@ var _rData3=rData;rData=function(){_rData3();var t=document.querySelector("#log 
  Array.from(t.rows).forEach(function(r,i){r.insertAdjacentHTML("beforeend",i==0?"<th></th>":"<td data-l=\"\"><button type=button class=\"btn danger small\" data-tdel=\""+esc(r.dataset.id)+"\">🗑 Delete</button></td>")})};
 var _openDetail=openDetail;openDetail=function(id){_openDetail(id);var b=$("dEdit");if(b)b.insertAdjacentHTML("afterend"," <button class=\"btn danger small\" type=\"button\" data-tdel=\""+esc(id)+"\">🗑 Delete</button>")};
 document.addEventListener("click",function(e){var t=e.target;if(!t.dataset||!t.dataset.tdel)return;e.stopPropagation();e.preventDefault();var id=t.dataset.tdel;sure(t,"Sure? Delete",function(){delTrial(id)})},true);
+
+
+/* ===================== SAFE TRIAL SAVE (no duplicates) ===================== */
+var savingTrial=false;
+function tSig(p,t,m,pos,no,st,q,ng,rs){return [p,Math.floor(t/60000),m,pos,no,st,q,ng,rs].join("|")}
+$("save").onclick=async function(){
+ if(savingTrial)return;
+ if(!$("proj").value){$("msg").textContent="Create/select a project first.";return}
+ var btn=$("save"),msg=$("msg");savingTrial=true;btn.disabled=true;msg.textContent="Checking…";
+ var done=function(t){if(t!=null)msg.textContent=t;savingTrial=false;btn.disabled=false};
+ var trialAt=new Date($("dt").value).getTime()||Date.now(),qty=Number($("qty").value)||0,ng=Number($("ng").value)||0,no=Number($("tno").value)||1;
+ var sig=tSig($("proj").value,trialAt,$("method").value,$("pos").value,no,$("stage").value,qty,ng,$("res").value);
+ try{last.t="";await loadT()}catch(e){}
+ if(rows.some(function(x){return tSig(x.project,T(x),x.method,x.pos,x.no||1,x.stage,x.qty||0,x.ng||0,x.res)==sig}))
+  return done("This trial is already saved (same project, time, method, part, trial no. and quantities). Change the time or trial no. if it is a new trial.");
+ msg.textContent="Saving…";
+ var params={};document.querySelectorAll("#params input,#params select").forEach(function(i){if(i.value.trim())params[i.dataset.k]=i.value.trim()});
+ var photos=[],mp={};
+ try{var fs=$("ph_in").files;for(var i=0;i<fs.length;i++)photos.push(await upPhoto(fs[i]));for(var kk of MPK){var f2=$("mp_"+kk[0]).files;mp[kk[0]]=[];for(var i2=0;i2<f2.length;i2++)mp[kk[0]].push(await upPhoto(f2[i2]))}}catch(e){msg.textContent="Photo upload failed ("+String(e.message||e).slice(0,80)+"); data was still saved."}
+ var rec={ts:Date.now(),trialAt:trialAt,project:$("proj").value,by:$("by").value,stage:$("stage").value,method:$("method").value,pos:$("pos").value,mc:$("mc").value.trim(),qty:qty,ng:ng,color:$("color").value,paint:$("paint").value.trim(),res:$("res").value,params:params,cat:$("cat").value.trim(),issue:$("issue").value.trim(),act:$("act").value.trim(),photos:photos,mp:mp,no:no};
+ try{await api("POST","trials",toT(rec))}catch(e){return done("Failed to save: "+String(e.message||e).slice(0,120))}
+ /* saved: a refresh problem below must never look like a failed save */
+ try{last.t="";await loadT()}catch(e){}
+ try{["qty","issue","act","ph_in","cat","mp_hmi","mp_speed","mp_angin","mp_proses"].forEach(function(k){$(k).value=""});$("ng").value=0;$("dt").value=nowLocal();suggestNo();
+  document.querySelectorAll("#params input,#params select").forEach(function(i){i.value=""});setCats()}catch(e){}
+ toast("Trial saved");done("Saved ✓")};
+
+/* remove already-existing duplicates from the Trial Log */
+function dupIds(){var g={};rows.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x){var k=tSig(x.project,T(x),x.method,x.pos,x.no||1,x.stage,x.qty||0,x.ng||0,x.res);(g[k]=g[k]||[]).push(x)});
+ var out=[];Object.keys(g).forEach(function(k){var l=g[k];if(l.length<2)return;l.sort(function(a,b){return ((b.photos||[]).length+String(b.issue||"").length)-((a.photos||[]).length+String(a.issue||"").length)});l.slice(1).forEach(function(x){out.push(x.id)})});return out}
+$("xl").insertAdjacentHTML("afterend"," <button class=\"btn ghost small\" type=button id=dupbtn>No duplicates</button>");
+async function delDups(){var ids=dupIds(),E=encodeURIComponent;if(!ids.length)return;
+ try{var n=await sbDel("trials","?id=eq."+E(ids[0]));if(!n){showDelHelp();return}
+  for(var i=1;i<ids.length;i++)await sbDel("trials","?id=eq."+E(ids[i]));
+  last.t="";await loadT();render();toast(ids.length+" duplicate trial(s) removed")}
+ catch(e){toast("Delete failed: "+String(e.message||e).slice(0,120))}}
+document.addEventListener("click",function(e){var t=e.target;if(t.id!="dupbtn"||t.disabled)return;var n=dupIds().length;sure(t,"Sure? Delete "+n+" duplicate(s)",delDups)});
+var _rData4=rData;rData=function(){_rData4();var d=dupIds().length,b=$("dupbtn");if(b){b.textContent=d?"Remove duplicates ("+d+")":"No duplicates";b.disabled=!d}rRdSum()};
+
+/* ===================== READINESS SUMMARY / EXPORT / EDIT ===================== */
+function rdHas(r){return r.some(Boolean)}
+function readinessSummary(names){var out=[];names.forEach(function(n){STAGES.forEach(function(st){
+ var comp=secRows(n,st,"completeness"),sp=secRows(n,st,"spray_tools").filter(rdHas),pd=secRows(n,st,"pad_tools").filter(rdHas),got=comp.filter(function(r){return r[1]||r[3]});
+ if(!got.length&&!sp.length&&!pd.length)return;
+ var stc={},add=function(v){if(v)stc[v]=(stc[v]||0)+1};got.forEach(function(r){add(r[3])});sp.forEach(function(r){add(r[4])});pd.forEach(function(r){add(r[4])});
+ out.push({project:n,stage:st,compTotal:comp.length,compGot:got.length,spray:sp.length,pad:pd.length,status:Object.keys(stc).map(function(k){return k+" ×"+stc[k]}).join(", "),missing:comp.filter(function(r){return !(r[1]||r[3])}).map(function(r){return r[0]})})})});return out}
+function readinessData(n){var out=[];STAGES.forEach(function(st){var secs2=[];Object.keys(SEC).forEach(function(k){var S=SEC[k],rows2=secRows(n,st,k).filter(function(r){return k=="completeness"?r.slice(1).some(Boolean):rdHas(r)});if(rows2.length)secs2.push({title:S.t,cols:S.c,rows:rows2})});if(secs2.length)out.push({stage:st,sections:secs2})});return out}
+$("labsum").parentNode.insertAdjacentHTML("afterend","<div class=\"panel\" style=\"margin-bottom:16px\"><h2>Readiness Summary per Project</h2>"+pickHTML("rd_pick","Projects (leave empty = all)")+"<button type=button class=btn id=rd_x style=\"margin-bottom:14px\">Export Readiness (Excel)</button><div class=\"ov stk\" id=rd_sum></div></div>");
+var _pickAll4=pickAll;pickAll=function(){_pickAll4();if($("rd_pick"))pickRender("rd_pick",projs.map(function(p){return p.name}))};
+function rRdSum(){var el=$("rd_sum");if(!el)return;var sel=pickSel("rd_pick"),sm=readinessSummary(sel.length?sel:projs.map(function(p){return p.name}));
+ el.innerHTML=sm.length?"<table><tr><th>Project</th><th>Stage</th><th>Completeness (received / total)</th><th>Spray tools</th><th>Pad Print tools</th><th>Status</th><th>Not received yet</th><th></th></tr>"+sm.map(function(o){return "<tr><td><b>"+esc(o.project)+"</b></td><td>"+esc(o.stage)+"</td><td>"+o.compGot+" / "+o.compTotal+"</td><td>"+o.spray+"</td><td>"+o.pad+"</td><td>"+esc(o.status||"-")+"</td><td><span class=sub>"+esc(o.missing.slice(0,6).join(", ")+(o.missing.length>6?" +"+(o.missing.length-6)+" more":"")||"-")+"</span></td><td><button type=button class=\"btn ghost small\" data-rdp=\""+esc(o.project)+"\" data-rds=\""+esc(o.stage)+"\">✎ Edit</button></td></tr>"}).join("")+"</table>":"<div class=sub>No readiness data entered yet. Fill it in the Readiness &amp; Lab tab.</div>";labelT("rd_sum")}
+document.addEventListener("change",function(e){var t=e.target;if(t.dataset&&t.dataset.pk=="rd_pick")rRdSum()});
+document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
+ if(t.dataset.pall=="rd_pick"||t.dataset.pnone=="rd_pick")rRdSum();
+ if(t.dataset.rdp){tab("lab");$("lp").value=t.dataset.rdp;$("ls").value=t.dataset.rds;rLab(true);window.scrollTo({top:0,behavior:"smooth"})}});
+$("rd_x").onclick=async function(){var b=$("rd_x"),lbl=b.textContent,sel=pickSel("rd_pick"),names=sel.length?sel:projs.map(function(p){return p.name}),sm=readinessSummary(names);
+ if(!sm.length)return toast("No readiness data for the selected projects");
+ b.disabled=true;b.textContent="Preparing…";
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Readiness Summary",{views:[{showGridLines:false}]});widths(ws,[2.6,5,18,12,20,12,14,34,50]);
+  put(ws,1,2,9,"Decoration Completeness & Tools Readiness – Summary",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Completeness (received / total)","Spray tools","Pad Print tools","Status","Not received yet"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  sm.forEach(function(o,i){[i+1,o.project,o.stage,o.compGot+" / "+o.compTotal,o.spray,o.pad,o.status||"-",o.missing.join(", ")||"-"].forEach(function(a,j){put(ws,4+i,2+j,2+j,a,{bd:true,h:j==0||(j>=2&&j<=5)?"center":"left"})})});
+  var d=wb.addWorksheet("Readiness Details",{views:[{showGridLines:false}]});widths(d,[2.6,5,18,12,30,30,16,14,8,16,30]);
+  put(d,1,2,11,"Decoration Completeness & Tools Readiness – Details",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Section","Item / Tool / Method","Position","Date","Qty","Status","Remark"].forEach(function(h,i){put(d,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  var r=4,k=1;names.forEach(function(n){STAGES.forEach(function(st){Object.keys(SEC).forEach(function(key){secRows(n,st,key).filter(function(rw){return key=="completeness"?rw.slice(1).some(Boolean):rdHas(rw)}).forEach(function(rw){
+   var v=key=="completeness"?[rw[0],"",rw[1],rw[2],rw[3],rw[4]]:[rw[0],rw[1],rw[2],rw[3],rw[4],rw[5]];
+   [k++,n,st,SEC[key].t].concat(v).forEach(function(a,j){put(d,r,2+j,2+j,a,{bd:true,h:j==0||j==7?"center":"left"})});r++})})})});
+  dl(names.length==1?"Readiness_"+names[0].replace(/[^\w-]+/g,"_")+".xlsx":"Readiness_Summary.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}
+ catch(e){toast("Export failed: "+e.message)}
+ b.disabled=false;b.textContent=lbl};
+pickAll();
 
 </script>
 </body>
