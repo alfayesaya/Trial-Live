@@ -1485,7 +1485,7 @@ var _rpc=renderPlanCmp;renderPlanCmp=function(){_rpc();var t=document.querySelec
 async function delDeco(name){await api("POST","sections",[{project:name,stage:"ALL",section:"decoplan",rows:[],ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();render();renderProj();toast("Decoplan of "+name+" deleted")}
 async function sbDel(t,q){var r=await fetch(SB+"/rest/v1/"+t+q,{method:"DELETE",headers:{apikey:KEY,Prefer:"return=representation"}});if(!r.ok)throw new Error(await r.text());return (await r.json()).length}
 var DEL_SQL="create policy \"anon delete projects\" on public.projects for delete to anon using (true);\ncreate policy \"anon delete trials\" on public.trials for delete to anon using (true);\ncreate policy \"anon delete sections\" on public.sections for delete to anon using (true);";
-function showDelHelp(){openModal("<h2>Delete is not allowed by Supabase yet <button class=\"btn ghost small\" id=sql_x type=button>Close</button></h2><div class=sub style=\"margin-bottom:10px\">Supabase refused the delete (no DELETE policy), so nothing was removed and your data is intact. Run this SQL once in Supabase → SQL Editor, then click Delete Project again:</div><textarea id=sql_t readonly rows=5 style=\"font-family:monospace;font-size:12px!important\">"+esc(DEL_SQL)+"</textarea><div style=\"margin-top:10px\"><button class=btn type=button id=sql_c>Copy SQL</button> <span id=sql_m class=sub></span></div>")}
+function showDelHelp(){openModal("<h2>Delete is not allowed by Supabase yet <button class=\"btn ghost small\" id=sql_x type=button>Close</button></h2><div class=sub style=\"margin-bottom:10px\">Supabase refused the delete (no DELETE policy), so nothing was removed and your data is intact. Run this SQL once in Supabase → SQL Editor, then try the delete again:</div><textarea id=sql_t readonly rows=5 style=\"font-family:monospace;font-size:12px!important\">"+esc(DEL_SQL)+"</textarea><div style=\"margin-top:10px\"><button class=btn type=button id=sql_c>Copy SQL</button> <span id=sql_m class=sub></span></div>")}
 async function delProject(name){var E=encodeURIComponent,p=projs.filter(function(x){return x.name==name})[0];if(!p)return;
  try{var n=await sbDel("projects","?id=eq."+p.id);
   if(!n){showDelHelp();return}
@@ -1634,6 +1634,15 @@ async function runWeekly(btn,kind){var lbl=btn.textContent;btn.disabled=true;btn
  btn.disabled=false;btn.textContent=lbl}
 $("wk_ppt").onclick=function(){runWeekly($("wk_ppt"),"ppt")};
 $("wk_html").onclick=function(){runWeekly($("wk_html"),"html")};
+
+/* ---------- Trial Log: delete a single entry (duplicates) ---------- */
+async function delTrial(id){try{var n=await sbDel("trials","?id=eq."+encodeURIComponent(id));if(!n){showDelHelp();return}
+  closeModal();last.t="";await loadT();render();toast("Trial deleted")}
+ catch(e){toast("Delete failed: "+String(e.message||e).slice(0,120))}}
+var _rData3=rData;rData=function(){_rData3();var t=document.querySelector("#log table");if(!t)return;
+ Array.from(t.rows).forEach(function(r,i){r.insertAdjacentHTML("beforeend",i==0?"<th></th>":"<td data-l=\"\"><button type=button class=\"btn danger small\" data-tdel=\""+esc(r.dataset.id)+"\">🗑 Delete</button></td>")})};
+var _openDetail=openDetail;openDetail=function(id){_openDetail(id);var b=$("dEdit");if(b)b.insertAdjacentHTML("afterend"," <button class=\"btn danger small\" type=\"button\" data-tdel=\""+esc(id)+"\">🗑 Delete</button>")};
+document.addEventListener("click",function(e){var t=e.target;if(!t.dataset||!t.dataset.tdel)return;e.stopPropagation();e.preventDefault();var id=t.dataset.tdel;sure(t,"Sure? Delete",function(){delTrial(id)})},true);
 
 </script>
 </body>
