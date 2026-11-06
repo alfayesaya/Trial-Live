@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
+<meta name="google" content="notranslate">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Panel Trial ME – Handspray &amp; Pad Print</title>
@@ -638,6 +639,19 @@ main{max-width:1600px;margin-left:auto;margin-right:auto}
 <button class="btn" id="tl_save" type="button">Save lab result</button> <button class="btn ghost hidden" id="tl_cancel" type="button">Cancel edit</button> <span id="tl_msg" class="sub"></span>
 </div>
 <div class="panel"><h2>Saved Lab Results <select id="tl_fp" style="width:auto;min-width:180px"></select></h2><div class="ov stk" id="tl_list"></div></div>
+<div class="panel"><h2>Production Limit Input <span id="lm_mode" class="n"></span></h2>
+<div class="fg">
+ <div class="field"><label>Project</label><select id="lm_proj"></select></div>
+ <div class="field"><label>Stage</label><select id="lm_stage"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Other Trial</option></select></div>
+ <div class="field"><label>Part</label><select id="lm_part"></select></div>
+ <div class="field"><label>Position</label><input id="lm_pos" type="text" list="lm_posl" placeholder="E.g. Top face"><datalist id="lm_posl"></datalist></div>
+ <div class="field"><label>Color</label><input id="lm_color" type="text" list="lm_colorl" placeholder="E.g. Black"><datalist id="lm_colorl"></datalist></div>
+</div>
+<div class="field"><label>Limit description (optional)</label><textarea id="lm_note" rows="2" placeholder="E.g. max. 0.3 mm overspray, slight shade difference allowed…"></textarea></div>
+<div class="field"><label>Limit sample photos (optional, multiple allowed)</label><div id="lm_ph"></div><input type="file" id="lm_f" accept="image/*" multiple></div>
+<button class="btn" id="lm_save" type="button">Save production limit</button> <button class="btn ghost hidden" id="lm_cancel" type="button">Cancel edit</button> <span id="lm_msg" class="sub"></span>
+</div>
+<div class="panel"><h2>Production Limits</h2><div id="lm_filters"></div><button class="btn" id="lm_x" type="button" style="margin-bottom:14px">Export Production Limit (Excel)</button><div class="ov stk" id="lm_list"></div></div>
 <div class="panel"><h2>Decoration Completeness &amp; Tools Readiness</h2>
 <div class="fg"><div class="field"><label>Project</label><select id="lp"></select></div><div class="field"><label>Stage</label><select id="ls"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Other Trial</option></select></div></div>
 <div id="labBox"></div>
@@ -1072,7 +1086,7 @@ async function buildReport(f,fname,b){if(!f.length&&!labScopeHas())return toast(
   for(var p of pr){var fp=f.filter(function(x){return (x.project||"-")==p});
    for(var s of STAGES){var fs=fp.filter(function(x){return x.stage==s}),sc={};secs.filter(function(y){return y.project==p&&y.stage==s}).forEach(function(y){if(y.section=="lab_results"&&!(y.rows||[]).length)return;sc[y.section]=y.rows});
     if(fs.length||Object.keys(sc).length)stageSheet(wb,p,s,fs,sc)}
-   await attachSheet(wb,p,fp);await labDocSheet(wb,p);await labResSheet(wb,p)}
+   await attachSheet(wb,p,fp);await labDocSheet(wb,p);await labResSheet(wb,p);await limitSheet(wb,p)}
   fillSummary(sm,f,pr);fillSchedule(jr,pr);if(dp)fillPlan(dp,pcs);var dt=wb.addWorksheet("Data Trial");dt.addRow(TH_);f.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x){dt.addRow(trialRow(x))});dt.getRow(1).font={bold:true};widths(dt,TH_.map(function(){return 18}));
   dl(fname,await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl}
@@ -1220,9 +1234,10 @@ function weeklyHtml(D){
   if(p.trials.length)o+="<h3>1. Trial results</h3><table><tr><th>Date</th><th>Stage</th><th>Method / Part</th><th>T#</th><th>Qty</th><th>NG</th><th>Color</th><th>Result</th><th>Issue</th>"+(D.mode=="full"?"<th>Parameters</th>":"")+"</tr>"+p.trials.map(function(r){return "<tr><td class=c>"+wkD(r.date)+"</td><td class=c>"+h(r.stage)+"</td><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>T"+r.no+"</td><td class=c>"+r.qty+"</td><td class=c>"+r.ng+"</td><td>"+h(r.color)+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td><td>"+h(r.cat=="No issue"?"-":r.cat)+"</td>"+(D.mode=="full"?"<td style=\"font-size:11px\">"+h(r.params||"-")+"</td>":"")+"</tr>"}).join("")+"</table>"+strip(p.trials.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.res}}));
   if(p.issues.length)o+="<h3>2. Issues & actions</h3><table><tr><th>Method / Part</th><th>Stage · T#</th><th>Issue category</th><th>Detail</th><th>Action</th><th>NG</th></tr>"+p.issues.map(function(r){return "<tr><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>"+h(r.stage)+" · T"+r.no+"</td><td><b>"+h(r.cat)+"</b></td><td>"+h(r.issue||"-")+"</td><td>"+h(r.act||"-")+"</td><td class=c>"+r.ng+"</td></tr>"}).join("")+"</table>"+strip(p.issues.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.cat}}));
   if(p.lab.length)o+="<h3>3. Lab test results</h3><table><tr><th>Stage</th><th>Part</th><th>Method</th><th>Qty</th><th>Result</th></tr>"+p.lab.map(function(r){return "<tr><td class=c>"+h(r.stage)+"</td><td>"+h(r.part)+"</td><td>"+h(r.method)+(r.desc?"<br><span class=mut>"+h(r.desc)+"</span>":"")+"</td><td class=c>"+r.qty+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td></tr>"}).join("")+"</table>"+strip(p.lab.map(function(r){return {d:r.photo,cap:r.part+" · "+r.method+" · "+r.res}}));
-  if(p.readiness&&p.readiness.length)o+="<h3>4. Decoration completeness & tools readiness</h3>"+p.readiness.map(function(g){return "<h4 style=\"margin:14px 0 4px;color:#864ea9\">"+h(g.stage)+"</h4>"+g.sections.map(function(s){return "<table><tr><th colspan="+s.cols.length+" style=\"text-align:left\">"+h(s.title)+"</th></tr><tr>"+s.cols.map(function(c){return "<th style=\"background:#9a82bb\">"+h(c)+"</th>"}).join("")+"</tr>"+s.rows.map(function(rw){return "<tr>"+rw.map(function(v){return "<td>"+h(v)+"</td>"}).join("")+"</tr>"}).join("")+"</table>"}).join("")}).join("");
-  if(p.decoplan&&p.decoplan.length)o+="<h3>5. Decoplan reference</h3><table><tr><th>Job</th><th>Position</th><th>Part (Face)</th><th>Method</th><th>Pads</th><th>Color</th></tr>"+p.decoplan.map(function(rw){return "<tr>"+rw.map(function(v){return "<td>"+h(v)+"</td>"}).join("")+"</tr>"}).join("")+"</table>";
-  if(p.pa)o+="<h3>"+(D.mode=="full"?"6":"4")+". Schedule fishbone (PA-based)</h3>"+fishSvg(p,h);
+  if(p.limits&&p.limits.length)o+="<h3>4. Production limit (position & color)</h3><table><tr><th>Stage</th><th>Part</th><th>Position</th><th>Color</th><th>Limit description</th></tr>"+p.limits.map(function(r){return "<tr><td class=c>"+h(r.stage)+"</td><td>"+h(r.part)+"</td><td>"+h(r.pos)+"</td><td>"+h(r.color)+"</td><td>"+h(r.note||"-")+"</td></tr>"}).join("")+"</table>"+strip(p.limits.map(function(r){return {d:r.photo,cap:r.part+" · "+r.pos+" · "+r.color}}));
+  if(p.readiness&&p.readiness.length)o+="<h3>5. Decoration completeness & tools readiness</h3>"+p.readiness.map(function(g){return "<h4 style=\"margin:14px 0 4px;color:#864ea9\">"+h(g.stage)+"</h4>"+g.sections.map(function(s){return "<table><tr><th colspan="+s.cols.length+" style=\"text-align:left\">"+h(s.title)+"</th></tr><tr>"+s.cols.map(function(c){return "<th style=\"background:#9a82bb\">"+h(c)+"</th>"}).join("")+"</tr>"+s.rows.map(function(rw){return "<tr>"+rw.map(function(v){return "<td>"+h(v)+"</td>"}).join("")+"</tr>"}).join("")+"</table>"}).join("")}).join("");
+  if(p.decoplan&&p.decoplan.length)o+="<h3>6. Decoplan reference</h3><table><tr><th>Job</th><th>Position</th><th>Part (Face)</th><th>Method</th><th>Pads</th><th>Color</th></tr>"+p.decoplan.map(function(rw){return "<tr>"+rw.map(function(v){return "<td>"+h(v)+"</td>"}).join("")+"</tr>"}).join("")+"</table>";
+  if(p.pa)o+="<h3>"+(D.mode=="full"?"7":"4")+". Schedule fishbone (PA-based)</h3>"+fishSvg(p,h);
   o+="</div>"});
  return o+"</div></body></html>"}
 function fishSvg(p,h){var G=fishGeom(),col=function(m){return WK_ST[m.st][0]},o="<svg viewBox=\"0.4 1.2 12.8 5.9\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"Arial\"><defs><marker id=\"ar"+h(p.name).replace(/\W/g,"")+"\" markerWidth=\"0.35\" markerHeight=\"0.35\" refX=\"0.3\" refY=\"0.175\" orient=\"auto\" markerUnits=\"userSpaceOnUse\"><path d=\"M0,0 L0.35,0.175 L0,0.35 z\" fill=\"#7a60a1\"/></marker></defs>";
@@ -1622,7 +1637,7 @@ async function weeklyData(all){
   var causes={};Object.keys(cz).forEach(function(s){causes[s]=Object.keys(cz[s]).map(function(k){return [k,cz[s][k]]}).sort(function(a,b){return b[1]-a[1]})});
   var st={trials:t.length,pass:t.filter(function(x){return x.res=="Pass"}).length,fail:t.filter(function(x){return x.res=="Fail"}).length,hold:t.filter(function(x){return x.res=="Hold"}).length,qty:t.reduce(function(a,x){return a+(x.qty||0)},0),ng:t.reduce(function(a,x){return a+(x.ng||0)},0),issues:is.length,labOk:lb.filter(function(o){return o.res=="OK"}).length,labTot:lb.length};
   Object.keys(tot).forEach(function(k){tot[k]+=st[k]});
-  P.push({name:n,pa:ml.pa,overall:ov,ms:plain(ml),stats:st,trials:tr,issues:ir,lab:lr,causes:causes,readiness:all?readinessData(n):null,decoplan:all?planOf(n).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}):null})}
+  P.push({name:n,pa:ml.pa,overall:ov,ms:plain(ml),stats:st,trials:tr,issues:ir,lab:lr,causes:causes,readiness:all?readinessData(n):null,limits:all?await limData(n):null,decoplan:all?planOf(n).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}):null})}
  var sn=sel.length?sel:names,all=sn.map(function(n){var ml=msList(n);return {name:n,pa:ml.pa,overall:overall(ml),ms:plain(ml)}}),ot=onTimeStats(sn);
  tot.otOk=ot.ok;tot.otTot=ot.tot;
  if(all){var ds=rr.map(function(x){return iso(T(x))});from=ds.length?ds[0]:todayIso();to=ds.length?ds[ds.length-1]:todayIso()}
@@ -1718,6 +1733,104 @@ $("rd_x").onclick=async function(){var b=$("rd_x"),lbl=b.textContent,sel=pickSel
  catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl};
 pickAll();
+
+
+/* ===================== PRODUCTION LIMIT (per project / stage / part: position + color) ===================== */
+var lmEd=null,lmPh=[],lmBusy=false;
+function fixSel(id){var s=$(id);if(s&&s.options&&s.options.length&&s.selectedIndex<0)s.selectedIndex=0}
+var _tlReset5=tlReset;tlReset=function(){_tlReset5();fixSel("tl_stage");fixSel("tl_res")};
+var _tlEdit5=tlEdit;tlEdit=function(id){_tlEdit5(id);fixSel("tl_stage");fixSel("tl_res")};
+function limAll(){var out=[];secs.forEach(function(y){if(y.section!="prod_limit")return;(y.rows||[]).forEach(function(r){out.push({id:r[0],project:y.project,stage:y.stage,part:r[1]||"",pos:r[2]||"",color:r[3]||"",note:r[4]||"",photos:String(r[5]||"").split(/\s+/).filter(Boolean),ts:Number(r[6])||0})})});return out}
+function limRow(o){return [o.id,o.part,o.pos,o.color,o.note||"",o.photos.join(" "),String(o.ts)]}
+function limGroup(p,s){return limAll().filter(function(o){return o.project==p&&o.stage==s})}
+async function putLimSec(p,s,list){await api("POST","sections",[{project:p,stage:s,section:"prod_limit",rows:list.map(limRow),ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
+function limSort(a,b){return (a.project<b.project?-1:a.project>b.project?1:0)||STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||(a.part<b.part?-1:a.part>b.part?1:0)||(a.pos<b.pos?-1:a.pos>b.pos?1:0)}
+function lmProjSel(){var n=projs.map(function(p){return p.name}),c=$("lm_proj").value;
+ $("lm_proj").innerHTML=n.length?opts(n):"<option value=\"\">(create a project first in the Project tab)</option>";if(n.indexOf(c)>=0)$("lm_proj").value=c;lmParts();fixSel("lm_stage");fixSel("tl_stage");fixSel("tl_res")}
+function lmParts(){var pn=$("lm_proj").value,p=projs.filter(function(x){return x.name==pn})[0],l=p?p.parts.slice():[],c=$("lm_part").value,ep=lmEd&&lmEd.project==pn?lmEd.part:"";
+ if(ep&&l.indexOf(ep)<0)l.push(ep);if(l.indexOf(c)<0)c=ep||l[0]||"";
+ $("lm_part").innerHTML=l.length?selOpts(l,c):"<option value=\"\">(add parts in the Project tab)</option>";lmHints()}
+function lmHints(){var pn=$("lm_proj").value,pt=$("lm_part").value,p=projs.filter(function(x){return x.name==pn})[0],pl=planOf(pn).filter(function(x){return en(x.part)==pt}),
+ pos=Array.from(new Set(pl.map(function(x){return en(x.pos)}).filter(Boolean))),cols=Array.from(new Set(((p&&p.co&&p.co[pt])||[]).concat(pl.map(function(x){return en(x.color)}).filter(Boolean))));
+ $("lm_posl").innerHTML=pos.map(function(v){return "<option value=\""+esc(v)+"\">"}).join("");$("lm_colorl").innerHTML=cols.map(function(v){return "<option value=\""+esc(v)+"\">"}).join("")}
+$("lm_proj").onchange=function(){$("lm_part").value="";lmParts()};
+$("lm_part").onchange=lmHints;
+function lmThumbs(){$("lm_ph").innerHTML=lmPh.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-lmrm=\""+i+"\">✕</button></span>"}).join("")}
+$("lm_ph").addEventListener("click",function(e){var t=e.target;if(t.dataset&&t.dataset.lmrm!=null&&t.dataset.lmrm!==""){lmPh.splice(+t.dataset.lmrm,1);lmThumbs()}});
+function lmReset(){lmEd=null;lmPh=[];lmThumbs();$("lm_pos").value="";$("lm_color").value="";$("lm_note").value="";$("lm_f").value="";$("lm_mode").textContent="";$("lm_cancel").classList.add("hidden");$("lm_save").textContent="Save production limit"}
+$("lm_cancel").onclick=function(){lmReset();$("lm_msg").textContent=""};
+$("lm_save").onclick=async function(){if(lmBusy)return;
+ var pj=$("lm_proj").value,st=$("lm_stage").value,pt=$("lm_part").value,pos=$("lm_pos").value.trim(),col=$("lm_color").value.trim(),msg=$("lm_msg");
+ if(!pj||!pt){msg.textContent="Select a project and part first.";return}
+ if(!pos){msg.textContent="Enter the position.";return}
+ if(!col){msg.textContent="Enter the color.";return}
+ lmBusy=true;var b=$("lm_save");b.disabled=true;msg.textContent="Saving…";
+ try{last.s="";await loadS();
+  var key=function(o){return [o.project,o.stage,o.part,o.pos,o.color].map(function(v){return String(v).trim().toLowerCase()}).join("|")};
+  if(limAll().some(function(o){return (!lmEd||o.id!=lmEd.id)&&key(o)==key({project:pj,stage:st,part:pt,pos:pos,color:col})})){msg.textContent="A limit for this project, stage, part, position and color already exists. Edit that one instead.";return}
+  var photos=lmPh.slice(),fl=$("lm_f").files;for(var i=0;i<fl.length;i++)photos.push(await upPhoto(fl[i]));
+  var rec={id:lmEd?lmEd.id:"M"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),part:pt,pos:pos,color:col,note:$("lm_note").value.trim(),photos:photos,ts:lmEd?lmEd.ts:Date.now()};
+  if(lmEd&&(lmEd.project!=pj||lmEd.stage!=st)){
+   await putLimSec(pj,st,limGroup(pj,st).concat([rec]));
+   await putLimSec(lmEd.project,lmEd.stage,limGroup(lmEd.project,lmEd.stage).filter(function(o){return o.id!=lmEd.id}))}
+  else{var g=limGroup(pj,st),f=false;g=g.map(function(o){if(o.id==rec.id){f=true;return rec}return o});if(!f)g.push(rec);await putLimSec(pj,st,g)}
+  last.s="";await loadS();pickRender("lm_ppt",lmPartList());rLmList();toast("Production limit saved ✓");lmReset();msg.textContent="Saved ✓"}
+ catch(e){msg.textContent="Failed: "+String(e.message||e).slice(0,140)}
+ finally{lmBusy=false;b.disabled=false}};
+function lmEdit(id){var o=limAll().filter(function(x){return x.id==id})[0];if(!o)return;
+ lmEd={id:o.id,project:o.project,stage:o.stage,part:o.part,ts:o.ts};var pj=$("lm_proj");
+ if(!Array.from(pj.options).some(function(op){return op.value==o.project}))pj.insertAdjacentHTML("beforeend","<option>"+esc(o.project)+"</option>");
+ pj.value=o.project;$("lm_part").value="";lmParts();$("lm_part").value=o.part;lmHints();$("lm_stage").value=o.stage;fixSel("lm_stage");
+ $("lm_pos").value=o.pos;$("lm_color").value=o.color;$("lm_note").value=o.note;lmPh=o.photos.slice();lmThumbs();$("lm_f").value="";
+ $("lm_mode").textContent="Edit mode";$("lm_cancel").classList.remove("hidden");$("lm_save").textContent="Save changes";$("lm_msg").textContent="";
+ $("lm_proj").scrollIntoView({behavior:"smooth",block:"center"})}
+async function lmDel(id){var o=limAll().filter(function(x){return x.id==id})[0];if(!o)return;
+ try{await putLimSec(o.project,o.stage,limGroup(o.project,o.stage).filter(function(x){return x.id!=id}));last.s="";await loadS();pickRender("lm_ppt",lmPartList());rLmList();if(lmEd&&lmEd.id==id)lmReset();toast("Production limit deleted")}catch(e){toast("Failed: "+String(e.message||e).slice(0,100))}}
+function lmPartList(){var sel=pickSel("lm_pp"),u=[];projs.forEach(function(p){if(sel.length&&sel.indexOf(p.name)<0)return;p.parts.forEach(function(x){if(u.indexOf(x)<0)u.push(x)})});
+ limAll().forEach(function(o){if((!sel.length||sel.indexOf(o.project)>=0)&&u.indexOf(o.part)<0)u.push(o.part)});return u}
+function lmFiltered(){var ps=pickSel("lm_pp"),ss=pickSel("lm_ps"),pts=pickSel("lm_ppt");return limAll().filter(function(o){return (!ps.length||ps.indexOf(o.project)>=0)&&(!ss.length||ss.indexOf(o.stage)>=0)&&(!pts.length||pts.indexOf(o.part)>=0)}).sort(limSort)}
+function rLmList(){var l=lmFiltered();
+ $("lm_list").innerHTML=l.length?"<div class=sub style=\"margin-bottom:8px\">Total "+l.length+" production limits</div><table><tr><th>Project</th><th>Stage</th><th>Part</th><th>Position</th><th>Color</th><th>Limit description</th><th>Photos</th><th></th></tr>"
+  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.pos)+"</td><td>"+esc(o.color)+"</td><td>"+esc(o.note||"-")+"</td><td>"+thumbsOf(o.photos)+"</td><td style=\"white-space:nowrap\"><button type=button class=\"btn ghost small\" data-lme=\""+esc(o.id)+"\">✎</button> <button type=button class=\"btn danger small\" data-lmd=\""+esc(o.id)+"\">✕</button></td></tr>"}).join("")+"</table>"
+  :"<div class=sub>No production limits yet.</div>";labelT("lm_list")}
+$("lm_list").addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
+ if(t.dataset.lme)lmEdit(t.dataset.lme);
+ if(t.dataset.lmd)sure(t,"Sure?",function(){lmDel(t.dataset.lmd)})});
+/* filters = same pickers used for export */
+$("lm_filters").innerHTML=pickHTML("lm_pp","Projects (leave empty = all)")+pickHTML("lm_ps","Stages (leave empty = all)")+pickHTML("lm_ppt","Parts (leave empty = all)");
+var _pickAll5=pickAll;pickAll=function(){_pickAll5();pickRender("lm_pp",projs.map(function(p){return p.name}));pickRender("lm_ps",STAGES);pickRender("lm_ppt",lmPartList());rLmList()};
+document.addEventListener("change",function(e){var t=e.target;if(t.dataset&&/^lm_p/.test(t.dataset.pk||"")){if(t.dataset.pk=="lm_pp")pickRender("lm_ppt",lmPartList());rLmList()}});
+document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;var id=t.dataset.pall||t.dataset.pnone;if(id&&/^lm_p/.test(id)){if(id=="lm_pp")pickRender("lm_ppt",lmPartList());rLmList()}});
+var _setProjSel5=setProjSel;setProjSel=function(){_setProjSel5();lmProjSel()};
+var _rLab5=rLab;rLab=function(f){_rLab5(f);rLmList()};
+async function limData(n){var l=limAll().filter(function(o){return o.project==n}).sort(limSort),out=[];for(var i=0;i<l.length;i++){var o=l[i];out.push({stage:o.stage,part:o.part,pos:o.pos,color:o.color,note:o.note,photo:i<8&&o.photos[0]?await wkImg(o.photos[0]):""})}return out}
+
+/* ---------- Excel export ---------- */
+async function limSheet(wb,a,b,title,list){var ws=wb.addWorksheet(sname(wb,a,b),{views:[{showGridLines:false}]});widths(ws,[2.6,5,16,10,18,20,18,34,16,16,16,16,16]);
+ put(ws,1,2,13,title,{b:true,sz:13,fill:BLUE});
+ ["No","Project","Stage","Part","Position","Color","Limit Description"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});put(ws,3,9,13,"Limit sample photos",{b:true,bd:true,fill:GREY,h:"center"});
+ var r=4;
+ for(var k=0;k<list.length;k++){var o=list[k],nr=Math.max(1,Math.ceil(o.photos.length/5));
+  [k+1,o.project,o.stage,o.part,o.pos,o.color,o.note||"-"].forEach(function(v,j){put(ws,r,2+j,2+j,v,{bd:true,h:j==0||j==2?"center":"left"});if(j==6)ws.getCell(r,8).alignment={wrapText:true,vertical:"middle"}});
+  for(var q=0;q<nr;q++){ws.getRow(r+q).height=o.photos.length?88:22;
+   for(var j=0;j<5;j++){var u=o.photos[q*5+j];if(!u)continue;
+    try{var im=await imgBuf(u),sc=Math.min(108/im.w,92/im.h),id=wb.addImage({buffer:im.buf,extension:"jpeg"});ws.addImage(id,{tl:{col:8+j+.05,row:r-1+q+.05},ext:{width:im.w*sc,height:im.h*sc}})}catch(e){put(ws,r+q,9+j,9+j,"(photo unavailable)",{sz:8})}}}
+  r+=nr}}
+async function limitSheet(wb,proj){var l=limAll().filter(function(o){return o.project==proj}).sort(limSort);if(l.length)await limSheet(wb,proj,"Limit",proj+" – Production Limit",l)}
+$("lm_x").onclick=async function(){var b=$("lm_x"),lbl=b.textContent,l=lmFiltered();
+ if(!l.length)return toast("No production limits match the selection");
+ b.disabled=true;b.textContent="Preparing…";
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Production Limit",{views:[{showGridLines:false}]});widths(ws,[2.6,5,16,10,18,20,18,40,10]);
+  put(ws,1,2,9,"Production Limit – Position & Color",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Part","Position","Color","Limit Description","Photos"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  l.forEach(function(o,i){[i+1,o.project,o.stage,o.part,o.pos,o.color,o.note||"-",o.photos.length].forEach(function(v,j){put(ws,4+i,2+j,2+j,v,{bd:true,h:j==0||j==2||j==7?"center":"left"})})});
+  var stages=STAGES.filter(function(s){return l.some(function(o){return o.stage==s})});
+  for(var si=0;si<stages.length;si++){var s=stages[si];await limSheet(wb,"Limit",s,"Production Limit – "+s,l.filter(function(o){return o.stage==s}))}
+  var ps=pickSel("lm_pp"),ss=pickSel("lm_ps"),pts=pickSel("lm_ppt"),nm="Production_Limit"+(ps.length==1?"_"+ps[0].replace(/[^\w-]+/g,"_"):"")+(ss.length==1?"_"+ss[0].replace(/\W+/g,""):"")+(pts.length==1?"_"+pts[0].replace(/[^\w-]+/g,"_"):"");
+  dl(nm+".xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}
+ catch(e){toast("Export failed: "+e.message)}
+ b.disabled=false;b.textContent=lbl};
+pickAll();lmProjSel();
 
 </script>
 </body>
