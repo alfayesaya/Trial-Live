@@ -1021,6 +1021,7 @@ function stageSheet(wb,proj,stage,f,sc){
   cols.forEach(function(c,i){put(ws,r,sp[i][0],sp[i][1],c,{b:true,bd:true,fill:GREY,h:"center"})});r++;
   data.forEach(function(d,k){put(ws,r,2,2,k+1,{bd:true,h:"center"});d.forEach(function(v,i){put(ws,r,sp[i][0],sp[i][1],v,{bd:true,h:cols[i]=="Qty"?"center":"left"})});r++});r++}
  if(sc.completeness)tbl(SEC.completeness.t,SEC.completeness.c,sc.completeness,SP.completeness);
+ Object.keys(sc).filter(function(k){return k.indexOf("::")>0}).sort().forEach(function(k){var bb=k.split("::"),S=SEC[bb[0]];if(S&&sc[k].length)tbl(S.t+" – Part: "+bb[1],S.c,sc[k],bb[0]=="completeness"?SP.completeness:SP.tools)});
  if(f.length){var pm={};f.forEach(function(x){var k=x.method+"|"+x.pos;pm[k]=pm[k]||{m:x.method,p:x.pos,mc:[],n:0};pm[k].n++;if(x.mc&&pm[k].mc.indexOf(x.mc)<0)pm[k].mc.push(x.mc)});
   tbl("Decoration Method",["Part Name","Position","Plan","Actual","Remark"],Object.keys(pm).map(function(k){var o=pm[k];return [o.m,o.p,o.m,o.m,"Machine "+(o.mc.join(", ")||"-")+" · "+o.n+" trial"]}),SP.method)}
  if(stage=="PP2K"){var pl=planOf(proj);if(pl.length)tbl("Decoplan (PP2K Release Reference)",["Position","Part","Method","Pads","Color (Reference)"],pl.sort(function(a,b){return (Number(a.job)||0)-(Number(b.job)||0)}).map(function(x){return ["J"+x.job+" · "+en(x.pos),en(x.part),x.method,x.method=="Pad Print"&&x.proc?x.proc+"×":"-",x.color]}),[[3,4],[5,9],[10,10],[11,11],[12,13]])}
@@ -1454,7 +1455,8 @@ async function saveProjEdit(){syncPe();var nm=pe.name.trim(),msg=$("pe_msg");if(
   if(nm!=pe.old){await api("PATCH","trials",{project:nm},"?project=eq."+E(pe.old));await api("PATCH","sections",{project:nm},"?project=eq."+E(pe.old))}
   if(ren.length){last.s="";await loadS();var up=[];
    for(var r of ren)await api("PATCH","trials",{pos:r[1]},"?project=eq."+E(nm)+"&pos=eq."+E(r[0]));
-   secs.filter(function(y){return y.project==nm&&(y.section=="decoplan"||y.section=="lab_results")}).forEach(function(y){var ch=false,rw=(y.rows||[]).map(function(row){var c=row.slice(),ix=y.section=="decoplan"?2:1;ren.forEach(function(r){if((y.section=="decoplan"?en(c[ix]):c[ix])==r[0]){c[ix]=r[1];ch=true}});return c});if(ch)up.push({project:nm,stage:y.stage,section:y.section,rows:rw,ts:Date.now()})});
+   secs.filter(function(y){return y.project==nm&&(y.section=="decoplan"||y.section=="lab_results"||y.section=="prod_limit")}).forEach(function(y){var ch=false,rw=(y.rows||[]).map(function(row){var c=row.slice(),ix=y.section=="decoplan"?2:1;ren.forEach(function(r){if((y.section=="decoplan"?en(c[ix]):c[ix])==r[0]){c[ix]=r[1];ch=true}});return c});if(ch)up.push({project:nm,stage:y.stage,section:y.section,rows:rw,ts:Date.now()})});
+   secs.filter(function(y){return y.project==nm&&String(y.section).indexOf("::")>0}).forEach(function(y){var bb=y.section.split("::");ren.forEach(function(r){if(bb[1]==r[0]){up.push({project:nm,stage:y.stage,section:bb[0]+"::"+r[1],rows:y.rows,ts:Date.now()});up.push({project:nm,stage:y.stage,section:y.section,rows:[],ts:Date.now()})}})});
    if(up.length)await api("POST","sections",up,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
   await savePA(nm,{pa:pe.pa,tool:pe.tool,ink:pe.ink});
   last.p=last.t=last.s="";await loadP();await loadT();await loadS();render();toast("Project & part updated ✓");closeModal();pe=null}
@@ -1702,33 +1704,34 @@ var _rData4=rData;rData=function(){_rData4();var d=dupIds().length,b=$("dupbtn")
 
 /* ===================== READINESS SUMMARY / EXPORT / EDIT ===================== */
 function rdHas(r){return r.some(Boolean)}
-function readinessSummary(names){var out=[];names.forEach(function(n){STAGES.forEach(function(st){
- var comp=secRows(n,st,"completeness"),sp=secRows(n,st,"spray_tools").filter(rdHas),pd=secRows(n,st,"pad_tools").filter(rdHas),got=comp.filter(function(r){return r[1]||r[3]});
+function rdParts(n){var p=projs.filter(function(x){return x.name==n})[0];return [""].concat(p?p.parts:[])}
+function readinessSummary(names){var out=[];names.forEach(function(n){STAGES.forEach(function(st){rdParts(n).forEach(function(pt){
+ var comp=secRows(n,st,"completeness",pt),sp=secRows(n,st,"spray_tools",pt).filter(rdHas),pd=secRows(n,st,"pad_tools",pt).filter(rdHas),got=comp.filter(function(r){return r[1]||r[3]});
  if(!got.length&&!sp.length&&!pd.length)return;
  var stc={},add=function(v){if(v)stc[v]=(stc[v]||0)+1};got.forEach(function(r){add(r[3])});sp.forEach(function(r){add(r[4])});pd.forEach(function(r){add(r[4])});
- out.push({project:n,stage:st,compTotal:comp.length,compGot:got.length,spray:sp.length,pad:pd.length,status:Object.keys(stc).map(function(k){return k+" ×"+stc[k]}).join(", "),missing:comp.filter(function(r){return !(r[1]||r[3])}).map(function(r){return r[0]})})})});return out}
-function readinessData(n){var out=[];STAGES.forEach(function(st){var secs2=[];Object.keys(SEC).forEach(function(k){var S=SEC[k],rows2=secRows(n,st,k).filter(function(r){return k=="completeness"?r.slice(1).some(Boolean):rdHas(r)});if(rows2.length)secs2.push({title:S.t,cols:S.c,rows:rows2})});if(secs2.length)out.push({stage:st,sections:secs2})});return out}
+ out.push({project:n,stage:st,part:pt,compTotal:comp.length,compGot:got.length,spray:sp.length,pad:pd.length,status:Object.keys(stc).map(function(k){return k+" ×"+stc[k]}).join(", "),missing:comp.filter(function(r){return !(r[1]||r[3])}).map(function(r){return r[0]})})})})});return out}
+function readinessData(n){var out=[];STAGES.forEach(function(st){var secs2=[];rdParts(n).forEach(function(pt){Object.keys(SEC).forEach(function(k){var S=SEC[k],rows2=secRows(n,st,k,pt).filter(function(r){return k=="completeness"?r.slice(1).some(Boolean):rdHas(r)});if(rows2.length)secs2.push({title:S.t+(pt?" – Part: "+pt:" – All parts"),cols:S.c,rows:rows2})})});if(secs2.length)out.push({stage:st,sections:secs2})});return out}
 $("labsum").parentNode.insertAdjacentHTML("afterend","<div class=\"panel\" style=\"margin-bottom:16px\"><h2>Readiness Summary per Project</h2>"+pickHTML("rd_pick","Projects (leave empty = all)")+"<button type=button class=btn id=rd_x style=\"margin-bottom:14px\">Export Readiness (Excel)</button><div class=\"ov stk\" id=rd_sum></div></div>");
 var _pickAll4=pickAll;pickAll=function(){_pickAll4();if($("rd_pick"))pickRender("rd_pick",projs.map(function(p){return p.name}))};
 function rRdSum(){var el=$("rd_sum");if(!el)return;var sel=pickSel("rd_pick"),sm=readinessSummary(sel.length?sel:projs.map(function(p){return p.name}));
- el.innerHTML=sm.length?"<table><tr><th>Project</th><th>Stage</th><th>Completeness (received / total)</th><th>Spray tools</th><th>Pad Print tools</th><th>Status</th><th>Not received yet</th><th></th></tr>"+sm.map(function(o){return "<tr><td><b>"+esc(o.project)+"</b></td><td>"+esc(o.stage)+"</td><td>"+o.compGot+" / "+o.compTotal+"</td><td>"+o.spray+"</td><td>"+o.pad+"</td><td>"+esc(o.status||"-")+"</td><td><span class=sub>"+esc(o.missing.slice(0,6).join(", ")+(o.missing.length>6?" +"+(o.missing.length-6)+" more":"")||"-")+"</span></td><td><button type=button class=\"btn ghost small\" data-rdp=\""+esc(o.project)+"\" data-rds=\""+esc(o.stage)+"\">✎ Edit</button></td></tr>"}).join("")+"</table>":"<div class=sub>No readiness data entered yet. Fill it in the Readiness &amp; Lab tab.</div>";labelT("rd_sum")}
+ el.innerHTML=sm.length?"<table><tr><th>Project</th><th>Stage</th><th>Part</th><th>Completeness (received / total)</th><th>Spray tools</th><th>Pad Print tools</th><th>Status</th><th>Not received yet</th><th></th></tr>"+sm.map(function(o){return "<tr><td><b>"+esc(o.project)+"</b></td><td>"+esc(o.stage)+"</td><td>"+esc(o.part||"All parts")+"</td><td>"+o.compGot+" / "+o.compTotal+"</td><td>"+o.spray+"</td><td>"+o.pad+"</td><td>"+esc(o.status||"-")+"</td><td><span class=sub>"+esc(o.missing.slice(0,6).join(", ")+(o.missing.length>6?" +"+(o.missing.length-6)+" more":"")||"-")+"</span></td><td><button type=button class=\"btn ghost small\" data-rdp=\""+esc(o.project)+"\" data-rds=\""+esc(o.stage)+"\" data-rdpt=\""+esc(o.part)+"\">✎ Edit</button></td></tr>"}).join("")+"</table>":"<div class=sub>No readiness data entered yet. Fill it in the Readiness &amp; Lab tab.</div>";labelT("rd_sum")}
 document.addEventListener("change",function(e){var t=e.target;if(t.dataset&&t.dataset.pk=="rd_pick")rRdSum()});
 document.addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
  if(t.dataset.pall=="rd_pick"||t.dataset.pnone=="rd_pick")rRdSum();
- if(t.dataset.rdp){tab("lab");$("lp").value=t.dataset.rdp;$("ls").value=t.dataset.rds;rLab(true);window.scrollTo({top:0,behavior:"smooth"})}});
+ if(t.dataset.rdp){tab("lab");$("lp").value=t.dataset.rdp;lptFill();$("lpt").value=t.dataset.rdpt||"";$("ls").value=t.dataset.rds;rLab(true);window.scrollTo({top:0,behavior:"smooth"})}});
 $("rd_x").onclick=async function(){var b=$("rd_x"),lbl=b.textContent,sel=pickSel("rd_pick"),names=sel.length?sel:projs.map(function(p){return p.name}),sm=readinessSummary(names);
  if(!sm.length)return toast("No readiness data for the selected projects");
  b.disabled=true;b.textContent="Preparing…";
- try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Readiness Summary",{views:[{showGridLines:false}]});widths(ws,[2.6,5,18,12,20,12,14,34,50]);
-  put(ws,1,2,9,"Decoration Completeness & Tools Readiness – Summary",{b:true,sz:13,fill:BLUE});
-  ["No","Project","Stage","Completeness (received / total)","Spray tools","Pad Print tools","Status","Not received yet"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
-  sm.forEach(function(o,i){[i+1,o.project,o.stage,o.compGot+" / "+o.compTotal,o.spray,o.pad,o.status||"-",o.missing.join(", ")||"-"].forEach(function(a,j){put(ws,4+i,2+j,2+j,a,{bd:true,h:j==0||(j>=2&&j<=5)?"center":"left"})})});
-  var d=wb.addWorksheet("Readiness Details",{views:[{showGridLines:false}]});widths(d,[2.6,5,18,12,30,30,16,14,8,16,30]);
-  put(d,1,2,11,"Decoration Completeness & Tools Readiness – Details",{b:true,sz:13,fill:BLUE});
-  ["No","Project","Stage","Section","Item / Tool / Method","Position","Date","Qty","Status","Remark"].forEach(function(h,i){put(d,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
-  var r=4,k=1;names.forEach(function(n){STAGES.forEach(function(st){Object.keys(SEC).forEach(function(key){secRows(n,st,key).filter(function(rw){return key=="completeness"?rw.slice(1).some(Boolean):rdHas(rw)}).forEach(function(rw){
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Readiness Summary",{views:[{showGridLines:false}]});widths(ws,[2.6,5,18,12,16,20,12,14,34,50]);
+  put(ws,1,2,10,"Decoration Completeness & Tools Readiness – Summary",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Part","Completeness (received / total)","Spray tools","Pad Print tools","Status","Not received yet"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  sm.forEach(function(o,i){[i+1,o.project,o.stage,o.part||"All parts",o.compGot+" / "+o.compTotal,o.spray,o.pad,o.status||"-",o.missing.join(", ")||"-"].forEach(function(a,j){put(ws,4+i,2+j,2+j,a,{bd:true,h:j==0||(j>=2&&j<=6)?"center":"left"})})});
+  var d=wb.addWorksheet("Readiness Details",{views:[{showGridLines:false}]});widths(d,[2.6,5,18,12,16,30,30,16,14,8,16,30]);
+  put(d,1,2,12,"Decoration Completeness & Tools Readiness – Details",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Stage","Part","Section","Item / Tool / Method","Position","Date","Qty","Status","Remark"].forEach(function(h,i){put(d,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  var r=4,k=1;names.forEach(function(n){STAGES.forEach(function(st){rdParts(n).forEach(function(pt){Object.keys(SEC).forEach(function(key){secRows(n,st,key,pt).filter(function(rw){return key=="completeness"?rw.slice(1).some(Boolean):rdHas(rw)}).forEach(function(rw){
    var v=key=="completeness"?[rw[0],"",rw[1],rw[2],rw[3],rw[4]]:[rw[0],rw[1],rw[2],rw[3],rw[4],rw[5]];
-   [k++,n,st,SEC[key].t].concat(v).forEach(function(a,j){put(d,r,2+j,2+j,a,{bd:true,h:j==0||j==7?"center":"left"})});r++})})})});
+   [k++,n,st,pt||"All parts",SEC[key].t].concat(v).forEach(function(a,j){put(d,r,2+j,2+j,a,{bd:true,h:j==0||j==8?"center":"left"})});r++})})})})});
   dl(names.length==1?"Readiness_"+names[0].replace(/[^\w-]+/g,"_")+".xlsx":"Readiness_Summary.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}
  catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl};
@@ -1831,6 +1834,66 @@ $("lm_x").onclick=async function(){var b=$("lm_x"),lbl=b.textContent,l=lmFiltere
  catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl};
 pickAll();lmProjSel();
+
+
+/* ===================== READINESS PER PART ===================== */
+function secRows(p,s,k,part){var sk=part?k+"::"+part:k,x=secs.filter(function(y){return y.project==p&&y.stage==s&&y.section==sk})[0],n=SEC[k].c.length,src=x?x.rows:SEC[k].d;
+ return src.map(function(r){var o=[];for(var i=0;i<n;i++)o.push(r[i]==null?"":String(r[i]));return o})}
+function rLab(force){var p=$("lp").value,s=$("ls").value,pt=$("lpt")?$("lpt").value:"",key=p+"|"+s+"|"+pt;
+ if(!p){$("labBox").innerHTML="<div class=sub>Create a project first in the Project tab.</div>";return}
+ if(force||key!=workKey){workKey=key;work={};Object.keys(SEC).forEach(function(k){work[k]=secRows(p,s,k,pt)});var dx=secs.filter(function(y){return y.project==p&&y.stage==s&&y.section=="lab_docs"})[0];workDocs=dx?dx.rows.map(function(r){return r[0]}):[]}
+ rLabDocs();
+ $("labBox").innerHTML="<div class=sub style=\"margin-bottom:10px\">"+(pt?"Updating readiness for part <b>"+esc(pt)+"</b> only.":"Updating readiness for the <b>whole project</b> (all parts). Pick a part above to record readiness per part.")+"</div>"
+ +Object.keys(SEC).map(function(k){var S=SEC[k];return "<div class=gh>"+S.t+"</div><div class=\"ov stk\"><table><tr><th>No</th>"+S.c.map(function(c){return "<th>"+c+"</th>"}).join("")+"<th></th></tr>"+work[k].map(function(r,i){return "<tr><td data-l=No>"+(i+1)+"</td>"+r.map(function(v,j){return "<td data-l=\""+S.c[j]+"\"><input type=text class=si"+(S.c[j]=="Result"?" list=resl":"")+" data-k=\""+k+"\" data-i=\""+i+"\" data-j=\""+j+"\" value=\""+esc(v)+"\"></td>"}).join("")+"<td><button type=button class=chip data-del=\""+k+"|"+i+"\">✕</button></td></tr>"}).join("")+"</table></div><button type=button class=\"btn ghost small\" data-add=\""+k+"\">＋ Row</button>"}).join("")}
+$("ls").parentNode.insertAdjacentHTML("afterend","<div class=field><label>Part</label><select id=lpt></select></div>");
+function lptFill(){var p=projs.filter(function(x){return x.name==$("lp").value})[0],c=$("lpt").value,l=p?p.parts:[];
+ $("lpt").innerHTML="<option value=\"\">All parts (whole project)</option>"+l.map(function(x){return "<option value=\""+esc(x)+"\">"+esc(x)+"</option>"}).join("");$("lpt").value=l.indexOf(c)>=0?c:""}
+$("lp").onchange=function(){lptFill();rLab()};$("ls").onchange=$("lpt").onchange=function(){rLab()};
+$("lsave").onclick=async function(){var p=$("lp").value,s=$("ls").value,pt=$("lpt").value;if(!p)return toast("Select a project first");
+ var body=Object.keys(SEC).map(function(k){return {project:p,stage:s,section:pt?k+"::"+pt:k,rows:work[k].filter(function(r){return r.some(function(x){return x.trim()})}),ts:Date.now()}});
+ try{var fl=$("labf").files;for(var i=0;i<fl.length;i++)workDocs.push(await upPhoto(fl[i]));$("labf").value="";rLabDocs();body.push({project:p,stage:s,section:"lab_docs",rows:workDocs.map(function(u){return [u]}),ts:Date.now()});await api("POST","sections",body,"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");last.s="";await loadS();toast("Completeness & tools saved"+(pt?" for "+pt:"")+" ✓")}catch(e){toast("Failed: "+e.message.slice(0,100))}};
+var _setProjSel6=setProjSel;setProjSel=function(){_setProjSel6();lptFill()};
+lptFill();
+
+/* ===================== DASHBOARD: NOTIFICATIONS + TIMELINE ===================== */
+function lastUpd(n){var best=0,what="";rows.forEach(function(x){if(x.project==n&&(x.ts||0)>best){best=x.ts;what="trial"}});
+ secs.forEach(function(y){var t=Number(y.ts)||0;if(y.project==n&&t>best){best=t;what=y.section=="lab_results"?"lab result":y.section=="prod_limit"?"production limit":y.section=="decoplan"?"Decoplan":y.section=="pa_plan"?"PA date":"readiness"}});return {t:best,what:what}}
+function notifs(names){var today=iso(Date.now()),out=[],STN={ep:"EP",fep:"FEP",pp2k:"PP2K"};
+ names.forEach(function(n){var p=projs.filter(function(x){return x.name==n})[0];if(!p||p.rs=="Released")return;
+  var lu=lastUpd(n),ld=lu.t?iso(lu.t):"";
+  if(ld!=today){var d=ld?dDiff(today,ld):null;out.push({sev:d==null||d>=3?3:2,kind:"No update today",project:n,text:ld?"Last update "+wkD(ld,1)+" ("+d+" day"+(d>1?"s":"")+" ago, "+lu.what+")":"Nothing has been recorded yet"})}
+  var ml=msList(n);
+  if(!ml.pa){out.push({sev:1,kind:"PA date not set",project:n,text:"The schedule cannot be tracked. Add the PA date in Project & Part → Edit project."});return}
+  ml.ms.forEach(function(m){var due=dDiff(m.plan,today),st=STN[m.k];
+   if(st){var miss=p.parts.length?p.parts.filter(function(pt){return !rows.some(function(x){return x.project==n&&x.stage==st&&x.pos==pt})}):(m.act?[]:["any part"]);if(!miss.length)return;
+    if(due<0)out.push({sev:3,kind:st+" overdue +"+(-due)+"d",project:n,text:"Planned "+wkD(m.plan,1)+". No "+st+" trial yet for: "+miss.join(", ")});
+    else if(due<=3)out.push({sev:2,kind:st+(due?" due in "+due+"d":" due today"),project:n,text:"Planned "+wkD(m.plan,1)+". No "+st+" trial yet for: "+miss.join(", ")})}
+   else if(!m.act){if(due<0)out.push({sev:3,kind:m.n+" overdue +"+(-due)+"d",project:n,text:"Planned "+wkD(m.plan,1)+". Actual date not entered yet."});else if(due<=3)out.push({sev:2,kind:m.n+(due?" due in "+due+"d":" due today"),project:n,text:"Planned "+wkD(m.plan,1)+"."})}})});
+ return out.sort(function(a,b){return b.sev-a.sev||(a.project<b.project?-1:1)})}
+$("tab-ringkasan").insertAdjacentHTML("afterbegin","<div class=\"dash-grid\"><div class=\"panel g-12\"><h2>Notifications <span class=n id=notif_n></span></h2><div id=notif_list style=\"max-height:340px;overflow:auto\"></div></div></div>");
+$("kpi").parentNode.parentNode.insertAdjacentHTML("afterend","<div class=\"dash-grid\"><div class=\"panel g-12\"><h2>Project Timeline – Not Yet Released</h2><div class=ov id=tl_dash></div></div></div>");
+function rNotif(){var fp=$("fp").value,names=projs.map(function(p){return p.name}).filter(function(n){return !fp||n==fp}),l=notifs(names),red=l.filter(function(x){return x.sev==3}).length,col={3:"#d6405a",2:"#c58a10",1:"#8a8a99"};
+ $("notif_n").textContent=l.length?l.length+" alert"+(l.length>1?"s":"")+(red?" · "+red+" urgent":""):"";
+ $("notif_list").innerHTML=l.length?l.map(function(x){return "<div style=\"border-left:4px solid "+col[x.sev]+";background:#f8f6fb;border-radius:8px;padding:8px 12px;margin-bottom:8px\"><b>"+esc(x.project)+"</b> · <span style=\"color:"+col[x.sev]+";font-weight:700\">"+esc(x.kind)+"</span><div class=sub>"+esc(x.text)+"</div></div>"}).join(""):"<div class=sub>✓ All projects are up to date. No overdue milestones.</div>"}
+function rTimeline(){var el=$("tl_dash");if(!el)return;var fp=$("fp").value,names=projs.filter(function(p){return p.rs!="Released"&&(!fp||p.name==fp)}).map(function(p){return p.name});
+ if(!names.length){el.innerHTML="<div class=sub>All projects are released.</div>";return}
+ var items=names.map(function(n){return {n:n,ml:msList(n)}}),wp=items.filter(function(i){return i.ml.pa}).sort(function(a,b){return a.ml.pa<b.ml.pa?-1:1}),np=items.filter(function(i){return !i.ml.pa}),today=iso(Date.now());
+ if(!wp.length){el.innerHTML="<div class=sub>No PA dates set yet. Add a PA date in Project & Part → Edit project to see the timeline.</div>";return}
+ var dts=[today];wp.forEach(function(i){i.ml.ms.forEach(function(m){if(m.plan)dts.push(m.plan);if(m.act)dts.push(m.act)})});dts.sort();
+ var d0=addDays(dts[0],-2),d1=addDays(dts[dts.length-1],2),span=Math.max(1,dDiff(d1,d0)),W=1000,X0=130,X1=W-20,RH=54,TOP=36,H=TOP+wp.length*RH+8,x=function(d){return X0+(X1-X0)*dDiff(d,d0)/span},S="";
+ for(var d=d0;dDiff(d1,d)>=0;d=addDays(d,7))S+="<line x1=\""+x(d)+"\" y1=\""+(TOP-8)+"\" x2=\""+x(d)+"\" y2=\""+H+"\" stroke=\"#e4e0ea\"/><text x=\""+x(d)+"\" y=\"14\" font-size=\"11\" fill=\"#6b6880\" text-anchor=\"middle\">"+wkD(d)+"</text>";
+ wp.forEach(function(it,i){var y0=TOP+i*RH,cy=y0+24,ov=overall(it.ml),pl=it.ml.ms.filter(function(m){return m.plan}),xa=x(pl[0].plan),xb=x(pl[pl.length-1].plan),oc=ov.c=="Fail"?"#d6405a":ov.c=="Pass"?"#1f9d63":"#8a8a99";
+  S+="<text x=\"6\" y=\""+(y0+22)+"\" font-size=\"13\" font-weight=\"700\" fill=\"#373545\">"+esc(it.n)+"</text><text x=\"6\" y=\""+(y0+38)+"\" font-size=\"10\" fill=\""+oc+"\">"+esc(ov.t)+"</text>"
+  +"<rect x=\""+xa+"\" y=\""+(cy-9)+"\" width=\""+Math.max(2,xb-xa)+"\" height=\"18\" rx=\"9\" fill=\"#eee6f3\" stroke=\"#cdb5dc\"/>";
+  it.ml.ms.forEach(function(m){var c=WK_ST[m.st][0];if(m.act&&m.act!=m.plan)S+="<line x1=\""+x(m.plan)+"\" y1=\""+cy+"\" x2=\""+x(m.act)+"\" y2=\""+cy+"\" stroke=\""+c+"\" stroke-width=\"2\" stroke-dasharray=\"3 2\"/>";
+   S+="<circle cx=\""+x(m.plan)+"\" cy=\""+cy+"\" r=\"7\" fill=\"#"+(m.st=="na"?"8a8a99":m.st=="pending"?"b7b3c4":c)+"\" stroke=\"#fff\" stroke-width=\"2\"><title>"+esc(m.n+" · plan "+wkD(m.plan,1)+(m.act?" · actual "+wkD(m.act,1):"")+" · "+wkStLabel(m))+"</title></circle><text x=\""+x(m.plan)+"\" y=\""+(cy-14)+"\" font-size=\"9\" fill=\"#6b6880\" text-anchor=\"middle\">"+{tool:"TOOL",ep:"EP",ink:"INK",fep:"FEP",pp2k:"PP2K",rel:"REL"}[m.k]+"</text>";
+   if(m.act)S+="<polygon points=\""+x(m.act)+","+(cy+11)+" "+(x(m.act)-5)+","+(cy+20)+" "+(x(m.act)+5)+","+(cy+20)+"\" fill=\"#373545\"/>"})});
+ S+="<line x1=\""+x(today)+"\" y1=\""+(TOP-10)+"\" x2=\""+x(today)+"\" y2=\""+H+"\" stroke=\"#d6405a\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\"/><text x=\""+x(today)+"\" y=\"28\" font-size=\"10\" fill=\"#d6405a\" text-anchor=\"middle\" font-weight=\"700\">Today</text>";
+ el.innerHTML="<div style=\"min-width:820px\"><svg viewBox=\"0 0 "+W+" "+H+"\" width=\"100%\" font-family=\"Arial\">"+S+"</svg></div><div class=sub style=\"margin-top:8px\">TOOL = Tooling Readiness (PA-20) · EP (PA-14) · INK = Original Ink (PA+1) · FEP (PA+2) · PP2K (PA+7) · REL = Release (PA+10). Circle = planned date (green on time · red late/overdue · amber due ≤3 days · grey pending). ▲ = actual date. Dashed red line = today.</div>"+(np.length?"<div class=sub style=\"margin-top:6px\">PA date not set: "+np.map(function(i){return esc(i.n)}).join(", ")+"</div>":"")}
+var _rDash6=rDash;rDash=function(){_rDash6();rNotif();rTimeline()};
+function updBadge(){var n=notifs(projs.map(function(p){return p.name})).filter(function(x){return x.sev>=2}).length;
+ document.querySelectorAll("[data-tab=\"ringkasan\"]").forEach(function(b){var s=b.querySelector(".nbadge");if(!s){b.insertAdjacentHTML("beforeend"," <span class=nbadge style=\"background:#d6405a;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px\"></span>");s=b.querySelector(".nbadge")}s.textContent=n||"";s.style.display=n?"inline-block":"none"})}
+var _render6=render;render=function(){_render6();try{updBadge()}catch(e){}};
 
 </script>
 </body>
