@@ -1289,10 +1289,10 @@ function paOf(name){var y=secs.filter(function(s){return s.project==name&&s.sect
 async function savePA(name,v){await api("POST","sections",[{project:name,stage:"ALL",section:"pa_plan",rows:[[v.pa||"",v.tool||"",v.ink||""]],ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
 function msList(name){var pa=paOf(name),f=rows.filter(function(x){return x.project==name}),p=projs.filter(function(x){return x.name==name})[0]||{},today=iso(Date.now());
  function first(st){var a=f.filter(function(x){return x.stage==st}).map(T);return a.length?iso(Math.min.apply(null,a)):""}
- var act={tool:pa.tool,ep:first("EP"),ink:pa.ink,fep:first("FEP"),pp2k:first("PP2K"),rel:p.rd||""};
+ var ik=inkActual(name,pa),act={tool:pa.tool,ep:first("EP"),ink:ik.d,fep:first("FEP"),pp2k:first("PP2K"),rel:p.rd||""};
  return {pa:pa.pa,ms:MS.map(function(m){var plan=pa.pa?addDays(pa.pa,m.off):"",a=act[m.k],st="na",d=0;
   if(plan){if(a){d=dDiff(a,plan);st=d<=0?"ontime":"late"}else{d=dDiff(today,plan);st=d>0?"overdue":(d>=-3?"soon":"pending")}}
-  return {k:m.k,n:m.n,off:m.off,plan:plan,act:a,st:st,d:d}})}}
+  return {k:m.k,n:m.n,off:m.off,plan:plan,act:a,st:st,d:d,src:m.k=="ink"?ik.src:""}})}}
 function stLabel(m){return m.st=="ontime"?(m.d<0?"On time ("+(-m.d)+"d early)":"On time"):m.st=="late"?"Late +"+m.d+"d":m.st=="overdue"?"Overdue +"+m.d+"d":m.st=="soon"?"Due in "+(-m.d)+"d":m.st=="pending"?"Pending":"-"}
 function stPill(m){return m.st=="ontime"?"Pass":(m.st=="late"||m.st=="overdue")?"Fail":m.st=="soon"?"Hold":""}
 function overall(ml){if(!ml.pa)return {t:"PA not set",c:"",bad:0};var bad=ml.ms.filter(function(m){return m.st=="late"||m.st=="overdue"}).length,done=ml.ms.filter(function(m){return m.act}).length;
@@ -1306,7 +1306,7 @@ function rSched(){var sc=schedule();
   return "<tr><td><b>"+esc(o.name)+"</b>"+(o.rn?"<div class=sub>Notes: "+esc(o.rn)+"</div>":"")+"</td>"
   +"<td data-l=\"Parts trialed\">"+(pt.length?pt.map(function(p){return "<div><b>"+esc(p.part)+"</b> <span class=sub>"+esc(p.st.join(", "))+" · "+p.n+" trial</span></div>"}).join(""):"-")+"</td>"
   +"<td>"+(ml.pa?fd(ml.pa):"<span class=sub>not set</span>")+"</td>"
-  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
+  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+(m.src?" <span class=sub>("+m.src+")</span>":"")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
   +"<td><span class=\"pill "+ov.c+"\">"+esc(ov.t)+"</span><div style=\"margin-top:4px\"><span class=\"pill "+(o.rs=="Released"?"Pass":o.rs=="Ready to release"?"Hold":"")+"\">"+esc(o.rs)+"</span></div></td><td>"+durTxt(o)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No projects yet.</div>";
  var h=Array.from(document.querySelectorAll("#sch table th")).map(function(t){return t.textContent});document.querySelectorAll("#sch table tr").forEach(function(r,i){if(i)Array.from(r.cells).forEach(function(c,j){c.setAttribute("data-l",h[j]||"")})})}
 fillSchedule=function(ws,names){var sc=schedule(names),W=[2.6,5,22,12];MS.forEach(function(){W.push(12,12,17)});W.push(22,16,16,30);widths(ws,W);
@@ -1441,8 +1441,8 @@ function openProjEdit(name){var p=projs.filter(function(x){return x.name==name})
  pe={id:p.id,old:p.name,name:p.name,pa:pa.pa,tool:pa.tool,ink:pa.ink,parts:p.parts.map(function(x){return {o:x,n:x}}),co:JSON.parse(JSON.stringify(p.co||{}))};drawProjEdit()}
 function drawProjEdit(){openModal("<h2>Edit Project &amp; Part <button class=\"btn ghost small\" id=pe_x type=button>Close</button></h2>"
  +"<div class=field><label>Project name</label><input type=text id=pe_name value=\""+esc(pe.name)+"\"></div>"
- +"<div class=gh>PA date &amp; milestones</div><div class=sub style=\"margin-bottom:8px\">Plan dates are derived from PA: Tooling Readiness PA-20 · EP Trial PA-14 · Original Ink PA+1 · FEP PA+2 · PP2K PA+7 · Release PA+10. EP/FEP/PP2K actuals come from the first trial of that stage; Release actual comes from the release data.</div>"
- +"<div class=fg><div class=field><label>PA date</label><input type=date id=pe_pa value=\""+esc(pe.pa)+"\"></div><div class=field><label>Tooling readiness (actual date)</label><input type=date id=pe_tool value=\""+esc(pe.tool)+"\"></div><div class=field><label>Original ink (actual date)</label><input type=date id=pe_ink value=\""+esc(pe.ink)+"\"></div></div>"
+ +"<div class=gh>PA date &amp; milestones</div><div class=sub style=\"margin-bottom:8px\">Plan dates are derived from PA: Tooling Readiness PA-20 · EP Trial PA-14 · Original Ink PA+1 · FEP PA+2 · PP2K PA+7 · Release PA+10. EP/FEP/PP2K actuals come from the first trial of that stage; Release actual comes from the release data. Original Ink actual = Received Date of “Paint / Ink” in Readiness (FEP stage).</div>"
+ +"<div class=fg><div class=field><label>PA date</label><input type=date id=pe_pa value=\""+esc(pe.pa)+"\"></div><div class=field><label>Tooling readiness (actual date)</label><input type=date id=pe_tool value=\""+esc(pe.tool)+"\"></div><div class=field><label>Original ink (actual date – used only if Readiness has no Paint / Ink date)</label><input type=date id=pe_ink value=\""+esc(pe.ink)+"\"></div></div>"
  +"<div class=gh>Parts</div><div class=sub style=\"margin-bottom:8px\">Renaming a part or project also updates saved trial data, Decoplan, and lab results.</div>"
  +pe.parts.map(function(x,i){return "<div class=fbar style=\"margin-bottom:6px\"><input type=text class=pe_p data-i=\""+i+"\" value=\""+esc(x.n)+"\"><button type=button class=\"btn danger small\" data-pedel=\""+i+"\">✕</button></div>"}).join("")
  +"<button type=button class=\"btn ghost small\" id=pe_add>＋ Add part</button>"
@@ -1886,7 +1886,7 @@ function rTimeline(){var el=$("tl_dash");if(!el)return;var fp=$("fp").value,name
   S+="<text x=\"6\" y=\""+(y0+22)+"\" font-size=\"13\" font-weight=\"700\" fill=\"#373545\">"+esc(it.n)+"</text><text x=\"6\" y=\""+(y0+38)+"\" font-size=\"10\" fill=\""+oc+"\">"+esc(ov.t)+"</text>"
   +"<rect x=\""+xa+"\" y=\""+(cy-9)+"\" width=\""+Math.max(2,xb-xa)+"\" height=\"18\" rx=\"9\" fill=\"#eee6f3\" stroke=\"#cdb5dc\"/>";
   it.ml.ms.forEach(function(m){var c=WK_ST[m.st][0];if(m.act&&m.act!=m.plan)S+="<line x1=\""+x(m.plan)+"\" y1=\""+cy+"\" x2=\""+x(m.act)+"\" y2=\""+cy+"\" stroke=\""+c+"\" stroke-width=\"2\" stroke-dasharray=\"3 2\"/>";
-   S+="<circle cx=\""+x(m.plan)+"\" cy=\""+cy+"\" r=\"7\" fill=\"#"+(m.st=="na"?"8a8a99":m.st=="pending"?"b7b3c4":c)+"\" stroke=\"#fff\" stroke-width=\"2\"><title>"+esc(m.n+" · plan "+wkD(m.plan,1)+(m.act?" · actual "+wkD(m.act,1):"")+" · "+wkStLabel(m))+"</title></circle><text x=\""+x(m.plan)+"\" y=\""+(cy-14)+"\" font-size=\"9\" fill=\"#6b6880\" text-anchor=\"middle\">"+{tool:"TOOL",ep:"EP",ink:"INK",fep:"FEP",pp2k:"PP2K",rel:"REL"}[m.k]+"</text>";
+   S+="<circle cx=\""+x(m.plan)+"\" cy=\""+cy+"\" r=\"7\" fill=\"#"+(m.st=="na"?"8a8a99":m.st=="pending"?"b7b3c4":c)+"\" stroke=\"#fff\" stroke-width=\"2\"><title>"+esc(m.n+" · plan "+wkD(m.plan,1)+(m.act?" · actual "+wkD(m.act,1)+(m.src?" (from "+m.src+")":""):"")+" · "+wkStLabel(m))+"</title></circle><text x=\""+x(m.plan)+"\" y=\""+(cy-14)+"\" font-size=\"9\" fill=\"#6b6880\" text-anchor=\"middle\">"+{tool:"TOOL",ep:"EP",ink:"INK",fep:"FEP",pp2k:"PP2K",rel:"REL"}[m.k]+"</text>";
    if(m.act)S+="<polygon points=\""+x(m.act)+","+(cy+11)+" "+(x(m.act)-5)+","+(cy+20)+" "+(x(m.act)+5)+","+(cy+20)+"\" fill=\"#373545\"/>"})});
  S+="<line x1=\""+x(today)+"\" y1=\""+(TOP-10)+"\" x2=\""+x(today)+"\" y2=\""+H+"\" stroke=\"#d6405a\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\"/><text x=\""+x(today)+"\" y=\"28\" font-size=\"10\" fill=\"#d6405a\" text-anchor=\"middle\" font-weight=\"700\">Today</text>";
  el.innerHTML="<div style=\"min-width:820px\"><svg viewBox=\"0 0 "+W+" "+H+"\" width=\"100%\" font-family=\"Arial\">"+S+"</svg></div><div class=sub style=\"margin-top:8px\">TOOL = Tooling Readiness (PA-20) · EP (PA-14) · INK = Original Ink (PA+1) · FEP (PA+2) · PP2K (PA+7) · REL = Release (PA+10). Circle = planned date (green on time · red late/overdue · amber due ≤3 days · grey pending). ▲ = actual date. Dashed red line = today.</div>"+(np.length?"<div class=sub style=\"margin-top:6px\">PA date not set: "+np.map(function(i){return esc(i.n)}).join(", ")+"</div>":"")}
@@ -1895,6 +1895,24 @@ function updBadge(){var n=notifs(projs.map(function(p){return p.name})).filter(f
  document.querySelectorAll("[data-tab=\"ringkasan\"]").forEach(function(b){var s=b.querySelector(".nbadge");if(!s){b.insertAdjacentHTML("beforeend"," <span class=nbadge style=\"background:#d6405a;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px\"></span>");s=b.querySelector(".nbadge")}s.textContent=n||"";s.style.display=n?"inline-block":"none"})}
 var _render6=render;render=function(){_render6();try{updBadge()}catch(e){}};
 
+
+/* ===================== ORIGINAL INK ACTUAL = "Paint / Ink" RECEIVED DATE IN READINESS ===================== */
+var MONN={jan:1,january:1,januari:1,feb:2,february:2,februari:2,mar:3,march:3,maret:3,apr:4,april:4,mei:5,may:5,jun:6,june:6,juni:6,jul:7,july:7,juli:7,agu:8,agt:8,aug:8,august:8,agustus:8,sep:9,sept:9,september:9,okt:10,oct:10,october:10,oktober:10,nov:11,november:11,nopember:11,des:12,dec:12,december:12,desember:12};
+function mkIso(y,m,d){if(m<1||m>12||d<1||d>31)return "";var t=new Date(y,m-1,d);return t.getMonth()==m-1?iso(t.getTime()):""}
+function parseLooseDate(s,ref){s=String(s||"").trim().toLowerCase().replace(/,/g," ").replace(/\s+/g," ");if(!s)return "";
+ var m,y;ref=ref||iso(Date.now());var ry=+ref.slice(0,4);
+ if(m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/))return mkIso(+m[1],+m[2],+m[3]);
+ if(m=s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})$/)){y=+m[3];if(y<100)y+=2000;return mkIso(y,+m[2],+m[1])}
+ var mm=s.match(/^(\d{1,2})(?:st|nd|rd|th)?[\s\-\/.]*([a-z]+)\.?(?:[\s\-\/.]*(\d{2,4}))?$/),dm=!mm&&s.match(/^([a-z]+)\.?\s*(\d{1,2})(?:st|nd|rd|th)?(?:[\s\-\/.]*(\d{2,4}))?$/),dd,mo;
+ if(mm){dd=+mm[1];mo=MONN[mm[2]];y=mm[3]}else if(dm){dd=+dm[2];mo=MONN[dm[1]];y=dm[3]}else return "";
+ if(!mo)return "";
+ if(y){y=+y;if(y<100)y+=2000;return mkIso(y,mo,dd)}
+ var best="",bd=1e9;[ry-1,ry,ry+1].forEach(function(yy){var c=mkIso(yy,mo,dd);if(c){var d=Math.abs(dDiff(c,ref));if(d<bd){bd=d;best=c}}});return best}
+function inkActual(name,pa){var p=projs.filter(function(x){return x.name==name})[0],parts=[""].concat(p?p.parts:[]),ref=(pa&&pa.pa)||iso(Date.now());
+ var stages=["FEP","PP2K","PP3K"];
+ for(var i=0;i<stages.length;i++){var ds=[];parts.forEach(function(pt){secRows(name,stages[i],"completeness",pt).forEach(function(r){if(/paint|ink|tinta/i.test(r[0])){var d=parseLooseDate(r[1],ref);if(d)ds.push(d)}})});
+  if(ds.length){ds.sort();return {d:ds[0],src:"Readiness"}}}
+ return {d:(pa&&pa.ink)||"",src:""}}
 </script>
 </body>
 </html>
