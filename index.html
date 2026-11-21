@@ -581,6 +581,8 @@ main{max-width:1600px;margin-left:auto;margin-right:auto}
   <div class="field"><label>💨 Angin</label><input id="mp_angin" type="file" accept="image/*" multiple></div>
   <div class="field"><label>⚙️ Proses</label><input id="mp_proses" type="file" accept="image/*" multiple></div>
  </div>
+ <div class="gh">Video trial</div>
+ <div class="field"><label>🎬 Video trial (opsional, bisa lebih dari satu · maks. 50 MB per video)</label><input id="vid_in" type="file" accept="video/*" multiple></div>
  <button class="btn" id="save" type="button">Simpan trial</button> <span id="msg" class="sub"></span>
 </div></section>
 
@@ -709,7 +711,7 @@ async function api(m,t,b,q,pref,n){var r=await fetch(SB+"/rest/v1/"+t+(q||""),{m
   if(mm&&t=="trials"&&b&&(n||0)<4){(Array.isArray(b)?b:[b]).forEach(function(o){delete o[mm[1]]});warn("Database not updated: column '"+mm[1]+"' does not exist, so that column's data was not saved. Run the latest supabase-setup.sql in Supabase.");return api(m,t,b,q,pref,(n||0)+1)}
   throw new Error(tx)}return m=="GET"?r.json():null}
 async function upPhoto(f){var ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,""),path=Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
- var r=await fetch(SB+"/storage/v1/object/"+BUCKET+"/"+path,{method:"POST",headers:{apikey:KEY,"Content-Type":f.type||"image/jpeg"},body:f});if(!r.ok)throw new Error(await r.text());return SB+"/storage/v1/object/public/"+BUCKET+"/"+path}
+ var r=await fetch(SB+"/storage/v1/object/"+BUCKET+"/"+path,{method:"POST",headers:{apikey:KEY,"Content-Type":f.type||(/^(mp4|mov|m4v|webm|3gp)$/.test(ext)?"video/"+(ext=="mov"?"quicktime":ext=="m4v"?"mp4":ext):"image/jpeg")},body:f});if(!r.ok)throw new Error(await r.text());return SB+"/storage/v1/object/public/"+BUCKET+"/"+path}
 function toT(x){return {ts:x.ts,trial_at:x.trialAt,project:x.project,by_name:x.by,stage:x.stage,method:x.method,pos:x.pos,mc:x.mc,qty:x.qty,ng:x.ng,color:x.color,res:x.res,params:x.params,cat:x.cat,issue:x.issue,act:x.act,photos:x.photos,trial_no:x.no,machine_photos:x.mp||{},paint_color:x.paint||""}}
 function fromT(r){return {id:r.id,ts:r.ts,trialAt:r.trial_at,project:r.project,by:r.by_name,stage:r.stage,method:r.method,pos:r.pos,mc:r.mc,qty:r.qty||0,ng:r.ng||0,color:r.color,res:r.res,params:r.params||{},cat:r.cat||"",issue:r.issue||"",act:r.act||"",photos:r.photos||[],no:r.trial_no||1,mp:r.machine_photos||{},paint:r.paint_color||""}}
 async function loadP(){var a=await api("GET","projects",null,"?select=*&order=ts.asc"),k=JSON.stringify(a);if(k==last.p)return;last.p=k;projs=a.map(function(r){return {id:r.id,name:r.name,parts:r.parts||[],co:r.colors||{},ts:r.ts,rt:r.release_target||"",rd:r.release_date||"",rs:lg(LEG.rel,r.release_status)||"Not released",rn:r.release_note||""}});setProjSel();renderProj();if(!relDone&&projs.length){relDone=true;fillRel();fillCol()}}
@@ -738,7 +740,7 @@ $("save").onclick=async function(){
  var rec={ts:Date.now(),trialAt:new Date($("dt").value).getTime()||Date.now(),project:$("proj").value,by:$("by").value,stage:$("stage").value,method:$("method").value,pos:$("pos").value,mc:$("mc").value.trim(),
   qty:Number($("qty").value)||0,ng:Number($("ng").value)||0,color:$("color").value,paint:$("paint").value.trim(),res:$("res").value,params:params,cat:$("cat").value.trim(),issue:$("issue").value.trim(),act:$("act").value.trim(),photos:photos,mp:mp,no:Number($("tno").value)||1};
  try{await api("POST","trials",toT(rec));last.t="";await loadT();$("msg").textContent="Saved ✓";toast("Trial saved");
-  ["qty","issue","act","ph_in","cat","mp_hmi","mp_speed","mp_angin","mp_proses"].forEach(function(k){$(k).value=""});$("ng").value=0;$("dt").value=nowLocal();suggestNo();
+  ["qty","issue","act","ph_in","cat","mp_hmi","mp_speed","mp_angin","mp_proses","vid_in"].forEach(function(k){$(k).value=""});$("ng").value=0;$("dt").value=nowLocal();suggestNo();
   document.querySelectorAll("#params input,#params select").forEach(function(i){i.value=""});setCats()}catch(e){$("msg").textContent="Failed to save: "+e.message.slice(0,120)}
  btn.disabled=false};
 
@@ -807,7 +809,7 @@ function openDetail(id){var x=rows.filter(function(r){return r.id==id})[0];if(!x
  openModal("<h2>Detail Trial <span><button class=\"btn small\" id=\"dEdit\" type=\"button\">✎ Edit</button> <button class=\"btn ghost small\" id=\"dClose\" type=\"button\">Close</button></span></h2><div class=fg>"+kv("Project",x.project)+kv("Stage",x.stage)+kv("Method",x.method)+kv("Part",x.pos)+kv("Trial no.","T"+(x.no||1))+kv("Trial time",fmt(T(x)))+kv("Machine / Line",x.mc)+kv("Updated by",x.by)+kv("Trial qty",x.qty)+kv("NG qty",x.ng+(x.qty?" ("+(x.ng/x.qty*100).toFixed(1)+"%)":""))+kv("Paint color",x.paint)+kv("Color result",x.color)+"<div class=field><label>Result</label><span class=\"pill "+x.res+"\">"+x.res+"</span></div></div>"
   +"<div class=gh>Actual parameters</div>"+(pr.length?"<div class=fg>"+pr.map(function(k){return kv(k,x.params[k])}).join("")+"</div>":"<div class=sub>No parameters entered.</div>")
   +"<div class=gh>Issue</div>"+kv("Category",x.cat)+kv("Issue detail",x.issue)+kv("Action / correction",x.act)
-  +"<div class=gh>Photos</div>"+(ph.length?ph.map(function(c){return "<div class=sub style=\"margin:6px 0\">"+c[1]+"</div><div class=gallery-grid>"+photosOf(x,c[0]).map(function(u){return "<div class=photo-card><img class=gimg data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"></div>"}).join("")+"</div>"}).join(""):"<div class=sub>No photos.</div>"));
+  +"<div class=gh>Photos</div>"+(ph.length?ph.map(function(c){return "<div class=sub style=\"margin:6px 0\">"+c[1]+"</div><div class=gallery-grid>"+photosOf(x,c[0]).map(function(u){return "<div class=photo-card><img class=gimg data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"></div>"}).join("")+"</div>"}).join(""):"<div class=sub>No photos.</div>")+vidBlock(x));
  $("dClose").onclick=closeModal;$("dEdit").onclick=function(){openEdit(x)}}
 function eParams(m,vals){$("e_params").innerHTML=PAR[m].map(function(k){return pfield(k,pv(vals,k),"ep")}).join("")}
 function eThumbs(){CAT.forEach(function(c){var arr=c[0]=="p"?ed.photos:(ed.mp[c[0]]=ed.mp[c[0]]||[]);$("e_x_"+c[0]).innerHTML=arr.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-rm=\""+c[0]+"|"+i+"\">✕</button></span>"}).join("")||"<span class=sub>None yet.</span>"})}
@@ -832,6 +834,7 @@ function openEdit(x){ed={id:x.id,ts:x.ts,photos:(x.photos||[]).slice(),mp:JSON.p
  +"<div class=field><label>Issue detail</label><textarea id=e_issue>"+esc(x.issue)+"</textarea></div>"
  +"<div class=field><label>Action / correction</label><textarea id=e_act>"+esc(x.act)+"</textarea></div>"
  +"<div class=gh>Photos (remove wrong ones or add new)</div>"+CAT.map(function(c){return "<div class=sub style=\"margin:8px 0 2px\">"+c[1]+"</div><div id=\"e_x_"+c[0]+"\"></div><input type=file accept=\"image/*\" multiple id=\"e_f_"+c[0]+"\">"}).join("")
+ +"<div class=sub style=\"margin:8px 0 2px\">Trial videos</div><div id=e_x_video></div><input type=file accept=\"video/*\" multiple id=e_f_video>"
  +"<div style=\"margin-top:16px\"><button class=btn id=eSave type=button>Save changes</button> <button class=\"btn ghost\" id=eCancel type=button>Cancel</button> <span id=eMsg class=sub></span></div>");
  eParams(x.method,x.params||{});eThumbs();
  $("e_method").onchange=function(){var v={};document.querySelectorAll(".ep").forEach(function(i){v[i.dataset.k]=i.value});eParams($("e_method").value,v)};
@@ -839,6 +842,7 @@ function openEdit(x){ed={id:x.id,ts:x.ts,photos:(x.photos||[]).slice(),mp:JSON.p
 async function saveEdit(){var b=$("eSave");b.disabled=true;$("eMsg").textContent="Saving…";
  try{var params={};if(ed.m0==$("e_method").value)Object.keys(ed.p0).forEach(function(k){if(k!="Din cup (s)"&&PAR[ed.m0].indexOf(k)<0)params[k]=ed.p0[k]});document.querySelectorAll(".ep").forEach(function(i){if(i.value.trim())params[i.dataset.k]=i.value.trim()});
   for(var c of CAT){var fl=$("e_f_"+c[0]).files,arr=c[0]=="p"?ed.photos:(ed.mp[c[0]]=ed.mp[c[0]]||[]);for(var i=0;i<fl.length;i++)arr.push(await upPhoto(fl[i]))}
+  var vf=$("e_f_video").files;if(vf.length){ed.mp.video=ed.mp.video||[];for(var vi=0;vi<vf.length;vi++){if(vf[vi].size>VID_MAX)throw new Error("Video "+vf[vi].name+" is too large (max 50 MB)");ed.mp.video.push(await upPhoto(vf[vi]))}}if(ed.mp.video&&!ed.mp.video.length)delete ed.mp.video;
   var rec={ts:ed.ts,trialAt:new Date($("e_dt").value).getTime()||Date.now(),project:$("e_proj").value,by:$("e_by").value,stage:$("e_stage").value,method:$("e_method").value,pos:$("e_pos").value,mc:$("e_mc").value.trim(),qty:Number($("e_qty").value)||0,ng:Number($("e_ng").value)||0,color:$("e_color").value,paint:$("e_paint").value.trim(),res:$("e_res").value,params:params,cat:$("e_cat").value.trim(),issue:$("e_issue").value.trim(),act:$("e_act").value.trim(),photos:ed.photos,mp:ed.mp,no:Number($("e_tno").value)||1},id=ed.id;
   await api("PATCH","trials",toT(rec),"?id=eq."+id);last.t="";await loadT();toast("Changes saved ✓");openDetail(id)}
  catch(e){$("eMsg").textContent="Failed: "+e.message.slice(0,120);b.disabled=false}}
@@ -1087,7 +1091,7 @@ async function buildReport(f,fname,b){if(!f.length&&!labScopeHas())return toast(
   for(var p of pr){var fp=f.filter(function(x){return (x.project||"-")==p});
    for(var s of STAGES){var fs=fp.filter(function(x){return x.stage==s}),sc={};secs.filter(function(y){return y.project==p&&y.stage==s}).forEach(function(y){if(y.section=="lab_results"&&!(y.rows||[]).length)return;sc[y.section]=y.rows});
     if(fs.length||Object.keys(sc).length)stageSheet(wb,p,s,fs,sc)}
-   await attachSheet(wb,p,fp);await labDocSheet(wb,p);await labResSheet(wb,p);await limitSheet(wb,p)}
+   await attachSheet(wb,p,fp);videoSheet(wb,p,fp);await labDocSheet(wb,p);await labResSheet(wb,p);await limitSheet(wb,p)}
   fillSummary(sm,f,pr);fillSchedule(jr,pr);if(dp)fillPlan(dp,pcs);var dt=wb.addWorksheet("Data Trial");dt.addRow(TH_);f.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x){dt.addRow(trialRow(x))});dt.getRow(1).font={bold:true};widths(dt,TH_.map(function(){return 18}));
   dl(fname,await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl}
@@ -1121,7 +1125,7 @@ async function meetingReport(d,b){if(!d)return toast("Select a date first");
   r=gtbl(ws,r,"2. Latest Part Status & Follow-up",["Project","Method","Part","Trials today","Trial History","Current Status","Follow-up"],pg.map(function(o){var last=o.t[o.t.length-1],lc=last.cat&&last.cat!="No issue"?last.cat:"",tn=f.filter(function(x){return x.project==o.project&&x.stage==o.stage&&x.method==o.method&&x.pos==o.pos}).map(function(x){return "T"+(x.no||1)}).join(", ");
    return [o.project,o.method,o.pos,tn,o.hist,o.final,o.ok?"Done – OK at T"+(o.ok.no||1):(last.no||1)>=10?"Already T10 – decision needed":"Retrial → T"+((last.no||1)+1)+(lc?" · issue: "+lc:"")]}),[[3,3],[4,4],[5,5],[6,7],[8,12],[13,13],[14,15]]);
   r=gtbl(ws,r,"3. Today's Issues",["Project","Issue","Occurrences","Fail","Hold","NG pcs","Affected parts","Latest detail"],summary(f).map(function(o){return [o.project,o.cat,o.n,o.fail,o.hold,o.ng,o.parts.join(", "),o.detail]}),[[3,3],[4,5],[6,7],[8,8],[9,9],[10,10],[11,13],[14,15]]);
-  for(var p of pr)await attachSheet(wb,p,f.filter(function(x){return (x.project||"-")==p}));
+  for(var p of pr){var fpv=f.filter(function(x){return (x.project||"-")==p});await attachSheet(wb,p,fpv);videoSheet(wb,p,fpv)}
   dl("Meeting_Trial_"+d+".xlsx",await wb.xlsx.writeBuffer());toast("Meeting summary created")}catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl}
 
@@ -1293,7 +1297,7 @@ function msList(name){var pa=paOf(name),f=rows.filter(function(x){return x.proje
  var ik=inkActual(name,pa),tl2=toolActual(name,pa),lb2=labActual(name),ac2=accActual(name),act={tool:tl2.d,ep:first("EP"),ink:ik.d,fep:first("FEP"),lab:lb2.d,acc:ac2.d,pp2k:first("PP2K"),rel:p.rd||""};
  return {pa:pa.pa,ms:MS.map(function(m){var off=(m.k=="lab"&&pa.lab!==""&&!isNaN(+pa.lab))?+pa.lab:(m.k=="acc"&&pa.acc!==""&&!isNaN(+pa.acc))?+pa.acc:m.off,plan=pa.pa?addDays(pa.pa,off):"",a=act[m.k],st="na",d=0;
   if(plan){if(a){d=dDiff(a,plan);st=d<=0?"ontime":"late"}else{d=dDiff(today,plan);st=d>0?"overdue":(d>=-3?"soon":"pending")}}
-  return {k:m.k,n:m.n,off:off,plan:plan,act:a,st:st,d:d,src:m.k=="ink"?ik.src:m.k=="tool"?tl2.src:m.k=="lab"?lb2.src:m.k=="acc"?ac2.src:""}})}}
+  return {k:m.k,n:m.n,off:off,plan:plan,act:a,st:st,d:d,src:m.k=="ink"?ik.src:m.k=="tool"?tl2.src:m.k=="lab"?lb2.src:m.k=="acc"?ac2.src:"",note:m.k=="tool"?(tl2.note||""):""}})}}
 function stLabel(m){return m.st=="ontime"?(m.d<0?"On time ("+(-m.d)+"d early)":"On time"):m.st=="late"?"Late +"+m.d+"d":m.st=="overdue"?"Overdue +"+m.d+"d":m.st=="soon"?"Due in "+(-m.d)+"d":m.st=="pending"?"Pending":"-"}
 function stPill(m){return m.st=="ontime"?"Pass":(m.st=="late"||m.st=="overdue")?"Fail":m.st=="soon"?"Hold":""}
 function overall(ml){if(!ml.pa)return {t:"PA not set",c:"",bad:0};var bad=ml.ms.filter(function(m){return m.st=="late"||m.st=="overdue"}).length,done=ml.ms.filter(function(m){return m.act}).length;
@@ -1307,7 +1311,7 @@ function rSched(){var sc=schedule();
   return "<tr><td><b>"+esc(o.name)+"</b>"+(o.rn?"<div class=sub>Notes: "+esc(o.rn)+"</div>":"")+"</td>"
   +"<td data-l=\"Parts trialed\">"+(pt.length?pt.map(function(p){return "<div><b>"+esc(p.part)+"</b> <span class=sub>"+esc(p.st.join(", "))+" · "+p.n+" trial</span></div>"}).join(""):"-")+"</td>"
   +"<td>"+(ml.pa?fd(ml.pa):"<span class=sub>not set</span>")+"</td>"
-  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+(m.src?" <span class=sub>("+m.src+")</span>":"")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
+  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+(m.src?" <span class=sub>("+m.src+")</span>":"")+(m.note?"<div class=sub>"+esc(m.note)+"</div>":"")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
   +"<td><span class=\"pill "+ov.c+"\">"+esc(ov.t)+"</span><div style=\"margin-top:4px\"><span class=\"pill "+(o.rs=="Released"?"Pass":o.rs=="Ready to release"?"Hold":"")+"\">"+esc(o.rs)+"</span></div></td><td>"+durTxt(o)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No projects yet.</div>";
  var h=Array.from(document.querySelectorAll("#sch table th")).map(function(t){return t.textContent});document.querySelectorAll("#sch table tr").forEach(function(r,i){if(i)Array.from(r.cells).forEach(function(c,j){c.setAttribute("data-l",h[j]||"")})})}
 fillSchedule=function(ws,names){var sc=schedule(names),W=[2.6,5,22,12];MS.forEach(function(){W.push(12,12,17)});W.push(22,16,16,30);widths(ws,W);
@@ -1683,13 +1687,15 @@ $("save").onclick=async function(){
  var params={};document.querySelectorAll("#params input,#params select").forEach(function(i){if(i.value.trim())params[i.dataset.k]=i.value.trim()});
  var photos=[],mp={};
  try{var fs=$("ph_in").files;for(var i=0;i<fs.length;i++)photos.push(await upPhoto(fs[i]));for(var kk of MPK){var f2=$("mp_"+kk[0]).files;mp[kk[0]]=[];for(var i2=0;i2<f2.length;i2++)mp[kk[0]].push(await upPhoto(f2[i2]))}}catch(e){msg.textContent="Foto gagal diupload ("+String(e.message||e).slice(0,80)+"), data tetap disimpan."}
+ var vidNote="";
+ try{var vs=$("vid_in").files;if(vs.length){mp.video=[];for(var iv=0;iv<vs.length;iv++){if(vs[iv].size>VID_MAX){vidNote=" · video \""+vs[iv].name+"\" dilewati (lebih dari 50 MB)";continue}msg.textContent="Mengupload video "+(iv+1)+"/"+vs.length+"…";mp.video.push(await upPhoto(vs[iv]))}if(!mp.video.length)delete mp.video}}catch(e){vidNote=" · video gagal diupload ("+String(e.message||e).slice(0,60)+")"}
  var rec={ts:Date.now(),trialAt:trialAt,project:$("proj").value,by:$("by").value,stage:$("stage").value,method:$("method").value,pos:$("pos").value,mc:$("mc").value.trim(),qty:qty,ng:ng,color:$("color").value,paint:$("paint").value.trim(),res:$("res").value,params:params,cat:$("cat").value.trim(),issue:$("issue").value.trim(),act:$("act").value.trim(),photos:photos,mp:mp,no:no};
  try{await api("POST","trials",toT(rec))}catch(e){return done("Gagal menyimpan: "+String(e.message||e).slice(0,120))}
  /* saved: a refresh problem below must never look like a failed save */
  try{last.t="";await loadT()}catch(e){}
- try{["qty","issue","act","ph_in","cat","mp_hmi","mp_speed","mp_angin","mp_proses"].forEach(function(k){$(k).value=""});$("ng").value=0;$("dt").value=nowLocal();suggestNo();
+ try{["qty","issue","act","ph_in","cat","mp_hmi","mp_speed","mp_angin","mp_proses","vid_in"].forEach(function(k){$(k).value=""});$("ng").value=0;$("dt").value=nowLocal();suggestNo();
   document.querySelectorAll("#params input,#params select").forEach(function(i){i.value=""});setCats()}catch(e){}
- toast("Trial tersimpan");done("Tersimpan ✓")};
+ toast("Trial tersimpan"+(vidNote?" (ada video yang tidak terupload)":""));done("Tersimpan ✓"+vidNote)};
 
 /* remove already-existing duplicates from the Trial Log */
 function dupIds(){var g={};rows.slice().sort(function(a,b){return T(a)-T(b)}).forEach(function(x){var k=tSig(x.project,T(x),x.method,x.pos,x.no||1,x.stage,x.qty||0,x.ng||0,x.res);(g[k]=g[k]||[]).push(x)});
@@ -1869,7 +1875,7 @@ function notifs(names){var today=iso(Date.now()),out=[],STN={ep:"EP",fep:"FEP",p
    if(st){var miss=p.parts.length?p.parts.filter(function(pt){return !rows.some(function(x){return x.project==n&&x.stage==st&&x.pos==pt})}):(m.act?[]:["any part"]);if(!miss.length)return;
     if(due<0)out.push({sev:3,kind:st+" overdue +"+(-due)+"d",project:n,text:"Planned "+wkD(m.plan,1)+". No "+st+" trial yet for: "+miss.join(", ")});
     else if(due<=3)out.push({sev:2,kind:st+(due?" due in "+due+"d":" due today"),project:n,text:"Planned "+wkD(m.plan,1)+". No "+st+" trial yet for: "+miss.join(", ")})}
-   else if(!m.act){if(due<0)out.push({sev:3,kind:m.n+" overdue +"+(-due)+"d",project:n,text:"Planned "+wkD(m.plan,1)+". "+(NOTE_MS[m.k]||"Actual date not entered yet.")});else if(due<=3)out.push({sev:2,kind:m.n+(due?" due in "+due+"d":" due today"),project:n,text:"Planned "+wkD(m.plan,1)+". "+(NOTE_MS[m.k]||"")})}})});
+   else if(!m.act){if(due<0)out.push({sev:3,kind:m.n+" overdue +"+(-due)+"d",project:n,text:"Planned "+wkD(m.plan,1)+". "+(m.note||NOTE_MS[m.k]||"Actual date not entered yet.")});else if(due<=3)out.push({sev:2,kind:m.n+(due?" due in "+due+"d":" due today"),project:n,text:"Planned "+wkD(m.plan,1)+". "+(m.note||NOTE_MS[m.k]||"")})}})});
  return out.sort(function(a,b){return b.sev-a.sev||(a.project<b.project?-1:1)})}
 $("tab-ringkasan").insertAdjacentHTML("afterbegin","<div class=\"dash-grid\"><div class=\"panel g-12\"><h2>Notifications <span class=n id=notif_n></span></h2><div id=notif_list style=\"max-height:340px;overflow:auto\"></div></div></div>");
 $("kpi").parentNode.parentNode.insertAdjacentHTML("afterend","<div class=\"dash-grid\"><div class=\"panel g-12\"><h2>Project Timeline – Not Yet Released</h2><div class=ov id=tl_dash></div></div></div>");
@@ -1887,7 +1893,7 @@ function rTimeline(){var el=$("tl_dash");if(!el)return;var fp=$("fp").value,name
   S+="<text x=\"6\" y=\""+(y0+22)+"\" font-size=\"13\" font-weight=\"700\" fill=\"#373545\">"+esc(it.n)+"</text><text x=\"6\" y=\""+(y0+38)+"\" font-size=\"10\" fill=\""+oc+"\">"+esc(ov.t)+"</text>"
   +"<rect x=\""+xa+"\" y=\""+(cy-9)+"\" width=\""+Math.max(2,xb-xa)+"\" height=\"18\" rx=\"9\" fill=\"#eee6f3\" stroke=\"#cdb5dc\"/>";
   it.ml.ms.forEach(function(m){var c=WK_ST[m.st][0];if(m.act&&m.act!=m.plan)S+="<line x1=\""+x(m.plan)+"\" y1=\""+cy+"\" x2=\""+x(m.act)+"\" y2=\""+cy+"\" stroke=\""+c+"\" stroke-width=\"2\" stroke-dasharray=\"3 2\"/>";
-   S+="<circle cx=\""+x(m.plan)+"\" cy=\""+cy+"\" r=\"7\" fill=\"#"+(m.st=="na"?"8a8a99":m.st=="pending"?"b7b3c4":c)+"\" stroke=\"#fff\" stroke-width=\"2\"><title>"+esc(m.n+" · plan "+wkD(m.plan,1)+(m.act?" · actual "+wkD(m.act,1)+(m.src?" (from "+m.src+")":""):"")+" · "+wkStLabel(m))+"</title></circle><text x=\""+x(m.plan)+"\" y=\""+(cy-14)+"\" font-size=\"9\" fill=\"#6b6880\" text-anchor=\"middle\">"+{tool:"TOOL",ep:"EP",ink:"INK",fep:"FEP",lab:"LAB",acc:"ACC",pp2k:"PP2K",rel:"REL"}[m.k]+"</text>";
+   S+="<circle cx=\""+x(m.plan)+"\" cy=\""+cy+"\" r=\"7\" fill=\"#"+(m.st=="na"?"8a8a99":m.st=="pending"?"b7b3c4":c)+"\" stroke=\"#fff\" stroke-width=\"2\"><title>"+esc(m.n+" · plan "+wkD(m.plan,1)+(m.act?" · actual "+wkD(m.act,1)+(m.src?" (from "+m.src+")":""):"")+(m.note?" · "+m.note:"")+" · "+wkStLabel(m))+"</title></circle><text x=\""+x(m.plan)+"\" y=\""+(cy-14)+"\" font-size=\"9\" fill=\"#6b6880\" text-anchor=\"middle\">"+{tool:"TOOL",ep:"EP",ink:"INK",fep:"FEP",lab:"LAB",acc:"ACC",pp2k:"PP2K",rel:"REL"}[m.k]+"</text>";
    if(m.act)S+="<polygon points=\""+x(m.act)+","+(cy+11)+" "+(x(m.act)-5)+","+(cy+20)+" "+(x(m.act)+5)+","+(cy+20)+"\" fill=\"#373545\"/>"})});
  S+="<line x1=\""+x(today)+"\" y1=\""+(TOP-10)+"\" x2=\""+x(today)+"\" y2=\""+H+"\" stroke=\"#d6405a\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\"/><text x=\""+x(today)+"\" y=\"28\" font-size=\"10\" fill=\"#d6405a\" text-anchor=\"middle\" font-weight=\"700\">Today</text>";
  el.innerHTML="<div style=\"min-width:820px\"><svg viewBox=\"0 0 "+W+" "+H+"\" width=\"100%\" font-family=\"Arial\">"+S+"</svg></div><div class=sub style=\"margin-top:8px\">TOOL = Tooling Readiness (PA-20) · EP (PA-14) · INK = Original Ink (PA+1) · FEP (PA+2) · LAB = Lab test after FEP (PA+4) · ACC = QE part approval (PA+6) · PP2K (PA+7) · REL = Release (PA+10). Circle = planned date (green on time · red late/overdue · amber due ≤3 days · grey pending). ▲ = actual date. Dashed red line = today.</div>"+(np.length?"<div class=sub style=\"margin-top:6px\">PA date not set: "+np.map(function(i){return esc(i.n)}).join(", ")+"</div>":"")}
@@ -1916,10 +1922,13 @@ function inkActual(name,pa){var p=projs.filter(function(x){return x.name==name})
  return {d:(pa&&pa.ink)||"",src:""}}
 
 /* ===================== TOOLING READINESS ACTUAL = LATEST "Copy Date" OF FIRST SET TOOLS (Readiness) ===================== */
-function toolActual(name,pa){var p=projs.filter(function(x){return x.name==name})[0],parts=[""].concat(p?p.parts:[]),ref=(pa&&pa.pa)||iso(Date.now()),stages=["EP","FEP","PP2K","PP3K"];
- for(var i=0;i<stages.length;i++){var ds=[];parts.forEach(function(pt){["spray_tools","pad_tools"].forEach(function(k){secRows(name,stages[i],k,pt).forEach(function(r){if(r[0]||r[1]){var d=parseLooseDate(r[2],ref);if(d)ds.push(d)}})})});
-  if(ds.length){ds.sort();return {d:ds[ds.length-1],src:"Readiness"}}}
- return {d:(pa&&pa.tool)||"",src:""}}
+function toolActual(name,pa){var p=projs.filter(function(x){return x.name==name})[0],parts=[""].concat(p?p.parts:[]),ref=(pa&&pa.pa)||iso(Date.now()),stages=["EP","FEP","PP2K","PP3K"],man=(pa&&pa.tool)||"";
+ for(var i=0;i<stages.length;i++){var tot=0,ds=[],miss=[];
+  parts.forEach(function(pt){["spray_tools","pad_tools"].forEach(function(k){secRows(name,stages[i],k,pt).forEach(function(r){if(!(r[0]||r[1]))return;tot++;var d=parseLooseDate(r[2],ref);if(d)ds.push(d);else miss.push((r[0]+" "+r[1]).trim())})})});
+  if(!tot)continue;
+  if(ds.length==tot){ds.sort();return {d:ds[ds.length-1],src:"Readiness",note:""}}
+  return {d:man,src:"",note:ds.length+" of "+tot+" first-set tools have a Copy Date"+(miss.length?" – missing: "+miss.slice(0,3).join(", ")+(miss.length>3?" +"+(miss.length-3)+" more":""):"")}}
+ return {d:man,src:"",note:""}}
 
 /* ===================== RECALL PREVIOUS TRIAL (reuse settings for the next stage) ===================== */
 (function(){var h=document.querySelector("#tab-input h2");if(h)h.insertAdjacentHTML("beforeend"," <button type=button class=\"btn ghost small\" id=recall_btn>↺ Ambil data trial sebelumnya</button>")})();
@@ -2043,6 +2052,23 @@ $("qa_save").onclick=async function(){var pn=$("qa_proj").value,msg=$("qa_msg");
 var _rLab8=rLab;rLab=function(f){_rLab8(f);qaRender()};
 var _setProjSel8=setProjSel;setProjSel=function(){_setProjSel8();qaProjSel()};
 qaProjSel();pickAll();
+
+/* ===================== TRIAL VIDEOS (stored in machine_photos.video, no schema change) ===================== */
+function vidsOf(x){return (x&&x.mp&&x.mp.video)||[]}
+function vidBlock(x){var v=vidsOf(x);if(!v.length)return "";return "<div class=gh>Trial videos</div>"+v.map(function(u){return "<div style=\"margin:8px 0\"><video controls preload=metadata playsinline src=\""+esc(u)+"\" style=\"width:100%;max-width:460px;border-radius:12px;background:#000\"></video><div class=sub><a href=\""+esc(u)+"\" target=_blank rel=noopener>Open / download video</a></div></div>"}).join("")}
+function eVid(){var el=$("e_x_video");if(!el||!ed)return;var a=(ed.mp&&ed.mp.video)||[];el.innerHTML=a.map(function(u,i){return "<span style=\"display:inline-flex;align-items:center;gap:6px;margin:2px 8px 6px 0\"><a class=chip href=\""+esc(u)+"\" target=_blank rel=noopener>▶ Video "+(i+1)+"</a><button type=button class=chip data-rm=\"video|"+i+"\">✕</button></span>"}).join("")||"<span class=sub>None yet.</span>"}
+var _eT19=eThumbs;eThumbs=function(){_eT19();eVid()};
+var _mpT19=mpThumbs;mpThumbs=function(x){var h=_mpT19(x),v=vidsOf(x);if(!v.length)return h;return (h=="-"?"":h)+"<div class=sub>🎬 Video</div>"+v.map(function(u,i){return "<a class=chip href=\""+esc(u)+"\" target=_blank rel=noopener onclick=\"event.stopPropagation()\">▶ "+(i+1)+"</a>"}).join(" ")};
+var _rGal19=rGal;rGal=function(){_rGal19();var g={};filtered().forEach(function(x){vidsOf(x).forEach(function(u){var k=(x.project||"-")+"||"+iso(T(x)),o=g[k]=g[k]||{p:x.project||"-",d:T(x),v:[]};o.v.push({u:u,t:x.method+" · "+x.pos+" · T"+(x.no||1)+" · "+x.res})})});
+ var ks=Object.keys(g).sort();if(!ks.length)return;
+ $("gal").insertAdjacentHTML("beforeend","<div class=gh style=\"margin-top:18px\">🎬 Trial Videos</div>"+ks.map(function(k){var o=g[k];return "<div class=sub style=\"margin:10px 0 4px\"><b>"+esc(o.p)+"</b> · "+day(o.d)+"</div><div class=gallery-grid>"+o.v.map(function(i){return "<div class=photo-card><video controls preload=metadata playsinline src=\""+esc(i.u)+"\" style=\"width:100%;display:block;background:#000\"></video><div class=cap>"+esc(i.t)+"</div></div>"}).join("")+"</div>"}).join(""))};
+function videoSheet(wb,proj,f){var L=f.filter(function(x){return vidsOf(x).length}).sort(function(a,b){return T(a)-T(b)});if(!L.length)return;
+ var ws=wb.addWorksheet(sname(wb,proj,"Videos"),{views:[{showGridLines:false}]});widths(ws,[2.6,5,20,10,22,12,8,10,24,34]);
+ put(ws,1,2,10,proj+" – Trial Videos",{b:true,sz:13,fill:BLUE});
+ ["No","Date & Time","Stage","Part","Method","Trial","Result","Issue","Link"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+ var r=4,n=0;L.forEach(function(x){vidsOf(x).forEach(function(u,i){n++;[n,fmt(T(x)),x.stage,x.pos,x.method,"T"+(x.no||1),x.res,x.cat||"-"].forEach(function(v,j){put(ws,r,2+j,2+j,v,{bd:true,h:j==0||j==5||j==6?"center":"left"})});put(ws,r,10,10,{text:"▶ Video "+(i+1),hyperlink:u},{bd:true});r++})})}
+
+var VID_MAX=50*1024*1024;
 </script>
 </body>
 </html>
