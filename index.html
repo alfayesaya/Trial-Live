@@ -634,6 +634,7 @@ main{max-width:1600px;margin-left:auto;margin-right:auto}
  <div class="field"><label>Trial type</label><select id="tl_stage"><option>EP</option><option>FEP</option><option>PP2K</option><option>PP3K</option><option>Other Trial</option></select></div>
  <div class="field"><label>Method</label><input id="tl_method" type="text" list="tl_methl" value="Handspray" data-auto="1" placeholder="Handspray / Pad Print"><datalist id="tl_methl"><option>Handspray</option><option>Pad Print</option><option>Adhesion</option><option>Abrasion</option><option>Rubbing</option><option>With Sanitizer</option><option>Nail</option></datalist></div>
  <div class="field"><label>Quantity (pcs)</label><input id="tl_qty" type="number" inputmode="numeric" min="0"></div>
+ <div class="field"><label>Test date (optional – default today)</label><input id="tl_date" type="date"></div>
  <div class="field"><label>Lab result</label><select id="tl_res"><option>OK</option><option>NG</option></select></div>
 </div>
 <div class="field"><label>Special trial method description (optional)</label><textarea id="tl_desc" rows="2" placeholder="E.g. 48 h aging at 60°C, 500 g load, 100 cycles…"></textarea></div>
@@ -1296,8 +1297,8 @@ function msList(name){var pa=paOf(name),f=rows.filter(function(x){return x.proje
  function first(st){var a=f.filter(function(x){return x.stage==st}).map(T);return a.length?iso(Math.min.apply(null,a)):""}
  var ik=inkActual(name,pa),tl2=toolActual(name,pa),lb2=labActual(name),ac2=accActual(name),act={tool:tl2.d,ep:first("EP"),ink:ik.d,fep:first("FEP"),lab:lb2.d,acc:ac2.d,pp2k:first("PP2K"),rel:p.rd||""};
  return {pa:pa.pa,ms:MS.map(function(m){var off=(m.k=="lab"&&pa.lab!==""&&!isNaN(+pa.lab))?+pa.lab:(m.k=="acc"&&pa.acc!==""&&!isNaN(+pa.acc))?+pa.acc:m.off,plan=pa.pa?addDays(pa.pa,off):"",a=act[m.k],st="na",d=0;
-  if(plan){if(a){d=dDiff(a,plan);st=d<=0?"ontime":"late"}else{d=dDiff(today,plan);st=d>0?"overdue":(d>=-3?"soon":"pending")}}
-  return {k:m.k,n:m.n,off:off,plan:plan,act:a,st:st,d:d,src:m.k=="ink"?ik.src:m.k=="tool"?tl2.src:m.k=="lab"?lb2.src:m.k=="acc"?ac2.src:"",note:m.k=="tool"?(tl2.note||""):""}})}}
+  if(plan){if(a){d=dDiff(a,plan);st=d<=0?"ontime":"late"}else if(m.k=="tool"&&tl2.part&&dDiff(tl2.part,plan)>0){d=dDiff(tl2.part,plan);st="late"}else{d=dDiff(today,plan);st=d>0?"overdue":(d>=-3?"soon":"pending")}}
+  return {k:m.k,n:m.n,off:off,plan:plan,act:a,st:st,d:d,src:m.k=="ink"?ik.src:m.k=="tool"?tl2.src:m.k=="lab"?lb2.src:m.k=="acc"?ac2.src:"",note:(a&&m.k!="tool")?"":(m.k=="tool"?(tl2.note||""):m.k=="ink"?(ik.note||""):m.k=="lab"?(lb2.note||""):m.k=="acc"?(ac2.note||""):(m.k=="ep"||m.k=="fep"||m.k=="pp2k")?"No "+m.k.toUpperCase()+" trial recorded yet":m.k=="rel"?"Release date not entered yet":""),part:m.k=="tool"?(tl2.part||""):""}})}}
 function stLabel(m){return m.st=="ontime"?(m.d<0?"On time ("+(-m.d)+"d early)":"On time"):m.st=="late"?"Late +"+m.d+"d":m.st=="overdue"?"Overdue +"+m.d+"d":m.st=="soon"?"Due in "+(-m.d)+"d":m.st=="pending"?"Pending":"-"}
 function stPill(m){return m.st=="ontime"?"Pass":(m.st=="late"||m.st=="overdue")?"Fail":m.st=="soon"?"Hold":""}
 function overall(ml){if(!ml.pa)return {t:"PA not set",c:"",bad:0};var bad=ml.ms.filter(function(m){return m.st=="late"||m.st=="overdue"}).length,done=ml.ms.filter(function(m){return m.act}).length;
@@ -1311,7 +1312,7 @@ function rSched(){var sc=schedule();
   return "<tr><td><b>"+esc(o.name)+"</b>"+(o.rn?"<div class=sub>Notes: "+esc(o.rn)+"</div>":"")+"</td>"
   +"<td data-l=\"Parts trialed\">"+(pt.length?pt.map(function(p){return "<div><b>"+esc(p.part)+"</b> <span class=sub>"+esc(p.st.join(", "))+" · "+p.n+" trial</span></div>"}).join(""):"-")+"</td>"
   +"<td>"+(ml.pa?fd(ml.pa):"<span class=sub>not set</span>")+"</td>"
-  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+(m.src?" <span class=sub>("+m.src+")</span>":"")+(m.note?"<div class=sub>"+esc(m.note)+"</div>":"")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
+  +ml.ms.map(function(m){return "<td>"+(m.plan?"<div class=sub>Plan: "+fd(m.plan)+"</div><div>Actual: "+(m.act?fd(m.act):"-")+(m.src?" <span class=sub>("+m.src+")</span>":"")+((m.note&&!m.act&&(m.st=="overdue"||m.st=="soon"||m.st=="late"||m.k=="tool"))?"<div class=sub>"+esc(m.note)+"</div>":"")+"</div><span class=\"pill "+stPill(m)+"\">"+esc(stLabel(m))+"</span>":"-")+"</td>"}).join("")
   +"<td><span class=\"pill "+ov.c+"\">"+esc(ov.t)+"</span><div style=\"margin-top:4px\"><span class=\"pill "+(o.rs=="Released"?"Pass":o.rs=="Ready to release"?"Hold":"")+"\">"+esc(o.rs)+"</span></div></td><td>"+durTxt(o)+"</td></tr>"}).join("")+"</table>":"<div class=sub>No projects yet.</div>";
  var h=Array.from(document.querySelectorAll("#sch table th")).map(function(t){return t.textContent});document.querySelectorAll("#sch table tr").forEach(function(r,i){if(i)Array.from(r.cells).forEach(function(c,j){c.setAttribute("data-l",h[j]||"")})})}
 fillSchedule=function(ws,names){var sc=schedule(names),W=[2.6,5,22,12];MS.forEach(function(){W.push(12,12,17)});W.push(22,16,16,30);widths(ws,W);
@@ -1364,8 +1365,8 @@ $("iss_x").onclick=async function(){var b=$("iss_x"),lbl=b.textContent,ps=pickSe
  b.disabled=false;b.textContent=lbl};
 
 /* ---------- Test Lab data (stored in `sections`, section = lab_results) ---------- */
-function labResAll(){var out=[];secs.forEach(function(y){if(y.section!="lab_results")return;(y.rows||[]).forEach(function(r){out.push({id:r[0],project:y.project,stage:y.stage,part:r[1]||"",method:r[2]||"",qty:r[3]==null?"":r[3],res:r[4]||"OK",photos:String(r[5]||"").split(/\s+/).filter(Boolean),ts:Number(r[6])||0,desc:r[7]||""})})});return out}
-function labRow(o){return [o.id,o.part,o.method,String(o.qty),o.res,o.photos.join(" "),String(o.ts),o.desc||""]}
+function labResAll(){var out=[];secs.forEach(function(y){if(y.section!="lab_results")return;(y.rows||[]).forEach(function(r){out.push({id:r[0],project:y.project,stage:y.stage,part:r[1]||"",method:r[2]||"",qty:r[3]==null?"":r[3],res:r[4]||"OK",photos:String(r[5]||"").split(/\s+/).filter(Boolean),ts:Number(r[6])||0,desc:r[7]||"",date:r[8]||""})})});return out}
+function labRow(o){return [o.id,o.part,o.method,String(o.qty),o.res,o.photos.join(" "),String(o.ts),o.desc||"",o.date||""]}
 function labGroup(p,s){return labResAll().filter(function(o){return o.project==p&&o.stage==s})}
 async function putLabSec(p,s,list){await api("POST","sections",[{project:p,stage:s,section:"lab_results",rows:list.map(labRow),ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
 function labSort(a,b){return (a.project<b.project?-1:a.project>b.project?1:0)||STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||a.ts-b.ts}
@@ -1386,7 +1387,7 @@ $("tl_part").onchange=tlMeth;
 $("tl_fp").onchange=function(){rLabList()};
 function tlThumbs(){$("tl_ph").innerHTML=tlPh.map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 6px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-tlrm=\""+i+"\">✕</button></span>"}).join("")}
 $("tl_ph").addEventListener("click",function(e){var t=e.target;if(t.dataset&&t.dataset.tlrm!=null&&t.dataset.tlrm!==""){tlPh.splice(+t.dataset.tlrm,1);tlThumbs()}});
-function tlReset(){tlEd=null;tlPh=[];tlThumbs();$("tl_qty").value="";$("tl_res").value="OK";$("tl_f").value="";$("tl_desc").value="";$("tl_mode").textContent="";$("tl_cancel").classList.add("hidden");$("tl_save").textContent="Save lab result";$("tl_method").dataset.auto="1";tlMeth()}
+function tlReset(){tlEd=null;tlPh=[];tlThumbs();$("tl_qty").value="";$("tl_res").value="OK";$("tl_f").value="";$("tl_desc").value="";$("tl_date").value="";$("tl_mode").textContent="";$("tl_cancel").classList.add("hidden");$("tl_save").textContent="Save lab result";$("tl_method").dataset.auto="1";tlMeth()}
 $("tl_cancel").onclick=function(){tlReset();$("tl_msg").textContent=""};
 $("tl_save").onclick=async function(){
  var pj=$("tl_proj").value,pt=$("tl_part").value,st=$("tl_stage").value,me=$("tl_method").value.trim(),qty=$("tl_qty").value,res=$("tl_res").value,msg=$("tl_msg");
@@ -1397,7 +1398,7 @@ $("tl_save").onclick=async function(){
  try{var photos=tlPh.slice(),fl=$("tl_f").files;
   for(var i=0;i<fl.length;i++)photos.push(await upPhoto(fl[i]));
   last.s="";await loadS();
-  var rec={id:tlEd?tlEd.id:"L"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),part:pt,method:me,qty:Number(qty),res:res,photos:photos,ts:tlEd?tlEd.ts:Date.now(),desc:$("tl_desc").value.trim()};
+  var rec={id:tlEd?tlEd.id:"L"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),part:pt,method:me,qty:Number(qty),res:res,photos:photos,ts:tlEd?tlEd.ts:Date.now(),desc:$("tl_desc").value.trim(),date:$("tl_date").value||""};
   if(tlEd&&(tlEd.project!=pj||tlEd.stage!=st)){
    await putLabSec(pj,st,labGroup(pj,st).concat([rec]));
    await putLabSec(tlEd.project,tlEd.stage,labGroup(tlEd.project,tlEd.stage).filter(function(o){return o.id!=tlEd.id}))}
@@ -1409,7 +1410,7 @@ function tlEdit(id){var o=labResAll().filter(function(x){return x.id==id})[0];if
  tlEd={id:o.id,project:o.project,stage:o.stage,part:o.part,ts:o.ts};var pj=$("tl_proj");
  if(!Array.from(pj.options).some(function(op){return op.value==o.project}))pj.insertAdjacentHTML("beforeend","<option>"+esc(o.project)+"</option>");
  pj.value=o.project;$("tl_part").value="";tlParts();$("tl_part").value=o.part;$("tl_stage").value=o.stage;$("tl_method").value=o.method;$("tl_method").dataset.auto="0";
- $("tl_qty").value=o.qty;$("tl_res").value=o.res;$("tl_desc").value=o.desc||"";tlPh=o.photos.slice();tlThumbs();$("tl_f").value="";
+ $("tl_qty").value=o.qty;$("tl_res").value=o.res;$("tl_desc").value=o.desc||"";$("tl_date").value=o.date||"";tlPh=o.photos.slice();tlThumbs();$("tl_f").value="";
  $("tl_mode").textContent="Edit mode";$("tl_cancel").classList.remove("hidden");$("tl_save").textContent="Save changes";$("tl_msg").textContent="";window.scrollTo({top:0,behavior:"smooth"})}
 async function tlDel(id){var o=labResAll().filter(function(x){return x.id==id})[0];if(!o)return;
  try{await putLabSec(o.project,o.stage,labGroup(o.project,o.stage).filter(function(x){return x.id!=id}));last.s="";await loadS();rLabList();rLabSum();if(tlEd&&tlEd.id==id)tlReset();toast("Lab result deleted")}catch(e){toast("Failed: "+String(e.message||e).slice(0,100))}}
@@ -1417,7 +1418,7 @@ function sure(t,label,fn){if(t.dataset.sure!="1"){t.dataset.sure="1";t.dataset.o
 function labBtns(o){return "<button type=button class=\"btn ghost small\" data-tle=\""+esc(o.id)+"\">✎</button> <button type=button class=\"btn danger small\" data-tld=\""+esc(o.id)+"\">✕</button>"}
 function rLabList(){var p=$("tl_fp").value,l=labResAll().filter(function(o){return !p||o.project==p}).sort(function(a,b){return b.ts-a.ts}),ok=l.filter(function(o){return o.res=="OK"}).length;
  $("tl_list").innerHTML=l.length?"<div class=sub style=\"margin-bottom:8px\">Total "+l.length+" tests · OK "+ok+" · NG "+(l.length-ok)+"</div><table><tr><th>Project</th><th>Trial type</th><th>Part</th><th>Method</th><th>Qty</th><th>Result</th><th>Photos</th><th>Date</th><th></th></tr>"
-  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.method)+descSub(o)+"</td><td>"+esc(o.qty)+"</td><td>"+labPill(o.res)+"</td><td>"+thumbsOf(o.photos)+"</td><td>"+(o.ts?day(o.ts):"-")+"</td><td style=\"white-space:nowrap\">"+labBtns(o)+"</td></tr>"}).join("")+"</table>"
+  +l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.stage)+"</td><td>"+esc(o.part)+"</td><td>"+esc(o.method)+descSub(o)+"</td><td>"+esc(o.qty)+"</td><td>"+labPill(o.res)+"</td><td>"+thumbsOf(o.photos)+"</td><td>"+(o.date?fd(o.date):(o.ts?day(o.ts):"-"))+"</td><td style=\"white-space:nowrap\">"+labBtns(o)+"</td></tr>"}).join("")+"</table>"
   :"<div class=sub>No lab results yet.</div>";labelT("tl_list")}
 $("tl_list").addEventListener("click",function(e){var t=e.target;if(!t.dataset)return;
  if(t.dataset.tle)tlEdit(t.dataset.tle);
@@ -1894,9 +1895,10 @@ function rTimeline(){var el=$("tl_dash");if(!el)return;var fp=$("fp").value,name
   +"<rect x=\""+xa+"\" y=\""+(cy-9)+"\" width=\""+Math.max(2,xb-xa)+"\" height=\"18\" rx=\"9\" fill=\"#eee6f3\" stroke=\"#cdb5dc\"/>";
   it.ml.ms.forEach(function(m){var c=WK_ST[m.st][0];if(m.act&&m.act!=m.plan)S+="<line x1=\""+x(m.plan)+"\" y1=\""+cy+"\" x2=\""+x(m.act)+"\" y2=\""+cy+"\" stroke=\""+c+"\" stroke-width=\"2\" stroke-dasharray=\"3 2\"/>";
    S+="<circle cx=\""+x(m.plan)+"\" cy=\""+cy+"\" r=\"7\" fill=\"#"+(m.st=="na"?"8a8a99":m.st=="pending"?"b7b3c4":c)+"\" stroke=\"#fff\" stroke-width=\"2\"><title>"+esc(m.n+" · plan "+wkD(m.plan,1)+(m.act?" · actual "+wkD(m.act,1)+(m.src?" (from "+m.src+")":""):"")+(m.note?" · "+m.note:"")+" · "+wkStLabel(m))+"</title></circle><text x=\""+x(m.plan)+"\" y=\""+(cy-14)+"\" font-size=\"9\" fill=\"#6b6880\" text-anchor=\"middle\">"+{tool:"TOOL",ep:"EP",ink:"INK",fep:"FEP",lab:"LAB",acc:"ACC",pp2k:"PP2K",rel:"REL"}[m.k]+"</text>";
+   if(!m.act&&m.part)S+="<polygon points=\""+x(m.part)+","+(cy+11)+" "+(x(m.part)-5)+","+(cy+20)+" "+(x(m.part)+5)+","+(cy+20)+"\" fill=\"none\" stroke=\"#373545\" stroke-width=\"1.5\"/>";
    if(m.act)S+="<polygon points=\""+x(m.act)+","+(cy+11)+" "+(x(m.act)-5)+","+(cy+20)+" "+(x(m.act)+5)+","+(cy+20)+"\" fill=\"#373545\"/>"})});
  S+="<line x1=\""+x(today)+"\" y1=\""+(TOP-10)+"\" x2=\""+x(today)+"\" y2=\""+H+"\" stroke=\"#d6405a\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\"/><text x=\""+x(today)+"\" y=\"28\" font-size=\"10\" fill=\"#d6405a\" text-anchor=\"middle\" font-weight=\"700\">Today</text>";
- el.innerHTML="<div style=\"min-width:820px\"><svg viewBox=\"0 0 "+W+" "+H+"\" width=\"100%\" font-family=\"Arial\">"+S+"</svg></div><div class=sub style=\"margin-top:8px\">TOOL = Tooling Readiness (PA-20) · EP (PA-14) · INK = Original Ink (PA+1) · FEP (PA+2) · LAB = Lab test after FEP (PA+4) · ACC = QE part approval (PA+6) · PP2K (PA+7) · REL = Release (PA+10). Circle = planned date (green on time · red late/overdue · amber due ≤3 days · grey pending). ▲ = actual date. Dashed red line = today.</div>"+(np.length?"<div class=sub style=\"margin-top:6px\">PA date not set: "+np.map(function(i){return esc(i.n)}).join(", ")+"</div>":"")}
+ el.innerHTML="<div style=\"min-width:820px\"><svg viewBox=\"0 0 "+W+" "+H+"\" width=\"100%\" font-family=\"Arial\">"+S+"</svg></div><div class=sub style=\"margin-top:8px\">TOOL = Tooling Readiness (PA-20) · EP (PA-14) · INK = Original Ink (PA+1) · FEP (PA+2) · LAB = Lab test after FEP (PA+4) · ACC = QE part approval (PA+6) · PP2K (PA+7) · REL = Release (PA+10). Circle = planned date (green on time · red late/overdue · amber due ≤3 days · grey pending). ▲ = actual date · △ = partial (tooling: some tools still have no Copy Date). Dashed red line = today.</div>"+(np.length?"<div class=sub style=\"margin-top:6px\">PA date not set: "+np.map(function(i){return esc(i.n)}).join(", ")+"</div>":"")}
 var _rDash6=rDash;rDash=function(){_rDash6();rNotif();rTimeline()};
 function updBadge(){var n=notifs(projs.map(function(p){return p.name})).filter(function(x){return x.sev>=2}).length;
  document.querySelectorAll("[data-tab=\"ringkasan\"]").forEach(function(b){var s=b.querySelector(".nbadge");if(!s){b.insertAdjacentHTML("beforeend"," <span class=nbadge style=\"background:#d6405a;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px\"></span>");s=b.querySelector(".nbadge")}s.textContent=n||"";s.style.display=n?"inline-block":"none"})}
@@ -2069,6 +2071,42 @@ function videoSheet(wb,proj,f){var L=f.filter(function(x){return vidsOf(x).lengt
  var r=4,n=0;L.forEach(function(x){vidsOf(x).forEach(function(u,i){n++;[n,fmt(T(x)),x.stage,x.pos,x.method,"T"+(x.no||1),x.res,x.cat||"-"].forEach(function(v,j){put(ws,r,2+j,2+j,v,{bd:true,h:j==0||j==5||j==6?"center":"left"})});put(ws,r,10,10,{text:"▶ Video "+(i+1),hyperlink:u},{bd:true});r++})})}
 
 var VID_MAX=50*1024*1024;
+
+/* ===================== MILESTONE DATA READERS (robust: any stage, any date text) + DATA CHECK ===================== */
+function secsOf(name,base){var out=[];secs.forEach(function(y){if(y.project!=name)return;var sec=String(y.section);if(sec==base||sec.indexOf(base+"::")==0)out.push({stage:y.stage||"",part:sec.indexOf("::")>0?sec.split("::")[1]:"",rows:(y.rows||[]).map(function(r){var o=[];for(var i=0;i<6;i++)o.push(r[i]==null?"":String(r[i]));return o})})});return out}
+function stRank(list){return function(a,b){var ia=list.indexOf(a),ib=list.indexOf(b);ia=ia<0?99:ia;ib=ib<0?99:ib;return ia-ib||(a<b?-1:1)}}
+var _pldZ=parseLooseDate;
+parseLooseDate=function(s,ref){var d=_pldZ(s,ref);if(d)return d;s=String(s||"");
+ var m=s.match(/\d{4}[-\/.]\d{1,2}[-\/.]\d{1,2}/)||s.match(/\d{1,2}[-\/.]\d{1,2}[-\/.]\d{2,4}/);if(m)return _pldZ(m[0],ref);
+ m=s.match(/\d{1,2}(?:st|nd|rd|th)?[\s\-\/.]*[A-Za-z]{3,9}\.?(?:[\s\-\/.]*\d{2,4})?/);return m?_pldZ(m[0],ref):""};
+function toolActual(name,pa){var ref=(pa&&pa.pa)||iso(Date.now()),man=(pa&&pa.tool)||"",G={};
+ ["spray_tools","pad_tools"].forEach(function(b){secsOf(name,b).forEach(function(g){var o=G[g.stage]=G[g.stage]||{tot:0,ds:[],miss:[]};g.rows.forEach(function(r){if(!(r[0]||r[1]))return;o.tot++;var d=parseLooseDate(r[2],ref);if(d)o.ds.push(d);else o.miss.push((r[0]+" "+r[1]).trim())})})});
+ var ks=Object.keys(G).filter(function(k){return G[k].tot}).sort(stRank(["EP","FEP","PP2K","PP3K","Other Trial"]));
+ if(!ks.length)return {d:man,src:"",part:"",note:man?"":"No Spray / Pad Print first-set tool rows saved yet (Readiness & Lab tab)"};
+ var o=G[ks[0]];o.ds.sort();
+ if(o.ds.length==o.tot)return {d:o.ds[o.ds.length-1],src:"Readiness",part:"",note:""};
+ return {d:man,src:"",part:o.ds.length?o.ds[o.ds.length-1]:"",note:o.ds.length+" of "+o.tot+" first-set tools have a Copy Date"+(ks[0]?" ("+ks[0]+")":"")+(o.miss.length?" – missing: "+o.miss.slice(0,3).join(", ")+(o.miss.length>3?" +"+(o.miss.length-3)+" more":""):"")}}
+function inkActual(name,pa){var ref=(pa&&pa.pa)||iso(Date.now()),G={},man=(pa&&pa.ink)||"";
+ secsOf(name,"completeness").forEach(function(g){g.rows.forEach(function(r){if(/paint|ink|tinta/i.test(r[0])){var d=parseLooseDate(r[1],ref);if(d)(G[g.stage]=G[g.stage]||[]).push(d)}})});
+ var ks=Object.keys(G).sort(stRank(["FEP","PP2K","PP3K","Other Trial","EP"]));
+ if(ks.length){var ds=G[ks[0]].sort();return {d:ds[0],src:"Readiness",note:""}}
+ return {d:man,src:"",note:man?"":"No “Paint / Ink” Received Date found in Readiness (FEP stage)"}}
+function labActual(name){var l=labResAll().filter(function(o){return o.project==name&&(o.date||o.ts)});
+ if(!l.length)return {d:"",src:"",note:"No lab result entered yet (Lab Test Result Input)"};
+ var f=l.filter(function(o){return o.stage=="FEP"}),u=f.length?f:l,ds=u.map(function(o){return o.date||iso(o.ts)}).sort();return {d:ds[0],src:"Lab results",note:""}}
+function accActual(name){var p=projs.filter(function(x){return x.name==name})[0],y=secs.filter(function(x){return x.project==name&&x.section=="qe_acc"})[0],q=qeRows(name),parts=p&&p.parts.length?p.parts:q.map(function(r){return r.part});
+ if(!parts.length)return {d:"",src:"",note:"This project has no parts yet"};
+ var ds=[],ok=0;parts.forEach(function(pt){var r=q.filter(function(x){return x.part==pt})[0];if(r&&r.adh=="OK"&&r.col=="OK"&&r.pos=="OK"){ok++;ds.push(r.date||"")}});
+ if(ok<parts.length)return {d:"",src:"",note:ok+" of "+parts.length+" parts fully approved by QE (adhesion / paint color / contour position)"};
+ ds=ds.filter(Boolean).sort();return {d:ds.length?ds[ds.length-1]:(y&&y.ts?iso(Number(y.ts)):""),src:"QE ACC",note:""}}
+/* never save readiness under a blank stage */
+var _rLabZ=rLab;rLab=function(f){fixSel("ls");_rLabZ(f)};
+(function(){var _ls=$("lsave").onclick;$("lsave").onclick=function(){fixSel("ls");return _ls.apply(this,arguments)}})();
+/* "why is this actual empty?" list under the timeline */
+var _rTlZ=rTimeline;rTimeline=function(){_rTlZ();var el=$("tl_dash");if(!el)return;var fp=$("fp").value,L=[];
+ projs.forEach(function(p){if(p.rs=="Released"||(fp&&p.name!=fp))return;var ml=msList(p.name);if(!ml.pa)return;
+  ml.ms.forEach(function(m){if(!m.act&&m.note&&(m.st=="overdue"||m.st=="soon"||m.st=="late"||m.k=="tool"))L.push("<b>"+esc(p.name)+"</b> · "+esc(m.n)+": "+esc(m.note))})});
+ if(L.length)el.insertAdjacentHTML("beforeend","<details style=\"margin-top:10px\"><summary class=sub style=\"cursor:pointer\">Why are some actual dates empty? ("+L.length+")</summary><div class=sub style=\"margin-top:6px;line-height:1.6\">"+L.slice(0,40).join("<br>")+"</div></details>")};
 </script>
 </body>
 </html>
