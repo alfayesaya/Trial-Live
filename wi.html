@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+<title>Work Instruction – Panel Trial ME</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;700&display=swap');
+
+:root{
+  --page-bg:#c9e9f0; --card:#ffffff; --card-soft:#f7fafb;
+  --text:#2b3a55; --text-dim:#8fa2b8; --text-soft:#a9b8cc;
+  --line:#e8eef2; --line-2:#dbe6ec;
+  --blue:#4a9fe0; --blue-soft:#e3f1fb;
+  --green:#4ecb8e; --green-soft:#ddf5e8;
+  --red:#f0687c; --red-soft:#fde3e8;
+  --amber:#f6b73c; --amber-soft:#fdf1da;
+  --sidebar:#3ba7c9; --sidebar-2:#2e94b6;
+  --shadow:0 8px 24px rgba(74,159,224,.10);
+  --shadow-soft:0 4px 14px rgba(74,159,224,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,var(--page-bg) 0%,#d8f0f5 100%);
+  background-attachment:fixed;color:var(--text);font-family:'Nunito',sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+input,select,textarea,button{font-family:inherit;font-size:13px}
+input,select,textarea{padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;
+  background:var(--card-soft);color:var(--text);font-weight:600;width:100%;transition:all .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:#fff;
+  box-shadow:0 0 0 3px var(--blue-soft)}
+textarea{resize:vertical;min-height:64px}
+button{padding:9px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),#4dd0c1);
+  color:#fff;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(74,159,224,.25);transition:all .15s}
+button:hover{filter:brightness(1.06);transform:translateY(-1px)}
+button.ghost{background:#eef3f7;color:var(--text-dim);box-shadow:none}
+button.ghost:hover{color:var(--text);background:#e3eaf0}
+button.danger{background:var(--red-soft);color:var(--red);box-shadow:none}
+button.danger:hover{background:var(--red);color:#fff}
+button.sm{padding:6px 10px;font-size:11.5px;border-radius:8px}
+button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* HEADER */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.85);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1400px;margin:0 auto;padding:12px 20px;display:flex;gap:12px;
+  align-items:center;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;font-weight:800;font-size:16px}
+.brand .tag{font-size:11px;color:#fff;background:var(--sidebar);padding:3px 9px;
+  border-radius:8px;font-weight:700}
+.spacer{flex:1}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar label{font-size:11.5px;color:var(--text-dim);font-weight:700;display:flex;
+  align-items:center;gap:6px;margin:0}
+.toolbar select{width:auto;min-width:180px}
+#msg{font-size:12px;color:var(--text-dim);font-weight:600;min-height:16px}
+#msg.ok{color:var(--green)}
+#msg.err{color:var(--red)}
+
+/* MAIN */
+main{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+.sec-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;
+  background:#fff;border-radius:14px;padding:14px 18px;box-shadow:var(--shadow-soft)}
+.sec-toolbar label{font-size:11.5px;color:var(--text-dim);font-weight:700;
+  display:flex;align-items:center;gap:6px}
+.sec-toolbar select{width:auto;min-width:180px}
+
+/* DOCUMENT */
+.doc{background:#fff;border-radius:18px;padding:32px;box-shadow:var(--shadow);
+  margin-bottom:20px}
+.doc-head{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:22px}
+.doc-head h1{margin:0 0 4px;font-size:22px;font-weight:800;letter-spacing:-.3px}
+.doc-head .subtitle{color:var(--text-dim);font-size:12.5px;font-weight:600;margin-bottom:16px}
+.doc-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;margin-top:14px}
+.doc-meta .fld{display:flex;flex-direction:column;gap:3px}
+.doc-meta label{font-size:10.5px;color:var(--text-dim);font-weight:800;
+  text-transform:uppercase;letter-spacing:.04em}
+.doc-meta input{padding:6px 10px;font-size:12.5px}
+
+/* STEP */
+.step{border:1.5px solid var(--line);border-radius:14px;padding:18px;
+  margin-bottom:16px;background:var(--card-soft);position:relative}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.step-num{background:var(--blue);color:#fff;font-weight:800;font-size:14px;
+  min-width:32px;height:32px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0}
+.step-head input.title{font-size:14px;font-weight:800;flex:1;background:#fff}
+.step-head input.machine{width:140px;background:#fff}
+.step-body{display:grid;grid-template-columns:1fr;gap:12px}
+.step-desc{min-height:56px}
+.step-photos{display:flex;gap:8px;flex-wrap:wrap}
+.step-photos .ph{position:relative;width:80px;height:80px;border-radius:10px;
+  overflow:hidden;background:#fff}
+.step-photos .ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.step-photos .ph button{position:absolute;top:2px;right:2px;padding:0 6px;
+  height:20px;font-size:11px;line-height:20px;border-radius:6px;
+  background:rgba(240,104,124,.92);color:#fff;box-shadow:none}
+.step-photos .add{width:80px;height:80px;border:1.5px dashed var(--line-2);
+  border-radius:10px;background:#fff;color:var(--text-dim);font-size:24px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;font-weight:400}
+.step-photos .add:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+.step-actions{position:absolute;top:14px;right:14px;display:flex;gap:6px}
+
+/* PARAM TABLE */
+.ptable{width:100%;border-collapse:collapse;margin-top:4px;background:#fff;
+  border-radius:10px;overflow:hidden}
+.ptable th{text-align:left;font-size:10.5px;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:.04em;font-weight:800;
+  padding:8px 10px;background:#eef3f7;border-bottom:1px solid var(--line)}
+.ptable td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.ptable tr:last-child td{border-bottom:none}
+.ptable td input{padding:6px 8px;font-size:12.5px;border-color:transparent;background:transparent}
+.ptable td input:focus{background:#fff;border-color:var(--blue)}
+.ptable td:nth-child(1){width:44%}
+.ptable td:nth-child(2){width:28%}
+.ptable td:nth-child(3){width:20%}
+.ptable td:nth-child(4){width:8%;text-align:center}
+.add-param{margin-top:8px;font-size:11.5px;padding:6px 12px}
+
+/* MACHINE REF */
+.mref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.mref-box{background:var(--card-soft);border-radius:12px;padding:12px}
+.mref-box h4{margin:0 0 8px;font-size:12px;color:var(--blue);font-weight:800;
+  text-transform:uppercase;letter-spacing:.04em}
+.mref-box .ph-list{display:flex;flex-wrap:wrap;gap:6px}
+.mref-box .ph{position:relative;width:60px;height:60px;border-radius:8px;
+  overflow:hidden;background:#fff;border:1px solid var(--line)}
+.mref-box .ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.mref-box .ph button{position:absolute;top:1px;right:1px;padding:0 5px;height:18px;
+  font-size:10px;line-height:18px;border-radius:5px;background:rgba(240,104,124,.92);
+  color:#fff;box-shadow:none}
+.mref-box .add{width:60px;height:60px;border:1.5px dashed var(--line-2);border-radius:8px;
+  background:#fff;color:var(--text-dim);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-weight:400}
+.mref-box .add:hover{border-color:var(--blue);color:var(--blue)}
+
+/* EMPTY / LIGHTBOX */
+.empty{padding:60px 20px;text-align:center;color:var(--text-soft);font-weight:600}
+.empty button{margin-top:16px}
+#lightbox{position:fixed;inset:0;background:rgba(20,30,45,.92);display:none;
+  align-items:center;justify-content:center;z-index:200;padding:30px;cursor:zoom-out}
+#lightbox.show{display:flex}
+#lightbox img{max-width:100%;max-height:100%;border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5)}
+
+/* PRINT */
+@media print{
+  body{background:#fff}
+  .topbar,.sec-toolbar,.step-actions,.add-param,.step-photos .add,.mref-box .add,
+  .noprint,#lightbox,#backBtn{display:none !important}
+  main{padding:0;max-width:none}
+  .doc{box-shadow:none;padding:0;border-radius:0}
+  .step{background:#fff;border-color:#ccc;page-break-inside:avoid;break-inside:avoid}
+  input,select,textarea{border:none !important;background:transparent !important;
+    box-shadow:none !important;padding:2px 4px !important;color:#000 !important;
+    font-size:10.5pt !important}
+  .doc-head h1{font-size:16pt}
+  .step-num{background:#000;color:#fff;-webkit-print-color-adjust:exact;
+    print-color-adjust:exact}
+  .ptable th{background:#f0f0f0;-webkit-print-color-adjust:exact;
+    print-color-adjust:exact;color:#000}
+  .ptable td input{background:#fff !important}
+  .step-photos .ph,.mref-box .ph{width:60px;height:60px}
+  @page{size:A4;margin:14mm}
+}
+@media (max-width:640px){
+  .doc{padding:18px}
+  .step-head{flex-wrap:wrap}
+  .step-head input.machine{width:100%}
+  .doc-meta{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="tag">WI</span>Work Instruction</div>
+    <div class="spacer"></div>
+    <div class="toolbar">
+      <button class="ghost sm" id="backBtn" onclick="location.href='index.html'">← Dashboard</button>
+      <button class="ghost sm" id="printBtn">🖨️ Print / PDF</button>
+      <button id="saveBtn">💾 Simpan WI</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="sec-toolbar">
+    <label>Project <select id="selProj"></select></label>
+    <label>Stage <select id="selStage">
+      <option>EP</option><option>FEP</option><option>PP2K</option>
+      <option>PP3K</option><option value="Other Trial">Trial Lain</option>
+    </select></label>
+    <button class="ghost sm" id="seedBtn">⟳ Seed dari trial</button>
+    <span id="msg"></span>
+  </div>
+  <div id="docBox" class="doc"><div class="empty">Memuat…</div></div>
+</main>
+
+<div id="lightbox"><img id="lbImg" src="" alt=""></div>
+
+<script>
+/* ============ KONFIG ============ */
+const SB="https://edmylqrsinorprliaoxu.supabase.co";
+const KEY="sb_publishable_xm8If-u4NuGkydo4ULg-hQ_wBrdEDec";
+const BUCKET="trial-photos";
+
+const PAR={
+  "Handspray":["Spray mode","CT Cat","Paint ratio","Spray cycle time (s)","Masking code","Air pressure (MPa)","Mask cleaning freq. (pcs)","Paint consumption (g/pcs)"],
+  "Pad Print":["Number of pads (times)","Ink color","Viscosity (KU)","Rubber head","Plate depth (mm)","Delay pick up ink (s)","Delay transfer to part (s)","Rear/front stopper distance (mm)","Cycle time (s)"]
+};
+const MREF=[["hmi","HMI"],["speed","Speed"],["angin","Air"],["proses","Process"]];
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const setMsg=(t,cls)=>{const m=$("msg");m.textContent=t;m.className=cls||""};
+
+/* ============ API ============ */
+async function api(m,t,b,q,pref){
+  const r=await fetch(SB+"/rest/v1/"+t+(q||""),{
+    method:m,
+    headers:{apikey:KEY,"Content-Type":"application/json",Prefer:pref||"return=minimal"},
+    body:b?JSON.stringify(b):undefined
+  });
+  if(!r.ok)throw new Error(await r.text());
+  return m==="GET"?r.json():null;
+}
+async function upPhoto(f){
+  const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const path=Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+  const r=await fetch(SB+"/storage/v1/object/"+BUCKET+"/"+path,{
+    method:"POST",
+    headers:{apikey:KEY,"Content-Type":f.type||"image/jpeg"},
+    body:f
+  });
+  if(!r.ok)throw new Error(await r.text());
+  return SB+"/storage/v1/object/public/"+BUCKET+"/"+path;
+}
+
+/* ============ STATE ============ */
+let projs=[], trials=[], current=null, dirty=false;
+
+/* ============ INIT ============ */
+async function init(){
+  try{
+    projs=await api("GET","projects",null,"?select=*&order=ts.asc");
+    trials=await api("GET","trials",null,"?select=*&order=trial_at.desc");
+    $("selProj").innerHTML=projs.length
+      ? projs.map(p=>`<option>${esc(p.name)}</option>`).join("")
+      : `<option value="">(Belum ada project — buat di Dashboard)</option>`;
+    // preselect dari ?project=
+    const up=new URLSearchParams(location.search).get("project");
+    if(up&&projs.some(p=>p.name===up))$("selProj").value=up;
+    if(projs.length){
+      $("selProj").onchange=()=>{if(dirty&&!confirm("Ada perubahan belum disimpan. Lanjut?"))return;loadWI();};
+      $("selStage").onchange=()=>{if(dirty&&!confirm("Ada perubahan belum disimpan. Lanjut?"))return;loadWI();};
+      $("saveBtn").onclick=save;
+      $("seedBtn").onclick=()=>seed(true);
+      $("printBtn").onclick=()=>window.print();
+      await loadWI();
+    } else {
+      renderEmpty("Belum ada project. Buat dulu di tab Project pada Dashboard.");
+    }
+  }catch(e){
+    renderEmpty("Gagal connect ke Supabase: "+e.message.slice(0,140));
+  }
+}
+
+/* ============ LOAD / SEED ============ */
+async function loadWI(){
+  const p=$("selProj").value, s=$("selStage").value;
+  if(!p){renderEmpty("Pilih project dulu.");return;}
+  setMsg("Memuat…");
+  try{
+    const rows=await api("GET","sections",null,
+      `?project=eq.${encodeURIComponent(p)}&stage=eq.${encodeURIComponent(s)}&section=eq.wi&select=*`);
+    if(rows.length && rows[0].rows && rows[0].rows[0] && rows[0].rows[0].steps){
+      current=rows[0].rows[0];
+      normalize();
+      render();
+      setMsg("WI tersimpan · di-load","ok");
+    } else {
+      setMsg("Belum ada WI tersimpan — auto-seed dari trial…");
+      await seed(false);
+    }
+    dirty=false;
+  }catch(e){
+    renderEmpty("Gagal load WI: "+e.message.slice(0,140));
+  }
+}
+
+function normalize(){
+  // pastikan struktur lengkap
+  current.steps=(current.steps||[]).map(s=>({
+    title:s.title||"", machine:s.machine||"", desc:s.desc||"",
+    photos:Array.isArray(s.photos)?s.photos:[],
+    params:Array.isArray(s.params)?s.params.map(p=>({
+      name:p.name||"", value:p.value||"", tol:p.tol||""
+    })):[]
+  }));
+  current.machineRef=current.machineRef||{};
+  MREF.forEach(([k])=>{if(!Array.isArray(current.machineRef[k]))current.machineRef[k]=[];});
+  current.meta=Object.assign({part:"",method:"",preparedBy:"",approvedBy:"",rev:"01",date:""},current.meta||{});
+}
+
+async function seed(manual){
+  const p=$("selProj").value, s=$("selStage").value;
+  if(!p){if(manual)toast("Pilih project dulu");return;}
+  // cari trial: Pass terbaru dulu, kalau tidak ada → trial terbaru apa saja
+  let t=trials.find(x=>x.project===p&&x.stage===s&&x.res==="Pass")
+      ||trials.find(x=>x.project===p&&x.stage===s);
+  if(!t){
+    if(manual){
+      if(!confirm("Tidak ada trial untuk project/stage ini. Mulai WI kosong?"))return;
+      current={steps:[newStep()],machineRef:{hmi:[],speed:[],angin:[],proses:[]},
+        meta:{part:"",method:"",preparedBy:"",approvedBy:"",rev:"01",date:today()}};
+      normalize();render();setMsg("WI kosong dibuat","ok");dirty=true;
+    } else {
+      renderEmpty("Belum ada trial & belum ada WI. Klik <b>+ Tambah Step</b> untuk mulai manual.");
+    }
+    return;
+  }
+  const methods=PAR[t.method]?t.method:"Handspray";
+  const paramNames=PAR[methods];
+  const step={
+    title:methods+" — "+(t.pos||""),
+    machine:t.mc||"",
+    desc:"",
+    photos:(t.photos||[]).slice(),
+    params:paramNames.map(n=>({
+      name:n,
+      value:(t.params||{})[n]||"",
+      tol:""
+    }))
+  };
+  current={
+    steps:[step],
+    machineRef:{
+      hmi:((t.machine_photos||{}).hmi||[]).slice(),
+      speed:((t.machine_photos||{}).speed||[]).slice(),
+      angin:((t.machine_photos||{}).angin||[]).slice(),
+      proses:((t.machine_photos||{}).proses||[]).slice()
+    },
+    meta:{
+      part:t.pos||"",
+      method:t.method||"",
+      preparedBy:t.by||"",
+      approvedBy:"",
+      rev:"01",
+      date:today()
+    }
+  };
+  normalize();render();dirty=true;
+  setMsg("Di-seed dari trial T"+(t.trial_no||1)+" ("+new Date(t.trial_at).toLocaleDateString("id-ID")+")","ok");
+}
+
+function newStep(){return {title:"",machine:"",desc:"",photos:[],params:[]};}
+function today(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
+
+/* ============ RENDER ============ */
+function renderEmpty(msg){
+  $("docBox").innerHTML=`<div class="empty">${msg}</div>`;
+}
+function render(){
+  if(!current){renderEmpty("Belum ada data WI.");return;}
+  const m=current.meta;
+  $("docBox").innerHTML=`
+    <div class="doc-head">
+      <h1>WORK INSTRUCTION</h1>
+      <div class="subtitle">Panel Trial ME – Handspray &amp; Pad Print</div>
+      <div class="doc-meta">
+        <div class="fld"><label>Project</label><input data-meta="proj" value="${esc($("selProj").value)}" readonly></div>
+        <div class="fld"><label>Stage</label><input data-meta="stage" value="${esc($("selStage").value)}" readonly></div>
+        <div class="fld"><label>Part</label><input data-meta="part" value="${esc(m.part)}"></div>
+        <div class="fld"><label>Method</label><input data-meta="method" value="${esc(m.method)}"></div>
+        <div class="fld"><label>Prepared by</label><input data-meta="preparedBy" value="${esc(m.preparedBy)}"></div>
+        <div class="fld"><label>Approved by</label><input data-meta="approvedBy" value="${esc(m.approvedBy)}"></div>
+        <div class="fld"><label>Revision</label><input data-meta="rev" value="${esc(m.rev)}"></div>
+        <div class="fld"><label>Date</label><input type="date" data-meta="date" value="${esc(m.date)}"></div>
+      </div>
+    </div>
+    <div id="stepsBox">${current.steps.map(renderStep).join("")}</div>
+    <div style="margin-top:10px" class="noprint">
+      <button class="ghost" data-action="addStep">＋ Tambah Step</button>
+    </div>
+    <div class="doc-head" style="margin-top:32px;padding-top:18px;border-top:2px solid var(--line);border-bottom:none">
+      <h2 style="font-size:15px;margin:0 0 14px">Machine Parameter Reference</h2>
+    </div>
+    <div class="mref-grid">${MREF.map(([k,lbl])=>renderMRef(k,lbl)).join("")}</div>
+  `;
+  bindEvents();
+}
+
+function renderStep(s,i){
+  return `
+  <div class="step" data-step="${i}">
+    <div class="step-actions noprint">
+      <button class="ghost sm" data-action="upStep" data-i="${i}" ${i===0?"disabled":""}>↑</button>
+      <button class="ghost sm" data-action="downStep" data-i="${i}" ${i===current.steps.length-1?"disabled":""}>↓</button>
+      <button class="danger sm" data-action="delStep" data-i="${i}">🗑</button>
+    </div>
+    <div class="step-head">
+      <div class="step-num">${i+1}</div>
+      <input class="title" data-step="${i}" data-k="title" placeholder="Judul step (mis. Masking)" value="${esc(s.title)}">
+      <input class="machine" data-step="${i}" data-k="machine" placeholder="Mesin / Line" value="${esc(s.machine)}">
+    </div>
+    <div class="step-body">
+      <textarea class="step-desc" data-step="${i}" data-k="desc" placeholder="Instruksi / catatan (opsional)…">${esc(s.desc)}</textarea>
+      <div class="step-photos">
+        ${s.photos.map((u,j)=>`
+          <div class="ph">
+            <img src="${esc(u)}" data-zoom="${esc(u)}" alt="">
+            <button class="noprint" data-action="delPhoto" data-step="${i}" data-j="${j}">✕</button>
+          </div>`).join("")}
+        <button class="add noprint" data-action="addPhoto" data-step="${i}" title="Tambah foto">＋</button>
+      </div>
+      <table class="ptable">
+        <thead><tr>
+          <th>Parameter</th><th>Target</th><th>Toleransi</th><th class="noprint"></th>
+        </tr></thead>
+        <tbody>
+          ${s.params.map((p,j)=>`
+            <tr>
+              <td><input data-step="${i}" data-param="${j}" data-k="name" value="${esc(p.name)}" placeholder="Parameter"></td>
+              <td><input data-step="${i}" data-param="${j}" data-k="value" value="${esc(p.value)}" placeholder="Nilai"></td>
+              <td><input data-step="${i}" data-param="${j}" data-k="tol" value="${esc(p.tol)}" placeholder="±..."></td>
+              <td class="noprint"><button class="danger sm" data-action="delParam" data-step="${i}" data-j="${j}">✕</button></td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+      <button class="ghost add-param noprint" data-action="addParam" data-step="${i}">＋ Parameter</button>
+    </div>
+  </div>`;
+}
+
+function renderMRef(k,lbl){
+  const arr=current.machineRef[k]||[];
+  return `
+  <div class="mref-box">
+    <h4>${lbl}</h4>
+    <div class="ph-list">
+      ${arr.map((u,j)=>`
+        <div class="ph">
+          <img src="${esc(u)}" data-zoom="${esc(u)}" alt="">
+          <button class="noprint" data-action="delMRef" data-k="${k}" data-j="${j}">✕</button>
+        </div>`).join("")}
+      <button class="add noprint" data-action="addMRef" data-k="${k}" title="Tambah foto ${lbl}">＋</button>
+    </div>
+  </div>`;
+}
+
+/* ============ EVENTS (delegated) ============ */
+function bindEvents(){
+  const doc=$("docBox");
+
+  // input biasa
+  doc.oninput=e=>{
+    const t=e.target;
+    if(t.dataset.meta){
+      current.meta[t.dataset.meta]=t.value; dirty=true; return;
+    }
+    if(t.dataset.step!=null && t.dataset.k){
+      const i=+t.dataset.step;
+      if(t.dataset.param!=null){
+        current.steps[i].params[+t.dataset.param][t.dataset.k]=t.value;
+      } else {
+        current.steps[i][t.dataset.k]=t.value;
+      }
+      dirty=true;
+    }
+  };
+
+  // klik
+  doc.onclick=async e=>{
+    const t=e.target.closest("[data-action]");
+    if(!t)return;
+    const a=t.dataset.action;
+    if(a==="addStep"){
+      current.steps.push(newStep()); dirty=true; render();
+    } else if(a==="delStep"){
+      if(!confirm("Hapus step ini?"))return;
+      current.steps.splice(+t.dataset.i,1); dirty=true; render();
+    } else if(a==="upStep"||a==="downStep"){
+      const i=+t.dataset.i, j=a==="upStep"?i-1:i+1;
+      if(j<0||j>=current.steps.length)return;
+      [current.steps[i],current.steps[j]]=[current.steps[j],current.steps[i]];
+      dirty=true; render();
+    } else if(a==="addParam"){
+      current.steps[+t.dataset.step].params.push({name:"",value:"",tol:""});
+      dirty=true; render();
+    } else if(a==="delParam"){
+      current.steps[+t.dataset.step].params.splice(+t.dataset.j,1);
+      dirty=true; render();
+    } else if(a==="addPhoto"){
+      pickFiles(files=>uploadTo(current.steps[+t.dataset.step].photos,files));
+    } else if(a==="delPhoto"){
+      current.steps[+t.dataset.step].photos.splice(+t.dataset.j,1);
+      dirty=true; render();
+    } else if(a==="addMRef"){
+      pickFiles(files=>uploadTo(current.machineRef[t.dataset.k],files));
+    } else if(a==="delMRef"){
+      current.machineRef[t.dataset.k].splice(+t.dataset.j,1);
+      dirty=true; render();
+    }
+  };
+
+  // zoom gambar
+  doc.onclick=e=>{
+    const z=e.target.closest("[data-zoom]");
+    if(z){$("lbImg").src=z.dataset.zoom;$("lightbox").classList.add("show");}
+  };
+}
+
+function pickFiles(cb){
+  const inp=document.createElement("input");
+  inp.type="file";inp.accept="image/*";inp.multiple=true;
+  inp.onchange=()=>{if(inp.files.length)cb(inp.files);};
+  inp.click();
+}
+
+async function uploadTo(arr,files){
+  setMsg("Upload foto…");
+  try{
+    for(const f of files) arr.push(await upPhoto(f));
+    dirty=true; render(); setMsg("Foto ditambahkan","ok");
+  }catch(e){setMsg("Upload gagal: "+e.message.slice(0,120),"err");}
+}
+
+$("lightbox").onclick=()=>$("lightbox").classList.remove("show");
+
+/* ============ SAVE ============ */
+async function save(){
+  if(!current){return;}
+  const btn=$("saveBtn");btn.disabled=true;setMsg("Menyimpan…");
+  try{
+    const body=[{
+      project:$("selProj").value,
+      stage:$("selStage").value,
+      section:"wi",
+      rows:[current],
+      ts:Date.now()
+    }];
+    await api("POST","sections",body,
+      "?on_conflict=project,stage,section",
+      "resolution=merge-duplicates,return=minimal");
+    dirty=false;setMsg("✓ WI tersimpan","ok");
+  }catch(e){
+    setMsg("Gagal simpan: "+e.message.slice(0,140),"err");
+  }
+  btn.disabled=false;
+}
+
+window.addEventListener("beforeunload",e=>{
+  if(dirty){e.preventDefault();e.returnValue="";}
+});
+
+/* ============ GO ============ */
+init();
+</script>
+</body>
+</html>
