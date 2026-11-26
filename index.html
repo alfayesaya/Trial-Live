@@ -1237,7 +1237,7 @@ function weeklyHtml(D){
  var sched=D.allProjects||D.projects;
  if(sched.length){o+="<h2>Project Schedule – PA Milestones</h2><table><tr><th>Project</th><th>PA date</th>"+sched[0].ms.map(function(m){return "<th>"+h(m.n)+"<br><small>"+wkOff(m.off)+"</small></th>"}).join("")+"<th>Status</th></tr>"+sched.map(function(p){return "<tr><td><b>"+h(p.name)+"</b></td><td class=c>"+(p.pa?wkD(p.pa,1):"<span class=mut>not set</span>")+"</td>"+p.ms.map(function(m){return m.plan?"<td class=c><span class=mut>Plan "+wkD(m.plan)+"</span><br>Act "+(m.act?wkD(m.act):"-")+"<br><span class="+stc(m)+">"+h(wkStLabel(m))+"</span></td>":"<td class=\"c mut\">-</td>"}).join("")+"<td class=\"c "+(p.overall.c=="Fail"?"bad":p.overall.c=="Pass"?"ok":"mut")+"\">"+h(p.overall.t)+"</td></tr>"}).join("")+"</table><p class=note>Plan dates come from the PA date. EP / FEP / PP2K actuals = first trial of that stage · Release actual = release date · Tooling Readiness / Original Ink = from Readiness (or manual) · Lab Test = first lab result after FEP · ACC Part = QE approval of adhesion, paint color and contour position complete for all parts.</p>"}
  D.projects.forEach(function(p){o+="<div class=proj><h2>"+h(p.name)+"</h2>";
-  if(p.progress&&p.progress.length)o+="<h3>Part progress (FEP → Lab → QE ACC)</h3><table><tr><th>Part</th><th>FEP</th><th>Lab</th><th>Adhesion</th><th>Paint color</th><th>Contour position</th><th>Status</th></tr>"+p.progress.map(function(q){var pl=function(v){return v?"<span class=\""+(v=="OK"?"ok":"bad")+"\">"+h(v)+"</span>":"<span class=mut>Pending</span>"};return "<tr><td><b>"+h(q.part)+"</b></td><td class=c>"+(q.fepN?h(q.fepRes)+" · "+wkD(q.fepDate,1):"<span class=mut>not yet</span>")+"</td><td class=c>"+(q.labN?q.labN+" tests · OK "+q.labOk+" · NG "+q.labNg:"<span class=mut>not yet</span>")+"</td><td class=c>"+pl(q.adh)+"</td><td class=c>"+pl(q.col)+"</td><td class=c>"+pl(q.pos)+"</td><td class=\"c "+(q.c=="Pass"?"ok":q.c=="Fail"?"bad":q.c=="Hold"?"warn":"mut")+"\">"+h(q.status)+"</td></tr>"}).join("")+"</table>";
+  if(p.progress&&p.progress.length)o+=progHtml(p,h);
   if(p.trials.length)o+="<h3>1. Trial results</h3><table><tr><th>Date</th><th>Stage</th><th>Method / Part</th><th>T#</th><th>Qty</th><th>NG</th><th>Color</th><th>Result</th><th>Issue</th>"+(D.mode=="full"?"<th>Parameters</th>":"")+"</tr>"+p.trials.map(function(r){return "<tr><td class=c>"+wkD(r.date)+"</td><td class=c>"+h(r.stage)+"</td><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>T"+r.no+"</td><td class=c>"+r.qty+"</td><td class=c>"+r.ng+"</td><td>"+h(r.color)+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td><td>"+h(r.cat=="No issue"?"-":r.cat)+"</td>"+(D.mode=="full"?"<td style=\"font-size:11px\">"+h(r.params||"-")+"</td>":"")+"</tr>"}).join("")+"</table>"+strip(p.trials.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.res}}));
   if(p.issues.length)o+="<h3>2. Issues & actions</h3><table><tr><th>Method / Part</th><th>Stage · T#</th><th>Issue category</th><th>Detail</th><th>Action</th><th>NG</th></tr>"+p.issues.map(function(r){return "<tr><td>"+h(r.method+" / "+r.pos)+"</td><td class=c>"+h(r.stage)+" · T"+r.no+"</td><td><b>"+h(r.cat)+"</b></td><td>"+h(r.issue||"-")+"</td><td>"+h(r.act||"-")+"</td><td class=c>"+r.ng+"</td></tr>"}).join("")+"</table>"+strip(p.issues.map(function(r){return {d:r.photo,cap:r.pos+" · T"+r.no+" · "+r.cat}}));
   if(p.lab.length)o+="<h3>3. Lab test results</h3><table><tr><th>Stage</th><th>Part</th><th>Method</th><th>Qty</th><th>Result</th></tr>"+p.lab.map(function(r){return "<tr><td class=c>"+h(r.stage)+"</td><td>"+h(r.part)+"</td><td>"+h(r.method)+(r.desc?"<br><span class=mut>"+h(r.desc)+"</span>":"")+"</td><td class=c>"+r.qty+"</td><td class=\"c "+cls(r.res)+"\">"+h(r.res)+"</td></tr>"}).join("")+"</table>"+strip(p.lab.map(function(r){return {d:r.photo,cap:r.part+" · "+r.method+" · "+r.res}}));
@@ -1645,7 +1645,7 @@ async function weeklyData(all){
   var causes={};Object.keys(cz).forEach(function(s){causes[s]=Object.keys(cz[s]).map(function(k){return [k,cz[s][k]]}).sort(function(a,b){return b[1]-a[1]})});causes.LAB=labCauses(n);causes.ACC=accCauses(n);
   var st={trials:t.length,pass:t.filter(function(x){return x.res=="Pass"}).length,fail:t.filter(function(x){return x.res=="Fail"}).length,hold:t.filter(function(x){return x.res=="Hold"}).length,qty:t.reduce(function(a,x){return a+(x.qty||0)},0),ng:t.reduce(function(a,x){return a+(x.ng||0)},0),issues:is.length,labOk:lb.filter(function(o){return o.res=="OK"}).length,labTot:lb.length};
   Object.keys(tot).forEach(function(k){tot[k]+=st[k]});
-  P.push({name:n,pa:ml.pa,overall:ov,ms:plain(ml),stats:st,trials:tr,issues:ir,lab:lr,causes:causes,readiness:all?readinessData(n):null,limits:all?await limData(n):null,progress:all?partProg(n):null,decoplan:all?planOf(n).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}):null})}
+  P.push({name:n,pa:ml.pa,overall:ov,ms:plain(ml),stats:st,trials:tr,issues:ir,lab:lr,causes:causes,readiness:all?readinessData(n):null,limits:all?await limData(n):null,progress:all?await partProgImg(n):null,decoplan:all?planOf(n).map(function(x){return [x.job,x.pos,x.part,x.method,x.proc,x.color]}):null})}
  var sn=sel.length?sel:names,all=sn.map(function(n){var ml=msList(n);return {name:n,pa:ml.pa,overall:overall(ml),ms:plain(ml)}}),ot=onTimeStats(sn);
  tot.otOk=ot.ok;tot.otTot=ot.tot;
  if(all){var ds=rr.map(function(x){return iso(T(x))});from=ds.length?ds[0]:todayIso();to=ds.length?ds[ds.length-1]:todayIso()}
@@ -2107,6 +2107,84 @@ var _rTlZ=rTimeline;rTimeline=function(){_rTlZ();var el=$("tl_dash");if(!el)retu
  projs.forEach(function(p){if(p.rs=="Released"||(fp&&p.name!=fp))return;var ml=msList(p.name);if(!ml.pa)return;
   ml.ms.forEach(function(m){if(!m.act&&m.note&&(m.st=="overdue"||m.st=="soon"||m.st=="late"||m.k=="tool"))L.push("<b>"+esc(p.name)+"</b> · "+esc(m.n)+": "+esc(m.note))})});
  if(L.length)el.insertAdjacentHTML("beforeend","<details style=\"margin-top:10px\"><summary class=sub style=\"cursor:pointer\">Why are some actual dates empty? ("+L.length+")</summary><div class=sub style=\"margin-top:6px;line-height:1.6\">"+L.slice(0,40).join("<br>")+"</div></details>")};
+
+/* ===================== LAB EXPORT, PP2K IN PART PROGRESS, QE APPROVAL PHOTOS ===================== */
+/* ---------- QE approval rows now carry photos (7th value) ---------- */
+function qeRows(name){var y=secs.filter(function(x){return x.project==name&&x.section=="qe_acc"})[0];return ((y&&y.rows)||[]).map(function(r){return {part:r[0]||"",adh:r[1]||"",col:r[2]||"",pos:r[3]||"",date:r[4]||"",remark:r[5]||"",photos:String(r[6]||"").split(/\s+/).filter(Boolean)}})}
+var QA_PH={};
+function qaThumbHtml(pt){return (QA_PH[pt]||[]).map(function(u,i){return "<span style=\"display:inline-block;position:relative;margin:2px 8px 4px 0\"><img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\"><button type=button class=chip style=\"position:absolute;top:-6px;right:-6px;padding:0 6px\" data-qapart=\""+esc(pt)+"\" data-qarm=\""+i+"\">✕</button></span>"}).join("")}
+function qaThumbs(pt){Array.from(document.querySelectorAll("#qa_tbl .qa_th")).forEach(function(d){if(d.dataset.part==pt)d.innerHTML=qaThumbHtml(pt)})}
+function qaRender(force){if(qaDirty&&!force)return;var pn=$("qa_proj").value,p=projs.filter(function(x){return x.name==pn})[0],q=qeRows(pn),parts=p?p.parts.slice():[];q.forEach(function(r){if(parts.indexOf(r.part)<0)parts.push(r.part)});
+ QA_PH={};parts.forEach(function(pt){var r=q.filter(function(x){return x.part==pt})[0];QA_PH[pt]=r?r.photos.slice():[]});
+ $("qa_tbl").innerHTML=parts.length?"<table><tr><th>Part</th><th>Adhesion</th><th>Paint color</th><th>Contour position</th><th>ACC date</th><th>Remark</th><th>Photos</th><th></th></tr>"+parts.map(function(pt){var r=q.filter(function(x){return x.part==pt})[0]||{adh:"",col:"",pos:"",date:"",remark:""};
+  return "<tr data-part=\""+esc(pt)+"\"><td><b>"+esc(pt)+"</b></td><td data-l=Adhesion>"+qaSel("qa_a",r.adh)+"</td><td data-l=\"Paint color\">"+qaSel("qa_c",r.col)+"</td><td data-l=\"Contour position\">"+qaSel("qa_p",r.pos)+"</td><td data-l=\"ACC date\"><input type=date class=qa_d value=\""+esc(r.date)+"\"></td><td data-l=Remark><input type=text class=qa_r value=\""+esc(r.remark)+"\"></td><td data-l=Photos><div class=qa_th data-part=\""+esc(pt)+"\">"+qaThumbHtml(pt)+"</div><input type=file class=qa_f accept=\"image/*\" multiple></td><td><button type=button class=\"btn ghost small\" data-qaok=\""+esc(pt)+"\">All OK</button></td></tr>"}).join("")+"</table>":"<div class=sub>This project has no parts yet.</div>"}
+function qaCollect(){return Array.from(document.querySelectorAll("#qa_tbl tr[data-part]")).map(function(tr){return [tr.dataset.part,tr.querySelector(".qa_a").value,tr.querySelector(".qa_c").value,tr.querySelector(".qa_p").value,tr.querySelector(".qa_d").value,tr.querySelector(".qa_r").value.trim(),Array.from(tr.querySelector(".qa_f").files||[])]})}
+document.addEventListener("click",function(e){var t=e.target;if(!t.dataset||t.dataset.qarm==null||t.dataset.qarm==="")return;var pt=t.dataset.qapart;(QA_PH[pt]||[]).splice(+t.dataset.qarm,1);qaThumbs(pt);qaDirty=true});
+document.addEventListener("change",function(e){var t=e.target;if(t.classList&&t.classList.contains("qa_f"))qaDirty=true});
+$("qa_save").onclick=async function(){var pn=$("qa_proj").value,msg=$("qa_msg");if(!pn)return;var b=$("qa_save");b.disabled=true;msg.textContent="Saving…";
+ try{var data=qaCollect(),out=[];
+  for(var i=0;i<data.length;i++){var rw=data[i],ph=(QA_PH[rw[0]]||[]).slice(),fl=rw[6]||[];
+   if(fl.length)msg.textContent="Uploading photos for "+rw[0]+"…";
+   for(var k=0;k<fl.length;k++)ph.push(await upPhoto(fl[k]));
+   if(rw[1]=="OK"&&rw[2]=="OK"&&rw[3]=="OK"&&!rw[4])rw[4]=todayIso();
+   if(rw[1]||rw[2]||rw[3]||rw[4]||rw[5]||ph.length)out.push([rw[0],rw[1],rw[2],rw[3],rw[4],rw[5],ph.join(" ")])}
+  await api("POST","sections",[{project:pn,stage:"ALL",section:"qe_acc",rows:out,ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal");
+  last.s="";await loadS();qaDirty=false;qaRender(true);rPartProg();msg.textContent="Saved ✓";toast("QE approval saved ✓")}
+ catch(e){msg.textContent="Failed: "+String(e.message||e).slice(0,120)}
+ b.disabled=false};
+
+/* ---------- Part progress with PP2K ---------- */
+function partProg(n){var p=projs.filter(function(x){return x.name==n})[0];if(!p)return [];var q=qeRows(n),labs=labResAll().filter(function(o){return o.project==n});
+ return p.parts.map(function(pt){var byT=function(st){return rows.filter(function(x){return x.project==n&&x.pos==pt&&x.stage==st}).sort(function(a,b){return T(a)-T(b)})},ft=byT("FEP"),p2=byT("PP2K"),lt=labs.filter(function(o){return o.part==pt}),
+  qr=q.filter(function(x){return x.part==pt})[0]||{adh:"",col:"",pos:"",date:"",remark:"",photos:[]},ok=lt.filter(function(o){return o.res=="OK"}).length,last=ft[ft.length-1],l2=p2[p2.length-1],
+  ngl=[["Adhesion",qr.adh],["Paint color",qr.col],["Contour position",qr.pos]].filter(function(x){return x[1]=="NG"}).map(function(x){return x[0]}),all3=qr.adh=="OK"&&qr.col=="OK"&&qr.pos=="OK",cnt=[qr.adh,qr.col,qr.pos].filter(function(v){return v=="OK"}).length,st,c;
+  if(all3){if(p2.length){st="Accepted · PP2K "+l2.res;c=l2.res=="Pass"?"Pass":l2.res=="Fail"?"Fail":"Hold"}else{st="Accepted";c="Pass"}}
+  else if(ngl.length){st="Rejected: "+ngl.join(", ");c="Fail"}else if(!ft.length){st="Not at FEP yet";c=""}else if(!lt.length){st="Waiting lab";c="Hold"}else{st="Waiting QE ACC"+(cnt?" ("+cnt+"/3)":"");c="Hold"}
+  return {project:n,part:pt,fepN:ft.length,fepDate:last?iso(T(last)):"",fepRes:last?last.res:"",labN:lt.length,labOk:ok,labNg:lt.length-ok,adh:qr.adh,col:qr.col,pos:qr.pos,accDate:qr.date,
+   pp2kN:p2.length,pp2kDate:l2?iso(T(l2)):"",pp2kRes:l2?l2.res:"",qeOk:all3,qeNg:ngl.length>0,photos:qr.photos||[],status:st,c:c,remark:qr.remark}})}
+async function partProgImg(n){var l=partProg(n);for(var i=0;i<l.length;i++)l[i].photo=l[i].photos[0]?await wkImg(l[i].photos[0]):"";return l}
+function ppStageCell(res,date,n){return n?"<span class=\"pill "+(res=="Pass"?"Pass":res=="Fail"?"Fail":"Hold")+"\">"+esc(res)+"</span> <span class=sub>"+wkD(date,1)+(n>1?" · "+n+" trials":"")+"</span>":"<span class=sub>Not yet</span>"}
+function rPartProg(){var el=$("pp_dash");if(!el)return;var names=ppNames(),all=[];names.forEach(function(n){partProg(n).forEach(function(x){all.push(x)})});
+ var N=all.length,cnt=function(f){return all.filter(f).length},hh=document.querySelector("#pp_kpi");
+ $("pp_kpi").innerHTML=N?"<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px\">"+[["FEP done",cnt(function(x){return x.fepN})+" / "+N],["In lab",cnt(function(x){return x.labN})+" / "+N],["QE accepted",cnt(function(x){return x.qeOk})+" / "+N],["PP2K done",cnt(function(x){return x.pp2kN})+" / "+N],["Rejected",cnt(function(x){return x.qeNg})]].map(function(k){return "<div style=\"background:#eee6f3;border-radius:12px;padding:12px;text-align:center\"><b style=\"display:block;font-size:24px;color:#864ea9\">"+k[1]+"</b><span class=sub>"+k[0]+"</span></div>"}).join("")+"</div>":"";
+ el.innerHTML=N?"<table><tr><th>Project</th><th>Part</th><th>FEP</th><th>Lab</th><th>Adhesion</th><th>Paint color</th><th>Contour position</th><th>QE photos</th><th>PP2K</th><th>Status</th></tr>"+all.map(function(x){return "<tr><td><b>"+esc(x.project)+"</b></td><td>"+esc(x.part)+"</td><td>"+ppStageCell(x.fepRes,x.fepDate,x.fepN)+"</td><td>"+(x.labN?x.labN+" test"+(x.labN>1?"s":"")+" · <span class=ok>OK "+x.labOk+"</span>"+(x.labNg?" · <span class=bad>NG "+x.labNg+"</span>":""):"<span class=sub>Not yet</span>")+"</td><td>"+ppPill(x.adh)+"</td><td>"+ppPill(x.col)+"</td><td>"+ppPill(x.pos)+"</td><td>"+(x.photos.length?x.photos.slice(0,3).map(function(u){return "<img class=table-thumb data-zoom=\""+esc(u)+"\" src=\""+esc(u)+"\">"}).join(" ")+(x.photos.length>3?" <span class=sub>+"+(x.photos.length-3)+"</span>":""):"<span class=sub>-</span>")+"</td><td>"+ppStageCell(x.pp2kRes,x.pp2kDate,x.pp2kN)+"</td><td><span class=\"pill "+x.c+"\">"+esc(x.status)+"</span></td></tr>"}).join("")+"</table>":"<div class=sub>No parts to show. Add parts in Project &amp; Part, or select projects above.</div>";
+ labelT("pp_dash")}
+(function(){var h=document.querySelector("#pp_kpi");if(h&&h.parentNode){var t=h.parentNode.querySelector("h2");if(t)t.textContent="Part Progress – FEP → Lab → QE ACC → PP2K"}})();
+$("pp_x").onclick=async function(){var b=$("pp_x"),lbl=b.textContent,all=[];ppNames().forEach(function(n){partProg(n).forEach(function(x){all.push(x)})});
+ if(!all.length)return toast("No parts to export");b.disabled=true;b.textContent="Preparing…";
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Part Progress",{views:[{showGridLines:false}]});widths(ws,[2.6,5,16,18,14,14,10,10,10,12,14,18,14,14,32,16,16,16]);
+  put(ws,1,2,18,"Part Progress – FEP → Lab → QE ACC → PP2K",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Part","FEP date","FEP result","Lab tests","Lab OK","Lab NG","Adhesion","Paint color","Contour position","ACC date","PP2K date","PP2K result","Status"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});put(ws,3,17,19,"QE approval photos",{b:true,bd:true,fill:GREY,h:"center"});
+  for(var i=0;i<all.length;i++){var x=all[i],rr=4+i;
+   [i+1,x.project,x.part,x.fepDate?wkD(x.fepDate,1):"-",x.fepRes||"-",x.labN,x.labOk,x.labNg,x.adh||"Pending",x.col||"Pending",x.pos||"Pending",x.accDate?wkD(x.accDate,1):"-",x.pp2kDate?wkD(x.pp2kDate,1):"-",x.pp2kRes||"-",x.status].forEach(function(v,j){put(ws,rr,2+j,2+j,v,{bd:true,h:j==1||j==2||j==14?"left":"center"});
+    if(j>=8&&j<=10)ws.getCell(rr,2+j).font={name:"Arial",size:10,bold:true,color:{argb:v=="OK"?"FF1F9D63":v=="NG"?"FFD6405A":"FF888888"}};
+    if(j==14)ws.getCell(rr,2+j).font={name:"Arial",size:10,bold:true,color:{argb:x.c=="Pass"?"FF1F9D63":x.c=="Fail"?"FFD6405A":x.c=="Hold"?"FFC58A10":"FF888888"}}});
+   if(x.photos.length){ws.getRow(rr).height=72;for(var k=0;k<Math.min(3,x.photos.length);k++){try{var im=await imgBuf(x.photos[k]),sc=Math.min(100/im.w,66/im.h),id=wb.addImage({buffer:im.buf,extension:"jpeg"});ws.addImage(id,{tl:{col:16+k+.05,row:rr-1+.05},ext:{width:im.w*sc,height:im.h*sc}})}catch(e){}}}}
+  dl("Part_Progress.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
+ b.disabled=false;b.textContent=lbl};
+function progHtml(p,h){var pl=function(v){return v?"<span class=\""+(v=="OK"?"ok":"bad")+"\">"+h(v)+"</span>":"<span class=mut>Pending</span>"},st=function(res,d,n){return n?h(res)+" · "+wkD(d,1):"<span class=mut>not yet</span>"};
+ return "<h3>Part progress (FEP → Lab → QE ACC → PP2K)</h3><table><tr><th>Part</th><th>FEP</th><th>Lab</th><th>Adhesion</th><th>Paint color</th><th>Contour position</th><th>QE photo</th><th>PP2K</th><th>Status</th></tr>"+p.progress.map(function(q){
+  return "<tr><td><b>"+h(q.part)+"</b></td><td class=c>"+st(q.fepRes,q.fepDate,q.fepN)+"</td><td class=c>"+(q.labN?q.labN+" tests · OK "+q.labOk+" · NG "+q.labNg:"<span class=mut>not yet</span>")+"</td><td class=c>"+pl(q.adh)+"</td><td class=c>"+pl(q.col)+"</td><td class=c>"+pl(q.pos)+"</td><td class=c>"+(q.photo?"<img src=\"data:"+q.photo+"\" style=\"width:70px;height:50px;object-fit:cover;border-radius:4px\">"+(q.photos&&q.photos.length>1?" <span class=mut>+"+(q.photos.length-1)+"</span>":""):"<span class=mut>-</span>")+"</td><td class=c>"+st(q.pp2kRes,q.pp2kDate,q.pp2kN)+"</td><td class=\"c "+(q.c=="Pass"?"ok":q.c=="Fail"?"bad":q.c=="Hold"?"warn":"mut")+"\">"+h(q.status)+"</td></tr>"}).join("")+"</table>"}
+
+/* ---------- Lab results: export with project selection ---------- */
+$("labsum").insertAdjacentHTML("beforebegin",pickHTML("lab_pick","Projects to export (leave empty = all)")+"<button type=button class=btn id=lab_x style=\"margin-bottom:14px\">Export Lab Results (Excel)</button>");
+var _pickAll9=pickAll;pickAll=function(){_pickAll9();if($("lab_pick"))pickRender("lab_pick",projs.map(function(p){return p.name}))};
+$("lab_x").onclick=async function(){var b=$("lab_x"),lbl=b.textContent,sel=pickSel("lab_pick");EXPMETH="";
+ var l=labResAll().filter(function(o){return !sel.length||sel.indexOf(o.project)>=0}).sort(labSort);
+ if(!l.length)return toast("No lab results for the selection");b.disabled=true;b.textContent="Preparing…";
+ try{var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Lab Summary",{views:[{showGridLines:false}]});widths(ws,[2.6,5,18,10,12,10,10,12]);
+  put(ws,1,2,8,"Lab Test Results – Summary",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Tests","Total pcs","OK","NG","% OK"].forEach(function(h,i){put(ws,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  var g={},order=[];l.forEach(function(o){var x=g[o.project];if(!x){x=g[o.project]={n:0,ok:0,q:0};order.push(o.project)}x.n++;if(o.res=="OK")x.ok++;x.q+=Number(o.qty)||0});
+  order.forEach(function(k,i){var x=g[k];[i+1,k,x.n,x.q,x.ok,x.n-x.ok,Math.round(x.ok/x.n*100)+"%"].forEach(function(v,j){put(ws,4+i,2+j,2+j,v,{bd:true,h:j==1?"left":"center"})})});
+  var d=wb.addWorksheet("Lab Results",{views:[{showGridLines:false}]});widths(d,[2.6,5,16,12,18,16,40,9,9,14,10]);
+  put(d,1,2,11,"Lab Test Results – All Tests",{b:true,sz:13,fill:BLUE});
+  ["No","Project","Trial Type","Part","Method","Method Description","Qty","Result","Test Date","Photos"].forEach(function(h,i){put(d,3,2+i,2+i,h,{b:true,bd:true,fill:GREY,h:"center"})});
+  l.forEach(function(o,i){[i+1,o.project,o.stage,o.part,o.method,o.desc||"-",o.qty,o.res,o.date?wkD(o.date,1):(o.ts?wkD(iso(o.ts),1):"-"),o.photos.length||"-"].forEach(function(v,j){put(d,4+i,2+j,2+j,v,{bd:true,h:j==0||j>=6?"center":"left"});if(j==7)d.getCell(4+i,2+j).font={name:"Arial",size:10,bold:true,color:{argb:v=="OK"?"FF1F9D63":"FFD6405A"}}})});
+  for(var i=0;i<order.length;i++)await labResSheet(wb,order[i]);
+  dl(order.length==1?"Lab_Results_"+order[0].replace(/[^\w-]+/g,"_")+".xlsx":"Lab_Results.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
+ b.disabled=false;b.textContent=lbl};
+pickAll();rPartProg();
 </script>
 </body>
 </html>
