@@ -2191,12 +2191,12 @@ var MT_ST=["FEP","PP2K"];
 $("wk_html").insertAdjacentHTML("afterend","<button class=btn type=button id=mt_ppt>Production Meeting (PPT)</button>");
 function mtRef(list){var s=list.slice().sort(function(a,b){return (a.no||1)-(b.no||1)||T(a)-T(b)}),p=s.filter(function(x){return x.res=="Pass"});
  return {ref:p.length?p[p.length-1]:s[s.length-1],ok:p.length>0,hist:s.map(function(x){return "T"+(x.no||1)+" "+x.res}).join(" → ")}}
-async function mtLoad(a){await Promise.all(a.map(async function(o){o.d=o.u?await wkImg(o.u):""}));return a}
+async function mtLoad(a){await Promise.all(a.map(async function(o){o.d="";if(!o.u)return;try{var im=await imgBuf(o.u);o.d="image/jpeg;base64,"+b64(im.buf);o.w=im.w;o.h=im.h}catch(e){}}));return a}
 function mtSum(a,k){return a.reduce(function(s,x){return s+(x[k]||0)},0)}
 async function mtData(){
  EXPMETH=$("xmeth").value;var sel=pickSel("xpicks"),okp=function(n){return !sel.length||sel.indexOf(n)>=0},inSt=function(x){return MT_ST.indexOf(x.stage)>=0};
- var rr=rows.filter(function(x){return inSt(x)&&methOK(x)&&okp(x.project)}),labs=labResAll().filter(function(o){return inSt(o)&&labOK(o)&&okp(o.project)}),lims=limAll().filter(function(o){return inSt(o)&&okp(o.project)}),used={};
- rr.concat(labs,lims).forEach(function(x){used[x.project]=1});
+ var rr=rows.filter(function(x){return inSt(x)&&methOK(x)&&okp(x.project)}),labs=labResAll().filter(function(o){return inSt(o)&&labOK(o)&&okp(o.project)}),lims=limAll().filter(function(o){return inSt(o)&&okp(o.project)}),pfa=pfAll().filter(function(o){return okp(o.project)}),used={};
+ rr.concat(labs,lims,pfa).forEach(function(x){used[x.project]=1});
  var names=projs.map(function(p){return p.name}).filter(function(n){return used[n]});Object.keys(used).forEach(function(n){if(names.indexOf(n)<0)names.push(n)});
  if(!names.length)throw new Error("No FEP / PP2K data found for the selected projects");
  var P=[];
@@ -2216,7 +2216,8 @@ async function mtData(){
   var lr=lb.map(function(o,i){return {stage:o.stage,part:o.part,method:o.method,desc:o.desc,qty:o.qty,res:o.res,date:o.date||(o.ts?iso(o.ts):""),u:i<30?o.photos[0]:""}});
   var li=lims.filter(function(o){return o.project==n}).sort(function(a,b){return STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||pi(a.part)-pi(b.part)||(a.pos<b.pos?-1:1)}).map(function(o,i){return {stage:o.stage,part:o.part,pos:o.pos,color:o.color,note:o.note,n:o.photos.length,u:i<36?o.photos[0]:""}});
   var ir=is.map(function(x,i){return {stage:x.stage,method:x.method,pos:x.pos,no:x.no||1,cat:x.cat||"-",issue:x.issue,act:x.act,ng:x.ng||0,res:x.res,u:i<20?(x.photos||[])[0]:""}});
-  P.push({name:n,stats:stats,status:status,refs:refs,mp:mp,tp:await mtLoad(tp),lab:await mtLoad(lr),lim:await mtLoad(li),iss:await mtLoad(ir)})}
+  var pfs=[];for(var pf of pfa.filter(function(o){return o.project==n}).sort(function(a,b){return a.ts-b.ts}))pfs.push({title:pf.title,part:pf.part,note:pf.note,ph:await mtLoad(pf.photos.slice(0,8).map(function(u){return {u:u}}))});
+  P.push({name:n,pf:pfs,stats:stats,status:status,refs:refs,mp:mp,tp:await mtLoad(tp),lab:await mtLoad(lr),lim:await mtLoad(li),iss:await mtLoad(ir)})}
  return {projects:P,reporter:($("wk_rep").value||"ME").trim(),methodLabel:EXPMETH||"Handspray & Pad Print",today:todayIso().replace(/-/g,".")}}
 
 function meetingPptx(PptxGenJS,D,BG){
@@ -2231,12 +2232,13 @@ function meetingPptx(PptxGenJS,D,BG){
  function td(t,o){return {text:String(t==null?"":t),options:Object.assign({color:DK,align:"left",valign:"middle",fontFace:FF,fontSize:11},o||{})}}
  function table(s,head,body,colW,y,rowH,hH){var r=[head].concat(body).map(function(row,ri){return row.map(function(c){if(ri>0&&ri%2==0)c.options=Object.assign({},c.options,{fill:{color:"F4F0F8"}});return c})});
   s.addTable(r,{x:0.65,y:y,w:colW.reduce(function(a,b){return a+b},0),colW:colW,rowH:[hH||0.4].concat(body.map(function(){return rowH})),border:{type:"solid",pt:0.5,color:"DCD8DC"},margin:[2,5,2,5],autoPage:false})}
+ function pic(s,o,x,y,w,h){if(!o||!o.d)return;s.addShape(pres.ShapeType.rect,{x:x,y:y,w:w,h:h,fill:{color:"F4F0F8"},line:{color:"E2DCE8",width:0.5}});var r=o.w&&o.h?Math.min(w/o.w,h/o.h):0,iw=r?o.w*r:w,ih=r?o.h*r:h;s.addImage({data:o.d,x:x+(w-iw)/2,y:y+(h-ih)/2,w:iw,h:ih})}
  function strip(s,items,y,label){items=items.filter(function(i){return i.d}).slice(0,5);if(!items.length)return;
   s.addText(label,{x:0.65,y:y,w:8,h:0.3,fontSize:12,bold:true,color:ACC,fontFace:FF,margin:0,isTextBox:true});
-  items.forEach(function(it,i){var x=0.65+i*2.4;s.addImage({data:it.d,x:x,y:y+0.35,w:2.2,h:1.45,sizing:{type:"contain",w:2.2,h:1.45}});
+  items.forEach(function(it,i){var x=0.65+i*2.4;pic(s,it,x,y+0.35,2.2,1.45);
    s.addText(wkCut(it.cap,34),{x:x,y:y+1.82,w:2.2,h:0.25,fontSize:10,color:GR,fontFace:FF,margin:0,isTextBox:true})})}
- function card(s,x,y,w,ih,th_,d,l1,l2,l3){
-  if(d)s.addImage({data:d,x:x,y:y,w:w,h:ih,sizing:{type:"contain",w:w,h:ih}});
+ function card(s,x,y,w,ih,th_,o,l1,l2,l3){
+  if(o&&o.d)pic(s,o,x,y,w,ih);
   else{s.addShape(pres.ShapeType.rect,{x:x,y:y,w:w,h:ih,fill:{color:"F4F0F8"},line:{color:"DCD8DC",width:0.5}});s.addText("No photo",{x:x,y:y,w:w,h:ih,fontSize:11,color:GR,fontFace:FF,align:"center",valign:"middle",margin:0,isTextBox:true})}
   var runs=[{text:wkCut(l1,46),options:{bold:true,color:DK,fontSize:11,breakLine:!!(l2||l3)}}];
   if(l2)runs.push({text:wkCut(l2,50),options:{bold:true,color:ACC,fontSize:10,breakLine:!!l3}});
@@ -2270,26 +2272,31 @@ function meetingPptx(PptxGenJS,D,BG){
     table(sl,head,L.map(function(l){return [td(l[0],{bold:true,fontSize:10})].concat(ch.map(function(f){return td(wkCut(l[1](f.r),24),{align:"center",fontSize:10})}))}),[2.4].concat(ch.map(function(){return w})),1.4,0.32,0.62)})});
   /* 3 machine parameter photos */
   p.mp.forEach(function(o){var sl=content(p.name+" – Machine Parameter Photos");sub(sl,o.f.pos+" · "+o.f.method+" · "+o.f.stage+" T"+(o.f.r.no||1)+" · "+(o.f.ok?"OK":o.f.r.res));
-   o.im.forEach(function(im,i){var x=0.65+i*3.05;if(im.d)sl.addImage({data:im.d,x:x,y:1.5,w:2.9,h:4.6,sizing:{type:"contain",w:2.9,h:4.6}});
+   o.im.forEach(function(im,i){var x=0.65+i*3.05;pic(sl,im,x,1.5,2.9,4.6);
     sl.addText(im.cap,{x:x,y:6.2,w:2.9,h:0.3,fontSize:12,bold:true,color:ACC,fontFace:FF,align:"center",margin:0,isTextBox:true})})});
   /* 4 lab test */
   wkChunk(p.lab.length?p.lab:[null],6).forEach(function(ch,i,all){var sl=content(p.name+" – Lab Test Results"+pg(i,all));sub(sl,"FEP – PP2K lab tests");
    if(ch[0]===null)return empty(sl,"No lab test results recorded for FEP – PP2K.");
    table(sl,["Stage","Part","Test method","Qty","Result","Date"].map(function(h){return th(h)}),ch.map(function(r){return [td(r.stage,{align:"center"}),td(r.part),td(wkCut(r.method+(r.desc?" – "+r.desc:""),110),{fontSize:10}),td(r.qty,{align:"center"}),td(r.res,{align:"center",bold:true,color:wkResCol(r.res)}),td(r.date?wkD(r.date,1):"-",{align:"center",fontSize:10})]}),[1.0,2.2,5.0,1.0,1.2,1.6],1.45,0.5);
-   strip(sl,ch.map(function(r){return {d:r.d,cap:r.part+" · "+wkCut(r.method,16)+" · "+r.res}}),4.95,"Lab photos")});
+   strip(sl,ch.map(function(r){return {d:r.d,w:r.w,h:r.h,cap:r.part+" · "+wkCut(r.method,16)+" · "+r.res}}),4.95,"Lab photos")});
   /* 5 sample OK: contour & color */
-  wkChunk(p.lim.length?p.lim:[null],6).forEach(function(ch,i,all){var sl=content(p.name+" – Sample OK: Contour & Color"+pg(i,all));
+  wkChunk(p.lim.length?p.lim:[null],3).forEach(function(ch,i,all){var sl=content(p.name+" – Sample OK: Contour & Color"+pg(i,all));
    if(ch[0]===null){sub(sl,"Production limit samples");return empty(sl,"No production limit samples recorded for FEP – PP2K.")}
    sub(sl,"Limit samples for production (position / contour and color)");
-   ch.forEach(function(o,j){card(sl,XS[j%3],j<3?1.45:4.1,3.9,1.55,0.95,o.d,o.part+" · "+o.pos,"Color: "+o.color+" · "+o.stage,(o.note||"")+(o.n>1?" (+"+(o.n-1)+" more photos)":""))})});
+   ch.forEach(function(o,j){card(sl,XS[j],1.45,3.9,3.75,1.4,o,o.part+" · "+o.pos,"Color: "+o.color+" · "+o.stage,(o.note||"")+(o.n>1?" (+"+(o.n-1)+" more photos)":""))})});
   /* 6 trial photos */
   wkChunk(p.tp.filter(function(o){return o.d}),6).forEach(function(ch,i,all){var sl=content(p.name+" – Trial Photos"+pg(i,all));sub(sl,"Product photos from FEP – PP2K trials");
-   ch.forEach(function(o,j){card(sl,XS[j%3],j<3?1.45:4.1,3.9,2.1,0.5,o.d,o.l1,o.l2)})});
+   ch.forEach(function(o,j){card(sl,XS[j%3],j<3?1.45:4.1,3.9,2.1,0.5,o,o.l1,o.l2)})});
   /* 7 issues */
   wkChunk(p.iss.length?p.iss:[null],4).forEach(function(ch,i,all){var sl=content(p.name+" – Issues During Trial"+pg(i,all));sub(sl,"Issues (kendala) and corrective actions, FEP – PP2K");
    if(ch[0]===null)return empty(sl,"No issues recorded during FEP – PP2K trials.");
    table(sl,["Stage · T#","Method / Part","Issue category","Detail","Action taken","NG","Result"].map(function(h){return th(h)}),ch.map(function(r){return [td(r.stage+" · T"+r.no,{align:"center"}),td(r.method+" / "+r.pos),td(wkCut(r.cat,50),{bold:true}),td(wkCut(r.issue||"-",120),{fontSize:10}),td(wkCut(r.act||"-",110),{fontSize:10}),td(r.ng,{align:"center"}),td(r.res,{align:"center",bold:true,color:wkResCol(r.res)})]}),[1.1,2.1,2.0,3.0,2.5,0.6,0.7],1.45,0.68);
-   strip(sl,ch.map(function(r){return {d:r.d,cap:r.pos+" · "+r.stage+" T"+r.no+" · "+wkCut(r.cat,18)}}),4.7,"Defect photos")})});
+   strip(sl,ch.map(function(r){return {d:r.d,w:r.w,h:r.h,cap:r.pos+" · "+r.stage+" T"+r.no+" · "+wkCut(r.cat,18)}}),4.7,"Defect photos")});
+  /* 8 PP2K findings (imported photos) */
+  p.pf.forEach(function(f){wkChunk(f.ph.length?f.ph:[null],4).forEach(function(ch,i,all){var sl=content(p.name+" – PP2K Findings"+pg(i,all));sub(sl,wkCut(f.title||"Finding",90)+(f.part?" · "+f.part:""));
+   var n=ch.length,w=Math.min(5.5,(12-(n-1)*0.15)/n);ch.forEach(function(o,j){pic(sl,o,0.65+j*(w+0.15),1.5,w,3.9)});
+   var rn=[{text:"Finding: "+(f.title||"-"),options:{bold:true,color:DK,fontSize:13,breakLine:true}},{text:"Part: "+(f.part||"General"),options:{bold:true,color:ACC,fontSize:12,breakLine:!!f.note}}];if(f.note)rn.push({text:wkCut(f.note,420),options:{color:GR,fontSize:11}});
+   sl.addText(rn,{x:0.65,y:5.55,w:12,h:1.4,fontFace:FF,valign:"top",margin:0,isTextBox:true})})})});
  s=pres.addSlide();idx++;s.background=bgOf("end");
  return pres}
 
@@ -2299,6 +2306,39 @@ $("mt_ppt").onclick=async function(){var b=$("mt_ppt"),lbl=b.textContent;b.disab
   await meetingPptx(PptxGenJS,D,BGW).writeFile({fileName:"Production_Meeting_FEP-PP2K"+nm+(EXPMETH?"_"+EXPMETH.replace(/\W+/g,""):"")+"_"+todayIso()+".pptx"});toast("Production meeting PPT created")}
  catch(e){toast("Export failed: "+String(e.message||e).slice(0,140))}
  b.disabled=false;b.textContent=lbl};
+
+/* ===================== PP2K FINDINGS (photo import, tab Data & Issue) ===================== */
+function pfAll(){var out=[];secs.forEach(function(y){if(y.section!="pp2k_findings")return;(y.rows||[]).forEach(function(r){out.push({id:r[0],project:y.project,part:r[1]||"",title:r[2]||"",note:r[3]||"",photos:String(r[4]||"").split(/\s+/).filter(Boolean),ts:Number(r[5])||0})})});return out}
+async function putPf(p,list){await api("POST","sections",[{project:p,stage:"PP2K",section:"pp2k_findings",rows:list.map(function(o){return [o.id,o.part,o.title,o.note||"",o.photos.join(" "),String(o.ts)]}),ts:Date.now()}],"?on_conflict=project,stage,section","resolution=merge-duplicates,return=minimal")}
+$("sum").parentNode.insertAdjacentHTML("afterend","<div class=\"panel\" style=\"margin-bottom:16px\"><h2>PP2K Findings (photo import)</h2>"
+ +"<div class=\"sub\" style=\"margin-bottom:10px\">Findings saved here are included in the Production Meeting PPT.</div>"
+ +"<div class=fg><div class=field><label>Project</label><select id=pf_proj></select></div><div class=field><label>Part</label><select id=pf_part></select></div><div class=field><label>Finding</label><input id=pf_title type=text placeholder=\"E.g. Paint peeling on edge\"></div></div>"
+ +"<div class=field><label>Detail / action (optional)</label><textarea id=pf_note rows=2 placeholder=\"What was found, where, and the follow-up action…\"></textarea></div>"
+ +"<div class=field><label>Photos (multiple allowed)</label><input type=file id=pf_f accept=\"image/*\" multiple></div>"
+ +"<button class=btn id=pf_save type=button>Import photos &amp; save finding</button> <span id=pf_msg class=sub></span>"
+ +"<div class=\"ov stk\" id=pf_list style=\"margin-top:14px\"></div></div>");
+function pfParts(){var p=projs.filter(function(x){return x.name==$("pf_proj").value})[0],c=$("pf_part").value;$("pf_part").innerHTML="<option value=\"\">General (whole product)</option>"+(p?p.parts:[]).map(function(x){return "<option>"+esc(x)+"</option>"}).join("");$("pf_part").value=c;fixSel("pf_part")}
+function pfProj(){var n=projs.map(function(p){return p.name}),c=$("pf_proj").value;$("pf_proj").innerHTML=n.length?opts(n):"<option value=\"\">(create a project first)</option>";if(n.indexOf(c)>=0)$("pf_proj").value=c;pfParts()}
+function pfList(){var l=pfAll().sort(function(a,b){return b.ts-a.ts});
+ $("pf_list").innerHTML=l.length?"<table><tr><th>Project</th><th>Part</th><th>Finding</th><th>Detail</th><th>Photos</th><th>Date</th><th></th></tr>"+l.map(function(o){return "<tr><td>"+esc(o.project)+"</td><td>"+esc(o.part||"General")+"</td><td><b>"+esc(o.title||"-")+"</b></td><td>"+esc(o.note||"-")+"</td><td>"+thumbsOf(o.photos)+"</td><td>"+(o.ts?day(o.ts):"-")+"</td><td><button type=button class=\"btn danger small\" data-pfd=\""+esc(o.id)+"\">✕</button></td></tr>"}).join("")+"</table>":"<div class=sub>No PP2K findings yet.</div>";labelT("pf_list")}
+$("pf_proj").onchange=pfParts;
+$("pf_save").onclick=async function(){var pj=$("pf_proj").value,title=$("pf_title").value.trim(),fl=$("pf_f").files,msg=$("pf_msg"),b=$("pf_save");
+ if(!pj){msg.textContent="Select a project first.";return}
+ if(!title&&!fl.length){msg.textContent="Enter the finding or add at least one photo.";return}
+ b.disabled=true;msg.textContent="Uploading…";
+ try{var ph=[];for(var i=0;i<fl.length;i++)ph.push(await upPhoto(fl[i]));
+  last.s="";await loadS();
+  var rec={id:"F"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),part:$("pf_part").value,title:title||"PP2K finding",note:$("pf_note").value.trim(),photos:ph,ts:Date.now()};
+  await putPf(pj,pfAll().filter(function(o){return o.project==pj}).concat([rec]));
+  last.s="";await loadS();pfList();$("pf_title").value="";$("pf_note").value="";$("pf_f").value="";msg.textContent="Saved ✓";toast("PP2K finding saved")}
+ catch(e){msg.textContent="Failed: "+String(e.message||e).slice(0,140)}
+ b.disabled=false};
+$("pf_list").addEventListener("click",function(e){var t=e.target;if(!t.dataset||!t.dataset.pfd)return;
+ sure(t,"Sure?",async function(){var id=t.dataset.pfd,o=pfAll().filter(function(x){return x.id==id})[0];if(!o)return;
+  try{await putPf(o.project,pfAll().filter(function(x){return x.project==o.project&&x.id!=id}));last.s="";await loadS();pfList();toast("Finding deleted")}catch(er){toast("Failed: "+String(er.message||er).slice(0,100))}})});
+var _sp7=setProjSel;setProjSel=function(){_sp7();pfProj()};
+var _rd7=rData;rData=function(){_rd7();pfList()};
+pfProj();pfList();
 </script>
 </body>
 </html>
