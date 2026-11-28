@@ -518,8 +518,6 @@ main{max-width:1600px;margin-left:auto;margin-right:auto}
   <button class="sb-btn" data-tab="lab" title="Readiness & Lab">🧪</button>
   <button class="sb-btn" data-tab="data" title="Data & Issues">🗂️</button>
   <button class="sb-btn" data-tab="galeri" title="Photo Gallery">📷</button>
-  <button class="sb-btn" onclick="location.href='wi.html'"
-        title="Work Instruction">📄</button>
 </aside>
 <header class="top"><div class="top-inner"><div class="brand"><span class="tag">ME</span><span class="title-brand">Panel Trial ME – Handspray &amp; Pad Print</span></div></div>
 <nav class="tabs">
@@ -1600,7 +1598,7 @@ var _fillSummary=fillSummary;fillSummary=function(sm,f,pr){_fillSummary(sm,f);va
   sm.getCell(r,8).font={name:"Arial",size:10,bold:true,color:{argb:o.res=="OK"?"FF1F9D63":"FFD6405A"}};r++})};
 $("xl").onclick=function(){var p=$("fp").value;LABSCOPE=p?[p]:null;buildReport(filtered(),"Trial_Report_ME.xlsx",$("xl"))};
 $("xp").parentNode.style.display="none";
-$("xp").parentNode.insertAdjacentHTML("afterend",pickHTML("xpicks","Projects (Project Report: tick one or more → 1 file &amp; 1 summary · Weekly Update: leave empty = all projects with activity)",true));
+$("xp").parentNode.insertAdjacentHTML("afterend",pickHTML("xpicks","Projects (Project Report: tick one or more → 1 file &amp; 1 summary · Weekly Update / Production Meeting: leave empty = all projects with activity)",true));
 $("xr").onclick=function(){var sel=pickSel("xpicks");
  if(!sel.length)return toast("Tick at least one project first");
  LABSCOPE=sel;var f=rows.filter(function(x){return sel.indexOf(x.project)>=0});
@@ -2187,6 +2185,120 @@ $("lab_x").onclick=async function(){var b=$("lab_x"),lbl=b.textContent,sel=pickS
   dl(order.length==1?"Lab_Results_"+order[0].replace(/[^\w-]+/g,"_")+".xlsx":"Lab_Results.xlsx",await wb.xlsx.writeBuffer());toast("Excel created")}catch(e){toast("Export failed: "+e.message)}
  b.disabled=false;b.textContent=lbl};
 pickAll();rPartProg();
+
+/* ===================== PRODUCTION MEETING SUMMARY (PPT · FEP → PP2K) ===================== */
+var MT_ST=["FEP","PP2K"];
+$("wk_html").insertAdjacentHTML("afterend","<button class=btn type=button id=mt_ppt>Production Meeting (PPT)</button>");
+function mtRef(list){var s=list.slice().sort(function(a,b){return (a.no||1)-(b.no||1)||T(a)-T(b)}),p=s.filter(function(x){return x.res=="Pass"});
+ return {ref:p.length?p[p.length-1]:s[s.length-1],ok:p.length>0,hist:s.map(function(x){return "T"+(x.no||1)+" "+x.res}).join(" → ")}}
+async function mtLoad(a){await Promise.all(a.map(async function(o){o.d=o.u?await wkImg(o.u):""}));return a}
+function mtSum(a,k){return a.reduce(function(s,x){return s+(x[k]||0)},0)}
+async function mtData(){
+ EXPMETH=$("xmeth").value;var sel=pickSel("xpicks"),okp=function(n){return !sel.length||sel.indexOf(n)>=0},inSt=function(x){return MT_ST.indexOf(x.stage)>=0};
+ var rr=rows.filter(function(x){return inSt(x)&&methOK(x)&&okp(x.project)}),labs=labResAll().filter(function(o){return inSt(o)&&labOK(o)&&okp(o.project)}),lims=limAll().filter(function(o){return inSt(o)&&okp(o.project)}),used={};
+ rr.concat(labs,lims).forEach(function(x){used[x.project]=1});
+ var names=projs.map(function(p){return p.name}).filter(function(n){return used[n]});Object.keys(used).forEach(function(n){if(names.indexOf(n)<0)names.push(n)});
+ if(!names.length)throw new Error("No FEP / PP2K data found for the selected projects");
+ var P=[];
+ for(var n of names){
+  var pr=projs.filter(function(p){return p.name==n})[0],po=pr?pr.parts:[],pi=function(x){var i=po.indexOf(x);return i<0?999:i};
+  var t=rr.filter(function(x){return x.project==n}),lb=labs.filter(function(o){return o.project==n}).sort(function(a,b){return STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||pi(a.part)-pi(b.part)||a.ts-b.ts}),g={};
+  t.forEach(function(x){var k=[x.method,x.pos,x.stage].join("|");(g[k]=g[k]||[]).push(x)});
+  var refs=Object.keys(g).map(function(k){var m=mtRef(g[k]);return {method:m.ref.method,pos:m.ref.pos,stage:m.ref.stage,r:m.ref,ok:m.ok,hist:m.hist}}).sort(function(a,b){return (a.method<b.method?-1:a.method>b.method?1:0)||pi(a.pos)-pi(b.pos)||STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)});
+  var sg={};refs.forEach(function(f){var k=f.method+"|"+f.pos;(sg[k]=sg[k]||{method:f.method,pos:f.pos,st:{}}).st[f.stage]=f});
+  var status=Object.keys(sg).map(function(k){var o=sg[k],a=o.st.PP2K||o.st.FEP,ll=lb.filter(function(l){return l.part==o.pos}),cv=function(f){return f?{t:f.hist,ok:f.ok,res:f.r.res}:null};
+   return {method:o.method,pos:o.pos,fep:cv(o.st.FEP),pp:cv(o.st.PP2K),paint:a.r.paint||"-",color:a.r.color||"-",labOk:ll.filter(function(l){return l.res=="OK"}).length,labTot:ll.length}});
+  var is=t.filter(function(x){return (x.cat&&x.cat!="No issue")||(x.issue&&x.issue.trim())}).sort(function(a,b){return STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||(a.no||1)-(b.no||1)||T(a)-T(b)});
+  var stats={trials:t.length,pass:t.filter(function(x){return x.res=="Pass"}).length,qty:mtSum(t,"qty"),ng:mtSum(t,"ng"),issues:is.length,labOk:lb.filter(function(o){return o.res=="OK"}).length,labTot:lb.length};
+  var mp=[];for(var f of refs){if(mp.length>=8)break;var u=MPK.map(function(k){return {cap:k[1],u:photosOf(f.r,k[0])[0]}}).filter(function(a){return a.u});if(u.length)mp.push({f:f,im:await mtLoad(u)})}
+  var ord=refs.map(function(f){return f.r}).concat(t.slice().sort(function(a,b){return STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||pi(a.pos)-pi(b.pos)||(a.no||1)-(b.no||1)})),seen={},tp=[];
+  ord.forEach(function(x){(x.photos||[]).slice(0,2).forEach(function(u){if(!seen[u]&&tp.length<18){seen[u]=1;tp.push({u:u,l1:x.pos+" · "+x.stage+" T"+(x.no||1)+" · "+x.res,l2:x.method+" · "+wkD(iso(T(x)),1)})}})});
+  var lr=lb.map(function(o,i){return {stage:o.stage,part:o.part,method:o.method,desc:o.desc,qty:o.qty,res:o.res,date:o.date||(o.ts?iso(o.ts):""),u:i<30?o.photos[0]:""}});
+  var li=lims.filter(function(o){return o.project==n}).sort(function(a,b){return STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||pi(a.part)-pi(b.part)||(a.pos<b.pos?-1:1)}).map(function(o,i){return {stage:o.stage,part:o.part,pos:o.pos,color:o.color,note:o.note,n:o.photos.length,u:i<36?o.photos[0]:""}});
+  var ir=is.map(function(x,i){return {stage:x.stage,method:x.method,pos:x.pos,no:x.no||1,cat:x.cat||"-",issue:x.issue,act:x.act,ng:x.ng||0,res:x.res,u:i<20?(x.photos||[])[0]:""}});
+  P.push({name:n,stats:stats,status:status,refs:refs,mp:mp,tp:await mtLoad(tp),lab:await mtLoad(lr),lim:await mtLoad(li),iss:await mtLoad(ir)})}
+ return {projects:P,reporter:($("wk_rep").value||"ME").trim(),methodLabel:EXPMETH||"Handspray & Pad Print",today:todayIso().replace(/-/g,".")}}
+
+function meetingPptx(PptxGenJS,D,BG){
+ var pres=new PptxGenJS();pres.layout="LAYOUT_WIDE";pres.title="Production Meeting – FEP to PP2K";pres.author=D.reporter||"ME";pres.company="Combine Will";
+ var PUR="7A60A1",DK="373545",ACC="864EA9",LT="EEE6F3",GR="6B6880",FF="Arial",idx=0,bgOf=function(k){return {data:"image/jpeg;base64,"+BG[k]}};
+ function content(title){var s=pres.addSlide();idx++;s.background=bgOf("content");
+  s.addShape(pres.ShapeType.rect,{x:12.966,y:7.097,w:0.367,h:0.403,fill:{color:"000000"},line:{color:"000000",width:0.25}});
+  s.addText(String(idx),{x:12.966,y:7.097,w:0.367,h:0.403,fontSize:10,color:"FFFFFF",fontFace:FF,align:"center",valign:"middle",margin:0,isTextBox:true});
+  s.addText(title,{x:0.65,y:0.3,w:12.1,h:0.55,fontSize:24,bold:true,color:PUR,fontFace:FF,valign:"middle",margin:0,fit:"shrink",isTextBox:true});return s}
+ function sub(s,t){s.addText(t,{x:0.65,y:0.95,w:12,h:0.4,fontSize:13,bold:true,color:DK,fontFace:FF,margin:0,fit:"shrink",isTextBox:true})}
+ function th(t,al){return {text:t,options:{bold:true,color:"FFFFFF",fill:{color:PUR},align:al||"center",valign:"middle",fontFace:FF,fontSize:11}}}
+ function td(t,o){return {text:String(t==null?"":t),options:Object.assign({color:DK,align:"left",valign:"middle",fontFace:FF,fontSize:11},o||{})}}
+ function table(s,head,body,colW,y,rowH,hH){var r=[head].concat(body).map(function(row,ri){return row.map(function(c){if(ri>0&&ri%2==0)c.options=Object.assign({},c.options,{fill:{color:"F4F0F8"}});return c})});
+  s.addTable(r,{x:0.65,y:y,w:colW.reduce(function(a,b){return a+b},0),colW:colW,rowH:[hH||0.4].concat(body.map(function(){return rowH})),border:{type:"solid",pt:0.5,color:"DCD8DC"},margin:[2,5,2,5],autoPage:false})}
+ function strip(s,items,y,label){items=items.filter(function(i){return i.d}).slice(0,5);if(!items.length)return;
+  s.addText(label,{x:0.65,y:y,w:8,h:0.3,fontSize:12,bold:true,color:ACC,fontFace:FF,margin:0,isTextBox:true});
+  items.forEach(function(it,i){var x=0.65+i*2.4;s.addImage({data:it.d,x:x,y:y+0.35,w:2.2,h:1.45,sizing:{type:"contain",w:2.2,h:1.45}});
+   s.addText(wkCut(it.cap,34),{x:x,y:y+1.82,w:2.2,h:0.25,fontSize:10,color:GR,fontFace:FF,margin:0,isTextBox:true})})}
+ function card(s,x,y,w,ih,th_,d,l1,l2,l3){
+  if(d)s.addImage({data:d,x:x,y:y,w:w,h:ih,sizing:{type:"contain",w:w,h:ih}});
+  else{s.addShape(pres.ShapeType.rect,{x:x,y:y,w:w,h:ih,fill:{color:"F4F0F8"},line:{color:"DCD8DC",width:0.5}});s.addText("No photo",{x:x,y:y,w:w,h:ih,fontSize:11,color:GR,fontFace:FF,align:"center",valign:"middle",margin:0,isTextBox:true})}
+  var runs=[{text:wkCut(l1,46),options:{bold:true,color:DK,fontSize:11,breakLine:!!(l2||l3)}}];
+  if(l2)runs.push({text:wkCut(l2,50),options:{bold:true,color:ACC,fontSize:10,breakLine:!!l3}});
+  if(l3)runs.push({text:wkCut(l3,100),options:{color:GR,fontSize:9}});
+  s.addText(runs,{x:x,y:y+ih+0.04,w:w,h:th_,fontFace:FF,valign:"top",margin:0,isTextBox:true})}
+ function empty(s,t){s.addText(t,{x:0.65,y:3.0,w:12,h:0.6,fontSize:16,color:GR,fontFace:FF,margin:0,isTextBox:true})}
+ var pg=function(i,all){return all.length>1?" ("+(i+1)+"/"+all.length+")":""},XS=[0.65,4.7,8.75];
+ /* title */
+ var s=pres.addSlide();idx++;s.background=bgOf("title");
+ s.addText("PRODUCTION MEETING",{x:1.17,y:2.9,w:11,h:0.94,fontSize:50,bold:true,color:"FFFFFF",fontFace:FF,margin:0,valign:"middle",isTextBox:true});
+ s.addText("TRIAL SUMMARY FEP – PP2K · "+D.methodLabel.toUpperCase(),{x:1.17,y:4.02,w:11,h:0.6,fontSize:20,bold:true,color:"FFFFFF",fontFace:FF,margin:0,valign:"middle",isTextBox:true});
+ s.addText("Reporter: "+(D.reporter||"ME"),{x:1.2,y:5.37,w:3.83,h:0.4,fontSize:20,bold:true,color:"FFFFFF",fontFace:FF,margin:0,isTextBox:true});
+ s.addText(D.today,{x:5.03,y:5.37,w:3.5,h:0.4,fontSize:20,bold:true,color:"FFFFFF",fontFace:FF,margin:0,isTextBox:true});
+ D.projects.forEach(function(p){
+  /* divider */
+  s=pres.addSlide();idx++;s.background=bgOf("week");
+  s.addText(p.name,{x:3.96,y:3.42,w:9.2,h:0.67,fontSize:32,bold:true,color:"FFFFFF",fontFace:FF,margin:0,valign:"middle",fit:"shrink",isTextBox:true});
+  s.addText("FEP – PP2K · "+D.methodLabel,{x:3.96,y:4.1,w:8.6,h:0.5,fontSize:16,bold:true,color:"FFFFFF",fontFace:FF,margin:0,valign:"top",fit:"shrink",isTextBox:true});
+  /* 1 status per part */
+  var a=p.stats,st=p.status,stc=function(o){return o?td(o.t,{fontSize:10,bold:true,color:o.ok?"1F9D63":o.res=="Hold"?"C58A10":"D6405A"}):td("-",{align:"center",color:GR})};
+  wkChunk(st.length?st:[null],9).forEach(function(ch,i,all){var sl=content(p.name+" – Trial Status"+pg(i,all));
+   sub(sl,"Trials "+a.trials+" · Pass rate "+(a.trials?Math.round(a.pass/a.trials*100)+"%":"-")+" · NG rate "+(a.qty?(a.ng/a.qty*100).toFixed(1)+"%":"-")+" · Lab OK "+(a.labTot?a.labOk+"/"+a.labTot:"-")+" · Issues "+a.issues);
+   if(ch[0]===null)return empty(sl,"No FEP / PP2K trials recorded.");
+   table(sl,["Part","Method","FEP","PP2K","Paint color","Color result","Lab test"].map(function(h){return th(h)}),ch.map(function(r){return [td(r.pos,{bold:true}),td(r.method),stc(r.fep),stc(r.pp),td(wkCut(r.paint,22),{fontSize:10}),td(r.color,{align:"center"}),td(r.labTot?r.labOk+"/"+r.labTot+" OK":"-",{align:"center",bold:true,color:r.labTot&&r.labOk<r.labTot?"D6405A":r.labTot?"1F9D63":GR})]}),[2.3,1.3,2.3,2.3,1.5,1.0,1.3],1.5,0.46)});
+  /* 2 parameters (transposed: one column per part × stage) */
+  ["Handspray","Pad Print"].forEach(function(m){var rf=p.refs.filter(function(f){return f.method==m});if(!rf.length)return;
+   wkChunk(rf,6).forEach(function(ch,i,all){var sl=content(p.name+" – Process Parameters · "+m+pg(i,all));
+    sub(sl,"Reference trial per part & stage: last OK trial (latest trial if not OK yet)");
+    var w=Math.floor((12-2.4)/ch.length*100)/100,head=[th("Parameter","left")].concat(ch.map(function(f){return {text:[{text:wkCut(f.pos,22),options:{bold:true,breakLine:true}},{text:f.stage+" T"+(f.r.no||1)+" · "+(f.ok?"OK":f.r.res),options:{bold:true,fontSize:10,color:f.ok?"C8F7DC":"FFD6DC"}}],options:{color:"FFFFFF",fill:{color:PUR},align:"center",valign:"middle",fontFace:FF,fontSize:11}}}));
+    var L=[["Trial date",function(r){return wkD(iso(T(r)),1)}],["Machine / Line",function(r){return r.mc||"-"}],["Qty / NG",function(r){return (r.qty||0)+" / "+(r.ng||0)}],["Paint color",function(r){return r.paint||"-"}],["Color result",function(r){return r.color||"-"}]].concat((PAR[m]||[]).map(function(k){return [k,function(r){return pval(r,k)||"-"}]}));
+    table(sl,head,L.map(function(l){return [td(l[0],{bold:true,fontSize:10})].concat(ch.map(function(f){return td(wkCut(l[1](f.r),24),{align:"center",fontSize:10})}))}),[2.4].concat(ch.map(function(){return w})),1.4,0.32,0.62)})});
+  /* 3 machine parameter photos */
+  p.mp.forEach(function(o){var sl=content(p.name+" – Machine Parameter Photos");sub(sl,o.f.pos+" · "+o.f.method+" · "+o.f.stage+" T"+(o.f.r.no||1)+" · "+(o.f.ok?"OK":o.f.r.res));
+   o.im.forEach(function(im,i){var x=0.65+i*3.05;if(im.d)sl.addImage({data:im.d,x:x,y:1.5,w:2.9,h:4.6,sizing:{type:"contain",w:2.9,h:4.6}});
+    sl.addText(im.cap,{x:x,y:6.2,w:2.9,h:0.3,fontSize:12,bold:true,color:ACC,fontFace:FF,align:"center",margin:0,isTextBox:true})})});
+  /* 4 lab test */
+  wkChunk(p.lab.length?p.lab:[null],6).forEach(function(ch,i,all){var sl=content(p.name+" – Lab Test Results"+pg(i,all));sub(sl,"FEP – PP2K lab tests");
+   if(ch[0]===null)return empty(sl,"No lab test results recorded for FEP – PP2K.");
+   table(sl,["Stage","Part","Test method","Qty","Result","Date"].map(function(h){return th(h)}),ch.map(function(r){return [td(r.stage,{align:"center"}),td(r.part),td(wkCut(r.method+(r.desc?" – "+r.desc:""),110),{fontSize:10}),td(r.qty,{align:"center"}),td(r.res,{align:"center",bold:true,color:wkResCol(r.res)}),td(r.date?wkD(r.date,1):"-",{align:"center",fontSize:10})]}),[1.0,2.2,5.0,1.0,1.2,1.6],1.45,0.5);
+   strip(sl,ch.map(function(r){return {d:r.d,cap:r.part+" · "+wkCut(r.method,16)+" · "+r.res}}),4.95,"Lab photos")});
+  /* 5 sample OK: contour & color */
+  wkChunk(p.lim.length?p.lim:[null],6).forEach(function(ch,i,all){var sl=content(p.name+" – Sample OK: Contour & Color"+pg(i,all));
+   if(ch[0]===null){sub(sl,"Production limit samples");return empty(sl,"No production limit samples recorded for FEP – PP2K.")}
+   sub(sl,"Limit samples for production (position / contour and color)");
+   ch.forEach(function(o,j){card(sl,XS[j%3],j<3?1.45:4.1,3.9,1.55,0.95,o.d,o.part+" · "+o.pos,"Color: "+o.color+" · "+o.stage,(o.note||"")+(o.n>1?" (+"+(o.n-1)+" more photos)":""))})});
+  /* 6 trial photos */
+  wkChunk(p.tp.filter(function(o){return o.d}),6).forEach(function(ch,i,all){var sl=content(p.name+" – Trial Photos"+pg(i,all));sub(sl,"Product photos from FEP – PP2K trials");
+   ch.forEach(function(o,j){card(sl,XS[j%3],j<3?1.45:4.1,3.9,2.1,0.5,o.d,o.l1,o.l2)})});
+  /* 7 issues */
+  wkChunk(p.iss.length?p.iss:[null],4).forEach(function(ch,i,all){var sl=content(p.name+" – Issues During Trial"+pg(i,all));sub(sl,"Issues (kendala) and corrective actions, FEP – PP2K");
+   if(ch[0]===null)return empty(sl,"No issues recorded during FEP – PP2K trials.");
+   table(sl,["Stage · T#","Method / Part","Issue category","Detail","Action taken","NG","Result"].map(function(h){return th(h)}),ch.map(function(r){return [td(r.stage+" · T"+r.no,{align:"center"}),td(r.method+" / "+r.pos),td(wkCut(r.cat,50),{bold:true}),td(wkCut(r.issue||"-",120),{fontSize:10}),td(wkCut(r.act||"-",110),{fontSize:10}),td(r.ng,{align:"center"}),td(r.res,{align:"center",bold:true,color:wkResCol(r.res)})]}),[1.1,2.1,2.0,3.0,2.5,0.6,0.7],1.45,0.68);
+   strip(sl,ch.map(function(r){return {d:r.d,cap:r.pos+" · "+r.stage+" T"+r.no+" · "+wkCut(r.cat,18)}}),4.7,"Defect photos")})});
+ s=pres.addSlide();idx++;s.background=bgOf("end");
+ return pres}
+
+$("mt_ppt").onclick=async function(){var b=$("mt_ppt"),lbl=b.textContent;b.disabled=true;b.textContent="Preparing…";
+ try{if(typeof PptxGenJS=="undefined")throw new Error("PowerPoint library not loaded (check internet connection)");
+  var D=await mtData(),nm=D.projects.length==1?"_"+D.projects[0].name.replace(/[^\w-]+/g,"_"):"";
+  await meetingPptx(PptxGenJS,D,BGW).writeFile({fileName:"Production_Meeting_FEP-PP2K"+nm+(EXPMETH?"_"+EXPMETH.replace(/\W+/g,""):"")+"_"+todayIso()+".pptx"});toast("Production meeting PPT created")}
+ catch(e){toast("Export failed: "+String(e.message||e).slice(0,140))}
+ b.disabled=false;b.textContent=lbl};
 </script>
 </body>
 </html>
